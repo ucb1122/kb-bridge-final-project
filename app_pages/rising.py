@@ -14,7 +14,7 @@ from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_va
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
 from kb_bridge.ui.kakao_rank_map import show_map
 from kb_bridge.ui.rising_layout import apply_rising_layout
-from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, industry_chart
+from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, industry_chart, overview_card_grid
 
 apply_rising_layout()
 
@@ -82,7 +82,7 @@ if "rising_map_district" not in st.session_state:
 if "rising_map_region" not in st.session_state or st.session_state.rising_map_region not in location_by_code:
     st.session_state.rising_map_region = ""
 source = "보관된 공식 순위 스냅샷" if result["ranking_source"] == "official" else "테스트 DB 원본 계산값"
-metric_labels = {"stores": "점포수", "sales": "매출", "footfall": "유동인구", "residents": "주거인구"}
+metric_labels = {"stores": "점포수", "sales": "매출", "footfall": "유동인구", "residents": "거주인구"}
 
 with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
@@ -141,7 +141,7 @@ with st.container(key="rising-canvas"):
                 st.subheader("분석 조건")
                 kind = st.segmented_control("지역 유형", options=["dong", "area"], format_func=lambda x: {"dong": "뜨는 동네", "area": "뜨는 상권"}[x], default=applied["kind"])
                 with st.container(key="rising-metric-control"):
-                    metric = st.segmented_control("분석 지표", options=list(LABELS), format_func=lambda x: metric_labels[x], default=applied["metric"])
+                    metric = st.segmented_control("분석 지표", options=list(LABELS), format_func=lambda x: metric_labels[x], default=applied["metric"], width="stretch", wrap=False)
                 district = st.selectbox("자치구", ["", *options["districts"]], index=["", *options["districts"]].index(applied["district"]) if applied["district"] in options["districts"] else 0, format_func=lambda x: x or "서울 전체")
                 quarter_col, criterion_col = st.columns(2)
                 with quarter_col:
@@ -158,20 +158,21 @@ with st.container(key="rising-canvas"):
                         year_options = sorted({q[:4] for q in options["quarters"]}, reverse=True)
                         year = st.selectbox("기준년도", year_options, index=year_options.index(applied["year"]) if applied["year"] in year_options else 0)
                     comparison = st.segmented_control("조회분기", ["previous", "same"], format_func=lambda x: "전분기" if x == "previous" else "전년 동분기", default=applied["comparison"])
-                    industry = st.selectbox("업종", ["all", "CS1", "CS2", "CS3"], index=["all", "CS1", "CS2", "CS3"].index(applied["industry"]),
-                                            format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
+                    with st.container(key="rising-industry-control"):
+                        industry = st.segmented_control("업종", ["all", "CS1", "CS2", "CS3"],
+                                                        default=applied["industry"], width="stretch", wrap=False,
+                                                        format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
                 submitted = st.form_submit_button("조건 적용", type="primary", width="stretch")
             if submitted:
                 if industry != "all" and metric not in {"stores", "sales"}:
-                    st.error("업종 조건은 점포수와 매출에만 적용됩니다.")
-                else:
-                    st.session_state.rising_filters = {"kind": kind, "metric": metric, "quarter": quarter, "district": district,
-                                                        "criterion": criterion, "comparison": comparison, "industry": industry,
-                                                        "period": period, "year": year}
-                    st.session_state.rising_selected = None
-                    st.session_state.rising_map_pending_district = district
-                    st.session_state.rising_map_pending_region = ""
-                    st.rerun()
+                    industry = "all"
+                st.session_state.rising_filters = {"kind": kind, "metric": metric, "quarter": quarter, "district": district,
+                                                    "criterion": criterion, "comparison": comparison, "industry": industry,
+                                                    "period": period, "year": year}
+                st.session_state.rising_selected = None
+                st.session_state.rising_map_pending_district = district
+                st.session_state.rising_map_pending_region = ""
+                st.rerun()
             st.caption(f"{result['quarter'][:4]}년 {result['quarter'][-1]}분기 · {source} · {applied['district'] or '서울 전체'}")
         with st.container(key="rising-rank-card"):
             st.subheader("순위 TOP 10")
@@ -226,17 +227,21 @@ with st.container(key="rising-canvas"):
                         st.session_state.rising_map_pending_region = ""
                         st.rerun()
                 st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 공개 원본과 확인된 공식 표시값을 구분합니다.")
+                ranked_row = next((row for row in rows if row["code"] == report["code"]), None)
+                if ranked_row:
+                    rank_number = next(index for index, row in enumerate(rows, 1) if row["code"] == report["code"])
+                    value_source = "공식 순위 확인값" if ranked_row["value_source"] == "official_rank" else "공개 원본 계산값"
+                    st.caption(f"{metric_labels[applied['metric']]} {rank_number}위 · {human_value(applied['metric'], ranked_row['value'])} · {value_source}")
+                else:
+                    st.caption("선택 지역은 현재 TOP 10 순위 밖입니다. 임의 순위를 붙이지 않습니다.")
                 st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
                 tab = st.segmented_control("보고서 항목", tabs, default="종합의견")
                 if tab == "종합의견":
-                    metric_cols = st.columns(4)
-                    for column, (metric, label) in zip(metric_cols, LABELS.items()):
-                        item = report["metrics"].get(metric)
-                        with column:
-                            st.metric(label, human_value(metric, item["value"]) if item else "자료 없음", percent(item["change"]) if item else None, border=True)
                     for line in overview_lines(report):
                         st.markdown("- " + line)
+                    selected_rank = next((index for index, row in enumerate(rows, 1) if row["code"] == report["code"]), None)
+                    overview_card_grid(report, selected_rank=selected_rank if applied["metric"] == "stores" else None)
                     if st.button("로컬 AI 종합의견 생성"):
                         with st.spinner("검증된 보고서 수치로 의견을 생성하는 중입니다."):
                             st.session_state[f"opinion-{report['code']}-{report['quarter']}"] = generate_opinion(report)

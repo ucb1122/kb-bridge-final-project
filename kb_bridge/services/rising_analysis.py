@@ -17,16 +17,86 @@ def percent(value: float | None) -> str:
     return "비교 자료 없음" if value is None else f"{value * 100:+.1f}%"
 
 
+def monthly_sales_from_totals(sales: float | None, stores: float | None) -> float | None:
+    """Return 만 원/점포/월 from one quarter's matching raw observations."""
+    if sales is None or stores is None or stores <= 0:
+        return None
+    return sales / 3 / stores / 10_000
+
+
 def sales_per_store_month(report: dict) -> tuple[float | None, str]:
     official = report.get("official_report_sales")
     if official and official.get("current") is not None:
-        return official["current"], "공식 화면 확인값"
-    official_total = report.get("official_sales_eok")
-    sales = official_total * 100_000_000 if official_total is not None else report["metrics"].get("sales", {}).get("value")
+        return official["current"], "공식 보고서 확인값"
+    sales = report["metrics"].get("sales", {}).get("value")
     stores = report["metrics"].get("stores", {}).get("value")
-    if sales is None or not stores:
-        return None, "자료 없음"
-    return sales / 3 / stores / 10_000, "공식 순위 표시값 환산" if official_total is not None else "공개 원본 계산값"
+    value = monthly_sales_from_totals(sales, stores)
+    return (value, "공개 원본 계산값") if value is not None else (None, "자료 없음")
+
+
+def _history_value(report: dict, metric: str, quarter: str) -> float | None:
+    return next((item["value"] for item in report.get("history", [])
+                 if item["metric"] == metric and item["quarter"] == quarter), None)
+
+
+def _comparison_quarters(quarter: str) -> tuple[str, str]:
+    year, part = int(quarter[:4]), int(quarter[4])
+    previous = f"{year - 1}4" if part == 1 else f"{year}{part - 1}"
+    return previous, f"{year - 1}{part}"
+
+
+def overview_cards(report: dict) -> list[dict]:
+    """Three cards with explicit units and provenance; unavailable comparisons stay null."""
+    quarter = report["quarter"]
+    previous, year_ago = _comparison_quarters(quarter)
+    cards = []
+
+    stores = report["metrics"].get("stores", {}).get("value")
+    cards.append({
+        "key": "stores", "title": "점포수", "unit": "개", "current": stores,
+        "previous_delta": stores - _history_value(report, "stores", previous)
+            if stores is not None and _history_value(report, "stores", previous) is not None else None,
+        "year_delta": stores - _history_value(report, "stores", year_ago)
+            if stores is not None and _history_value(report, "stores", year_ago) is not None else None,
+        "source": "공개 원본", "rank": None,
+    })
+
+    official = report.get("official_report_sales") or {}
+    raw_sales = report["metrics"].get("sales", {}).get("value")
+    current_monthly = monthly_sales_from_totals(raw_sales, stores)
+    verified = official.get("current") is not None
+    if verified:
+        current_monthly = official["current"]
+    def monthly_at(q: str) -> float | None:
+        return monthly_sales_from_totals(_history_value(report, "sales", q),
+                                         _history_value(report, "stores", q))
+    previous_monthly, year_monthly = monthly_at(previous), monthly_at(year_ago)
+    cards.append({
+        "key": "sales", "title": "매출액 (점포당 월평균)", "unit": "만 원/점포/월",
+        "current": current_monthly,
+        "previous_delta": official.get("previousChange") if verified and official.get("previousChange") is not None
+            else current_monthly - previous_monthly if not verified and current_monthly is not None and previous_monthly is not None else None,
+        "year_delta": official.get("yearAgoChange") if verified and official.get("yearAgoChange") is not None
+            else current_monthly - year_monthly if not verified and current_monthly is not None and year_monthly is not None else None,
+        "source": "공식 보고서 확인값" if verified else "공개 원본 계산값", "rank": None,
+    })
+
+    footfall = report["metrics"].get("footfall", {}).get("value")
+    area = report.get("area_m2")
+    density = footfall / (area / 10_000) if footfall is not None and area and area > 0 else None
+    cards.append({
+        "key": "footfall",
+        "title": "유동인구 (3개월간 1ha당 인구수)" if density is not None else "유동인구 (분기 총량)",
+        "unit": "명/ha" if density is not None else "명",
+        "current": density if density is not None else footfall,
+        "previous_delta": None if density is not None or footfall is None or _history_value(report, "footfall", previous) is None
+            else footfall - _history_value(report, "footfall", previous),
+        "year_delta": None if density is not None or footfall is None or _history_value(report, "footfall", year_ago) is None
+            else footfall - _history_value(report, "footfall", year_ago),
+        "source": "공개 원본·분석 면적 계산값" if density is not None else "공개 원본",
+        "rank": None,
+    })
+    return cards
 
 
 def footfall_per_ha(report: dict) -> tuple[float | None, str]:

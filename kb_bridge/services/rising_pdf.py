@@ -14,7 +14,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
-from kb_bridge.services.rising_analysis import LABELS, human_value, overview_lines, sales_per_store_month, footfall_per_ha
+from kb_bridge.services.rising_analysis import LABELS, human_value, overview_lines, overview_cards, sales_per_store_month, footfall_per_ha
 
 FONT_PATH = Path(__file__).resolve().parents[2] / "assets" / "fonts" / "NotoSansKR-VF.ttf"
 SECTIONS = ("종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석")
@@ -69,7 +69,15 @@ def build_pdf(report: dict, section: str) -> bytes:
              Paragraph("지역 단위 공개 통계와 확인된 공식 화면 표시값을 구분해 사용합니다.", styles["small"]), Spacer(1, 8*mm)]
     if section == "종합의견":
         story.append(Paragraph("핵심 수치", styles["heading"]))
-        story.append(_table([["지표", "값"], *[[label, human_value(metric, report["metrics"].get(metric, {}).get("value"))] for metric, label in LABELS.items()]]))
+        card_rows = [["지표", "값"]]
+        for card in overview_cards(report):
+            unit = card["unit"]
+            current = card["current"]
+            card_rows.append([card["title"], f"{current:,.0f}{unit}" if current is not None else "자료 없음"])
+            for label, delta in (("전분기 대비", card["previous_delta"]), ("전년 동분기 대비", card["year_delta"])):
+                card_rows.append([label, f"{delta:+,.0f}{unit}" if delta is not None else "비교 자료 없음"])
+            card_rows.append(["출처", card["source"]])
+        story.append(_table(card_rows))
         story.append(Paragraph("수치 기반 요약", styles["heading"]))
         story.extend(Paragraph(line, styles["body"]) for line in overview_lines(report))
     elif section == "업종분석":

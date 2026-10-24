@@ -17,11 +17,16 @@ class RisingSnapshotParityTests(unittest.TestCase):
         row = next(x for x in rows if x["code"] == "11740600")
         self.assertEqual(row["value"], 287.9e8)
         self.assertEqual(row["change"], .034)
+        self.assertEqual(row["value_source"], "official_rank")
+        self.assertEqual(row["change_source"], "official_rank")
+        self.assertEqual(row["rank_source"], "official")
 
     def test_detail_filters(self):
         high = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262", district="강남구", criterion="highest")
         food = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262", district="강남구", industry="CS1")
         self.assertEqual((high["rows"][0]["name"], high["rows"][0]["value"]), ("역삼1동", 11922))
+        self.assertEqual(high["rows"][0]["value_source"], "public_raw")
+        self.assertEqual(high["rows"][0]["rank_source"], "calculated")
         self.assertEqual((food["rows"][0]["name"], food["rows"][0]["value"]), ("일원본동", 53))
 
     def test_map_selector_can_open_region_outside_city_top_ten(self):
@@ -37,7 +42,7 @@ class RisingSnapshotParityTests(unittest.TestCase):
         self.assertEqual(round(footfall_per_ha(songcheon)[0]), 118254)
         jamsil = rising_snapshot.report(kind="dong", code="11710690", quarter="20262")
         self.assertEqual(round(jamsil["metrics"]["sales"]["value"] / 3 / jamsil["metrics"]["stores"]["value"] / 10000), 999)
-        self.assertEqual(sales_per_store_month(jamsil), (1003, "공식 화면 확인값"))
+        self.assertEqual(sales_per_store_month(jamsil), (1003, "공식 보고서 확인값"))
 
 
 @unittest.skipUnless(owner_snapshot.available(), "Local owner snapshot is absent")
