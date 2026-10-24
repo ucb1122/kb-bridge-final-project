@@ -129,5 +129,7 @@ def overview_lines(report: dict) -> list[str]:
         lines.append(f"{label}은 {human_value(metric, item['value'])}이며 {trend}.")
     stores = report.get("details", {}).get(report["quarter"], {}).get("stores", {})
     if stores:
-        lines.append(f"이번 분기 개업 점포 {stores.get('opened', 0):,.0f}개, 폐업 점포 {stores.get('closed', 0):,.0f}개가 기록됐습니다.")
+        opened, closed = stores.get("opened"), stores.get("closed")
+        if opened is not None and closed is not None:
+            lines.append(f"이번 분기 개업 점포 {opened:,.0f}개, 폐업 점포 {closed:,.0f}개가 기록됐습니다.")
     return lines

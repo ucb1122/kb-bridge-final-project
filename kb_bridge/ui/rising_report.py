@@ -32,7 +32,7 @@ def breakdown_chart(report: dict, *, category: str, title: str,
     if not any(value is not None for value in values):
         st.info(f"{title} 원본 자료가 없습니다.")
         return False
-    frame = pd.DataFrame({"구분": names, "값": [value or 0 for value in values]})
+    frame = pd.DataFrame({"구분": names, "값": values})
     st.subheader(title)
     st.bar_chart(frame, x="구분", y="값", color="#E5A900", alt=f"{report['name']}의 {title}")
     st.caption(f"단위: {unit} · 공개 원본의 {report['quarter'][:4]}년 {report['quarter'][-1]}분기 집계값")
