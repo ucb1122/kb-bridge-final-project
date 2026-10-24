@@ -68,7 +68,7 @@ def history_table(report: dict) -> None:
         st.caption("매출은 분기 추정매출 합계(원)이며 점포당 월평균 매출과 다릅니다.")
 
 
-def overview_card_grid(report: dict, *, selected_rank: int | None = None) -> None:
+def overview_card_grid(report: dict, *, selected_rank: int | None = None, selected_metric: str | None = None) -> None:
     """Source-labeled cards matching the three-column reference report."""
     cards = overview_cards(report)
     columns = st.columns(3, gap="small")
@@ -88,6 +88,6 @@ def overview_card_grid(report: dict, *, selected_rank: int | None = None) -> Non
               <div class="kb-overview-delta {delta_class(card['previous_delta'])}"><small>전분기 대비</small><strong>{escape(formatted(card['previous_delta'], signed=True))}</strong></div>
               <div class="kb-overview-current"><small>{report['quarter'][:4]}년 {report['quarter'][-1]}분기</small><strong>{escape(formatted(card['current']))}</strong></div>
               <div class="kb-overview-delta {delta_class(card['year_delta'])}"><small>전년 동분기 대비</small><strong>{escape(formatted(card['year_delta'], signed=True))}</strong></div>
-              <div class="kb-overview-rank"><small>나의 등수</small><strong>{rank_text if card['key'] == 'stores' else '확인 자료 없음'}</strong></div>
+              <div class="kb-overview-rank"><small>나의 등수</small><strong>{rank_text if card['key'] == selected_metric else '확인 자료 없음'}</strong></div>
               <p>{escape(card['source'])}</p>
             </article>""")

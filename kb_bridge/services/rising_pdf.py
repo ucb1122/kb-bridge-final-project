@@ -67,6 +67,15 @@ def build_pdf(report: dict, section: str) -> bytes:
     story = [Paragraph("상권브릿지 | " + section, styles["title"]),
              Paragraph(f"{report['district']} {report['name']} · {report['quarter'][:4]}년 {report['quarter'][-1]}분기", styles["body"]),
              Paragraph("지역 단위 공개 통계와 확인된 공식 화면 표시값을 구분해 사용합니다.", styles["small"]), Spacer(1, 8*mm)]
+    selected_ranking = report.get("selected_ranking")
+    if selected_ranking:
+        metric = selected_ranking["metric"]
+        source_label = "공식 순위 확인값" if selected_ranking["value_source"] == "official_rank" else "공개 원본 계산값"
+        story.append(Paragraph(
+            f"선택 지표 순위: {LABELS[metric]} {selected_ranking['rank']}위 · "
+            f"{human_value(metric, selected_ranking['value'])} · {source_label}",
+            styles["body"],
+        ))
     if section == "종합의견":
         story.append(Paragraph("핵심 수치", styles["heading"]))
         card_rows = [["지표", "값"]]
