@@ -64,6 +64,9 @@ if "rising_filters" not in st.session_state:
     st.session_state.rising_filters = initial
 if "rising_selected" not in st.session_state:
     st.session_state.rising_selected = None
+for panel_key in ("rising_left_open", "rising_right_open", "rising_selector_open"):
+    if panel_key not in st.session_state:
+        st.session_state[panel_key] = True
 applied = st.session_state.rising_filters
 result = load_rankings(**applied)
 rows = result["rows"]
@@ -95,29 +98,39 @@ with st.container(key="rising-canvas"):
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도는 표시되지 않습니다. 왼쪽 순위 목록으로 보고서를 열 수 있습니다.")
     with st.container(key="rising-map-selector"):
-        city, map_district_col, map_region_col = st.columns([1.25, 1, 1])
-        with city:
-            st.html('<div class="kb-rising-city">◉ &nbsp;서울특별시</div>')
-        with map_district_col:
-            map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
-                                        key="rising_map_district", format_func=lambda value: value or "전체",
-                                        label_visibility="collapsed")
-        if map_district != applied["district"]:
-            st.session_state.rising_filters = {**applied, "district": map_district}
-            st.session_state.rising_map_region = ""
-            st.session_state.rising_selected = None
-            st.rerun()
-        visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
-        visible_codes = {item["code"] for item in visible_locations}
-        if st.session_state.rising_map_region not in visible_codes:
-            st.session_state.rising_map_region = ""
-        with map_region_col:
-            map_region = st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
-                                      key="rising_map_region", label_visibility="collapsed",
-                                      format_func=lambda value: location_by_code[value]["name"] if value else "전체")
-        if map_region and map_region != st.session_state.rising_selected:
-            st.session_state.rising_selected = map_region
-            st.rerun()
+        if st.session_state.rising_selector_open:
+            city, map_district_col, map_region_col, selector_toggle = st.columns([1.25, 1, 1, 0.65])
+            with city:
+                st.html('<div class="kb-rising-city">◉ &nbsp;서울특별시</div>')
+            with map_district_col:
+                map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
+                                            key="rising_map_district", format_func=lambda value: value or "전체",
+                                            label_visibility="collapsed")
+            if map_district != applied["district"]:
+                st.session_state.rising_filters = {**applied, "district": map_district}
+                st.session_state.rising_map_region = ""
+                st.session_state.rising_selected = None
+                st.rerun()
+            visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
+            visible_codes = {item["code"] for item in visible_locations}
+            if st.session_state.rising_map_region not in visible_codes:
+                st.session_state.rising_map_region = ""
+            with map_region_col:
+                map_region = st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
+                                          key="rising_map_region", label_visibility="collapsed",
+                                          format_func=lambda value: location_by_code[value]["name"] if value else "전체")
+            if map_region and map_region != st.session_state.rising_selected:
+                st.session_state.rising_selected = map_region
+                st.rerun()
+            with selector_toggle:
+                if st.button("접기 ‹", key="rising-selector-toggle", help="지도 지역 선택창 접기"):
+                    st.session_state.rising_selector_open = False
+                    st.rerun()
+        else:
+            st.html('<span class="kb-selector-collapsed-flag" hidden></span>')
+            if st.button("지역 선택 ›", key="rising-selector-toggle", help="지도 지역 선택창 펼치기"):
+                st.session_state.rising_selector_open = True
+                st.rerun()
     with st.container(key="rising-filter-panel"):
         with st.container(key="rising-controls-card"):
             st.markdown("## 뜨는 상권")
@@ -169,12 +182,26 @@ with st.container(key="rising-canvas"):
                     st.session_state.rising_map_pending_region = row["code"]
                     st.rerun()
                 st.caption(f"{percent(row['change'])} · 비교값 {human_value(applied['metric'], row['previous'])}")
+    with st.container(key="rising-left-toggle"):
+        if not st.session_state.rising_left_open:
+            st.html('<span class="kb-left-collapsed-flag" hidden></span>')
+        if st.button("‹" if st.session_state.rising_left_open else "›", key="rising-left-collapse",
+                     help="왼쪽 분석 조건 접기 또는 펼치기"):
+            st.session_state.rising_left_open = not st.session_state.rising_left_open
+            st.rerun()
     with st.container(key="rising-source-badge"):
         st.caption("순위 배지나 경계를 선택하면 지역 보고서를 엽니다. 값은 테스트 프로젝트 자료의 기준 분기이며 실시간 수치가 아닙니다.")
     selected_row = next((row for row in rows if row["code"] == st.session_state.rising_selected), None)
     if selected_row is None:
         selected_row = location_by_code.get(st.session_state.rising_selected)
     if selected_row:
+        with st.container(key="rising-right-toggle"):
+            if not st.session_state.rising_right_open:
+                st.html('<span class="kb-right-collapsed-flag" hidden></span>')
+            if st.button("›" if st.session_state.rising_right_open else "‹", key="rising-right-collapse",
+                         help="오른쪽 분석 리포트 접기 또는 펼치기"):
+                st.session_state.rising_right_open = not st.session_state.rising_right_open
+                st.rerun()
         with st.container(key="rising-report-panel"):
             report = load_report(applied["kind"], selected_row["code"], result["quarter"])
             if report:

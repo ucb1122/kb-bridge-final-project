@@ -27,7 +27,7 @@ _MAP = st.components.v2.component(
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
 let kakaoResizeObserver=null, boundarySvg=null, boundaryDraw=null, boundaryPaths=[];
-let rankLayer=null, rankMarkers=[], positionKakaoMarkers=null, redrawFrame=null, viewKey=null;
+let rankLayer=null, rankMarkers=[], positionKakaoMarkers=null, redrawFrame=null, viewKey=null, viewportResizeBound=false;
 let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
 let mapLibreLoading=null;
 function loadKakao(key) {
@@ -70,6 +70,19 @@ function drawKakaoBoundaries(root,map,features,setTriggerValue) {
     const points=ring.map(coord=>projection.containerPointFromCoords(coord));
     shape.setAttribute('d',points.map((point,index)=>`${index?'L':'M'}${point.x} ${point.y}`).join(' ')+' Z');
   }
+}
+function resizeMapViewport() {
+  if(!mapRoot)return;
+  const host=mapRoot.getRootNode().host||mapRoot;
+  const canvas=host.closest?.('.st-key-rising-canvas');
+  if(window.innerWidth>1100 && canvas) {
+    canvas.style.height=`${Math.max(650,window.innerHeight-canvas.getBoundingClientRect().top)}px`;
+  } else if(canvas) {
+    canvas.style.removeProperty('height');
+  }
+  const size=window.innerWidth<=1100?650:Math.max(650,window.innerHeight-mapRoot.getBoundingClientRect().top);
+  mapRoot.style.height=`${size}px`;
+  map?.relayout();scheduleKakaoDecorations();
 }
 function scheduleKakaoDecorations() {
   if(redrawFrame!==null)return;
@@ -206,7 +219,7 @@ export default async function(component) {
   const root=parentElement.querySelector('#kb-map');
   const status=parentElement.querySelector('#kb-map-status');
   if (!root) return;
-  root.style.height=`${data.height||590}px`;
+  root.style.height=`${window.innerWidth<=1100?650:Math.max(650,window.innerHeight-root.getBoundingClientRect().top-8)}px`;
   try {
     await loadKakao(data.key);
     if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
@@ -220,6 +233,8 @@ export default async function(component) {
       Object.assign(inner.style,{position:'absolute',inset:'0'}); root.prepend(inner);
       map=new kakao.maps.Map(inner,{center:new kakao.maps.LatLng(37.5665,126.9780),level:9});
       loadedKey=data.key; mapRoot=root; viewKey=null;
+      resizeMapViewport();
+      if(!viewportResizeBound){window.addEventListener('resize',resizeMapViewport);viewportResizeBound=true;}
       kakaoResizeObserver=new ResizeObserver(()=>{map.relayout();scheduleKakaoDecorations();});
       kakaoResizeObserver.observe(inner);
       for(const event of ['center_changed','zoom_changed','drag','idle'])
@@ -278,7 +293,7 @@ export default async function(component) {
       else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
       viewKey=nextViewKey;
     }
-    requestAnimationFrame(()=>{map.relayout();scheduleKakaoDecorations();
+    requestAnimationFrame(()=>{resizeMapViewport();scheduleKakaoDecorations();
       if(boundaryError||markerErrors) status.textContent=`카카오 지도 일부 표시 실패 · 경계: ${boundaryError?.message||'정상'}, 순위 배지 ${markerErrors}건`;
     });
   } catch(error) {
@@ -310,5 +325,5 @@ def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selec
     result = _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
                                          "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
                                          "fallback_districts": fallback_districts or []},
-                  height=height, on_selected_change=lambda: None)
+                  height="content", on_selected_change=lambda: None)
     return getattr(result, "selected", None)
