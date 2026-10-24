@@ -75,13 +75,15 @@ function resizeMapViewport() {
   if(!mapRoot)return;
   const host=mapRoot.getRootNode().host||mapRoot;
   const canvas=host.closest?.('.st-key-rising-canvas');
-  if(window.innerWidth>1100 && canvas) {
-    canvas.style.height=`${Math.max(650,window.innerHeight-canvas.getBoundingClientRect().top)}px`;
-  } else if(canvas) {
-    canvas.style.removeProperty('height');
+  const compact=window.innerWidth<=1100;
+  if(canvas && !compact) {
+    const size=Math.max(650,Math.ceil(window.innerHeight-canvas.getBoundingClientRect().top));
+    canvas.style.height=`${size}px`;
+    mapRoot.style.height=`${size}px`;
+  } else {
+    canvas?.style.removeProperty('height');
+    mapRoot.style.height='650px';
   }
-  const size=window.innerWidth<=1100?650:Math.max(650,window.innerHeight-mapRoot.getBoundingClientRect().top);
-  mapRoot.style.height=`${size}px`;
   map?.relayout();scheduleKakaoDecorations();
 }
 function scheduleKakaoDecorations() {
@@ -234,6 +236,9 @@ export default async function(component) {
       map=new kakao.maps.Map(inner,{center:new kakao.maps.LatLng(37.5665,126.9780),level:9});
       loadedKey=data.key; mapRoot=root; viewKey=null;
       resizeMapViewport();
+      requestAnimationFrame(()=>requestAnimationFrame(resizeMapViewport));
+      setTimeout(resizeMapViewport,250);
+      setTimeout(resizeMapViewport,1000);
       if(!viewportResizeBound){window.addEventListener('resize',resizeMapViewport);viewportResizeBound=true;}
       kakaoResizeObserver=new ResizeObserver(()=>{map.relayout();scheduleKakaoDecorations();});
       kakaoResizeObserver.observe(inner);
