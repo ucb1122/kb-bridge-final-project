@@ -51,7 +51,7 @@ if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 | OLLAMA_BASE_URL | 로컬 Ollama 주소. 예: http://127.0.0.1:11434 | 로컬 AI 의견 생성에서 사용 |
 | OLLAMA_MODEL | 사용할 모델. 예: gemma4:e2b | 로컬 AI 의견 생성에서 사용 |
 
-지도를 붙일 때 JavaScript 키는 브라우저로 전달되므로 카카오 콘솔의 허용 도메인을 설정해야 합니다. REST 키는 서버 전용으로 취급합니다. 키를 README나 .env.example에 적지 마세요. 지도는 허용 도메인이 맞아야 보이며, AI 의견은 보고서에서 생성 버튼을 눌렀을 때만 요청합니다.
+지도를 붙일 때 JavaScript 키는 브라우저로 전달되므로 카카오 콘솔의 허용 도메인을 설정해야 합니다. REST 키는 서버 전용으로 취급합니다. 키를 README나 .env.example에 적지 마세요. 로컬에서 지도를 보려면 Kakao Developers의 해당 앱에 Web 사이트 도메인 `http://localhost:8501`을 등록하세요. `127.0.0.1`로 접속한다면 `http://127.0.0.1:8501`도 별도로 등록해야 합니다. 브라우저에서 지도가 인증 오류를 표시하면 JavaScript 키와 도메인이 같은 앱에 속하는지 확인한 뒤 새로고침하세요. AI 의견은 보고서에서 생성 버튼을 눌렀을 때만 요청합니다.
 
 ## 데이터 위치
 
