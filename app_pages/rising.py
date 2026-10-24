@@ -32,6 +32,12 @@ def load_rankings(**kwargs) -> dict:
 def load_report(kind: str, code: str, quarter: str) -> dict | None:
     return rising_snapshot.report(kind=kind, code=code, quarter=quarter)
 
+@st.cache_data(max_entries=1)
+def seoul_district_boundaries() -> list[dict]:
+    path = Path(__file__).resolve().parents[1] / "assets" / "seoul-district-boundaries.geojson"
+    return json.loads(path.read_text(encoding="utf-8"))["features"]
+
+
 @st.cache_data(max_entries=16)
 def boundaries(kind: str, district: str, codes: tuple[str, ...]) -> list[dict]:
     name = "commerce-dong.geojson" if kind == "dong" else "commerce.geojson"
@@ -62,6 +68,7 @@ with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
         selected = show_map(key=load_settings().kakao_map_javascript_key, rows=rows,
                             boundaries=boundaries(applied["kind"], applied["district"], tuple(r["code"] for r in rows)),
+                            fallback_districts=seoul_district_boundaries(),
                             selected=st.session_state.rising_selected, source=result["ranking_source"], district=applied["district"], height=750)
         if selected and selected != st.session_state.rising_selected and selected in {r["code"] for r in rows}:
             st.session_state.rising_selected = selected
