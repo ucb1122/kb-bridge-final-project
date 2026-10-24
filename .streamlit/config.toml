@@ -20,6 +20,9 @@ secondaryBackgroundColor = "#FBFAF7"
 [server]
 enableStaticServing = true
 
+[client]
+toolbarMode = "viewer"
+
 [[theme.fontFaces]]
 family = "KB Noto Sans KR"
 url = "app/static/fonts/NotoSansKR-Regular.woff2"

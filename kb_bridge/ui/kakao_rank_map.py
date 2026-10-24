@@ -7,17 +7,18 @@ _MAP = st.components.v2.component(
     "kb_bridge_rising_map",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
-#kb-map {position:relative;width:100%;height:100%;min-height:390px;border:1px solid #e9e6de;border-radius:14px;overflow:hidden;background:#f5f3ee}
+#kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
 #kb-map-status:empty {display:none}
 #kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
-.kb-rank-marker {display:grid;grid-template-columns:26px 112px;min-width:138px;padding:0;border:1px solid #7545c9;border-radius:7px;background:#fff;color:#101624;box-shadow:0 3px 12px #0003;font:600 12px sans-serif;cursor:pointer;text-align:center;overflow:hidden}
+.kb-rank-marker {display:grid;grid-template-columns:26px 112px;position:relative;isolation:isolate;min-width:138px;padding:0;border:1px solid #7545c9;border-radius:4px;background:#fff;color:#101624;box-shadow:0 3px 12px #0003;font:600 12px sans-serif;cursor:pointer;text-align:center;overflow:visible}
+.kb-rank-marker::before {content:"";position:absolute;z-index:-1;left:50%;top:50%;width:96px;height:96px;transform:translate(-50%,-50%);border-radius:50%;background:#7142c655;pointer-events:none}
 .kb-rank-marker strong {grid-row:span 2;display:grid;place-items:center;background:#7241c4;color:white;font-size:16px}
-.kb-rank-marker span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px;background:#7241c4;color:white}.kb-rank-marker small {display:block;padding:4px;background:#fff;color:#344054;font-size:11px}
+.kb-rank-marker span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px;background:#7241c4;color:white;overflow:hidden}.kb-rank-marker small {display:block;padding:4px;background:#fff;color:#344054;font-size:11px}
 .kb-rank-marker.active {outline:3px solid #ffc400;z-index:10}
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
-let kakaoResizeObserver=null;
+let kakaoResizeObserver=null, boundarySvg=null, boundaryDraw=null;
 let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
 let mapLibreLoading=null;
 function loadKakao(key) {
@@ -35,6 +36,28 @@ function loadKakao(key) {
 function paths(geometry) {
   const rings=geometry?.type==='Polygon'?[geometry.coordinates]:geometry?.type==='MultiPolygon'?geometry.coordinates:[];
   return rings.map(poly=>poly[0].map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
+}
+function drawKakaoBoundaries(root,map,features,setTriggerValue) {
+  if(boundarySvg){boundarySvg.remove();boundarySvg=null;}
+  const projection=map.getProjection();
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('width',String(root.clientWidth));
+  svg.setAttribute('height',String(root.clientHeight));
+  Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',zIndex:'2',pointerEvents:'none'});
+  for(const feature of features||[]) {
+    for(const ring of paths(feature.geometry)) {
+      const points=ring.map(coord=>projection.containerPointFromCoords(coord));
+      if(points.length<3)continue;
+      const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
+      shape.setAttribute('d',points.map((point,index)=>`${index?'L':'M'}${point.x} ${point.y}`).join(' ')+' Z');
+      shape.setAttribute('fill','#9165db');shape.setAttribute('fill-opacity','.12');
+      shape.setAttribute('stroke','#7142c6');shape.setAttribute('stroke-width','2');
+      shape.style.pointerEvents='visiblePainted';shape.style.cursor='pointer';
+      shape.addEventListener('click',()=>setTriggerValue('selected',String(feature.properties.code)));
+      svg.appendChild(shape);
+    }
+  }
+  root.appendChild(svg);boundarySvg=svg;
 }
 function renderSvgFallback(root, data, setTriggerValue) {
   root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
@@ -175,30 +198,22 @@ export default async function(component) {
       loadedKey=data.key; mapRoot=root;
       kakaoResizeObserver=new ResizeObserver(()=>map.relayout());
       kakaoResizeObserver.observe(inner);
+      kakao.maps.event.addListener(map,'idle',()=>boundaryDraw?.());
     }
     status.textContent='';
     overlays.forEach(o=>o.setMap(null)); overlays=[];
     polygons.forEach(p=>p.setMap(null)); polygons=[];
-    let boundaryErrors=0, markerErrors=0;
-    for (const feature of data.boundaries||[]) {
-      let boundaryPaths=[];
-      try {boundaryPaths=paths(feature.geometry);} catch(error) {boundaryErrors++;console.warn('상권 경계 좌표 실패',error);}
-      for (const path of boundaryPaths) {
-        try {
-          const polygon=new kakao.maps.Polygon({path,strokeWeight:2,strokeColor:'#7142c6',strokeOpacity:.8,fillColor:'#9165db',fillOpacity:.12});
-          polygon.setMap(map); polygons.push(polygon);
-          kakao.maps.event.addListener(polygon,'mouseover',()=>polygon.setOptions({fillOpacity:.24,strokeWeight:3}));
-          kakao.maps.event.addListener(polygon,'mouseout',()=>polygon.setOptions({fillOpacity:.12,strokeWeight:2}));
-          kakao.maps.event.addListener(polygon,'click',()=>setTriggerValue('selected',String(feature.properties.code)));
-        } catch(error) {boundaryErrors++;console.warn('상권 경계 표시 실패',error);}
-      }
-    }
+    let boundaryError=null, markerErrors=0;
+    boundaryDraw=()=>{
+      try {drawKakaoBoundaries(root,map,data.boundaries,setTriggerValue);}
+      catch(error) {boundaryError=error;console.warn('상권 경계 표시 실패',error);}
+    };
     if (data.radius && data.rows?.length === 1) {
       const row=data.rows[0];
       try {
         const circle=new kakao.maps.Circle({center:new kakao.maps.LatLng(row.lat,row.lng),radius:data.radius,strokeWeight:2,strokeColor:'#7142c6',strokeOpacity:.9,fillColor:'#9165db',fillOpacity:.12});
         circle.setMap(map);polygons.push(circle);
-      } catch(error) {boundaryErrors++;console.warn('선택 반경 표시 실패',error);}
+      } catch(error) {boundaryError=error;console.warn('선택 반경 표시 실패',error);}
     }
     (data.rows||[]).forEach((row,index)=>{
       const lat=Number(row.lat),lng=Number(row.lng);
@@ -216,18 +231,20 @@ export default async function(component) {
       overlay.setMap(map);overlays.push(overlay);
       } catch(error) {markerErrors++;console.warn('순위 배지 표시 실패',error);}
     });
-    const selected=(data.rows||[]).find(r=>r.code===data.selected);
+    const selected=(data.rows||[]).find(r=>r.code===data.selected)||data.selected_location;
     if(selected && Number.isFinite(selected.lat) && Number.isFinite(selected.lng)) {map.setCenter(new kakao.maps.LatLng(selected.lat,selected.lng));map.setLevel(5)}
     else if(data.district && data.rows?.length) {map.setCenter(new kakao.maps.LatLng(data.rows[0].lat,data.rows[0].lng));map.setLevel(7)}
     else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
-    requestAnimationFrame(()=>map.relayout());
-    if(boundaryErrors||markerErrors) status.textContent=`카카오 지도 표시 일부 실패 · 경계 ${boundaryErrors}건, 순위 배지 ${markerErrors}건`;
+    requestAnimationFrame(()=>{map.relayout();boundaryDraw?.();
+      if(boundaryError||markerErrors) status.textContent=`카카오 지도 일부 표시 실패 · 경계: ${boundaryError?.message||'정상'}, 순위 배지 ${markerErrors}건`;
+    });
   } catch(error) {
     console.error('카카오 지도 초기화 실패',error);
     if(map && mapRoot===root){status.textContent='카카오 지도 일부 표시 실패: '+error.message;return;}
     overlays.forEach(o=>o.setMap(null));overlays=[];
     polygons.forEach(p=>p.setMap(null));polygons=[];
     if(kakaoResizeObserver){kakaoResizeObserver.disconnect();kakaoResizeObserver=null;}
+    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryDraw=null;
     root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
     map=null;mapRoot=null;loadedKey=null;
     try {
@@ -244,10 +261,10 @@ export default async function(component) {
 
 
 def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
-             source: str, district: str, radius: int | None = None, height: int = 590,
+             source: str, district: str, selected_location: dict | None = None, radius: int | None = None, height: int = 590,
              fallback_districts: list[dict] | None = None) -> str | None:
     result = _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
-                                         "selected": selected, "source": source, "district": district, "radius": radius, "height": height,
+                                         "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
                                          "fallback_districts": fallback_districts or []},
                   height=height, on_selected_change=lambda: None)
     return getattr(result, "selected", None)
