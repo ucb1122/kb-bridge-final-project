@@ -76,14 +76,8 @@ function resizeMapViewport() {
   const host=mapRoot.getRootNode().host||mapRoot;
   const canvas=host.closest?.('.st-key-rising-canvas');
   const compact=window.innerWidth<=1100;
-  if(canvas && !compact) {
-    const size=Math.max(650,Math.ceil(window.innerHeight-canvas.getBoundingClientRect().top));
-    canvas.style.height=`${size}px`;
-    mapRoot.style.height=`${size}px`;
-  } else {
-    canvas?.style.removeProperty('height');
-    mapRoot.style.height='650px';
-  }
+  const size=compact?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-mapRoot.getBoundingClientRect().top));
+  mapRoot.style.height=`${size}px`;
   map?.relayout();scheduleKakaoDecorations();
 }
 function scheduleKakaoDecorations() {
@@ -221,7 +215,9 @@ export default async function(component) {
   const root=parentElement.querySelector('#kb-map');
   const status=parentElement.querySelector('#kb-map-status');
   if (!root) return;
-  root.style.height=`${window.innerWidth<=1100?650:Math.max(650,window.innerHeight-root.getBoundingClientRect().top-8)}px`;
+  const host=root.getRootNode().host||root;
+  const canvas=host.closest?.('.st-key-rising-canvas');
+  root.style.height=`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
   try {
     await loadKakao(data.key);
     if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
