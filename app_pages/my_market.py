@@ -8,10 +8,8 @@ import streamlit as st
 from kb_bridge.config import load_settings
 from kb_bridge.domain.finance import amortizing_payment, rent_stress
 from kb_bridge.repositories import owner_snapshot
-from kb_bridge.ui.brand import header
 from kb_bridge.ui.kakao_rank_map import show_map
 
-header("내상권 분석")
 st.title("내상권 분석")
 st.caption("상권 데이터에서 출발해 내 사업의 비용과 다음 상담 질문까지 이어갑니다.")
 

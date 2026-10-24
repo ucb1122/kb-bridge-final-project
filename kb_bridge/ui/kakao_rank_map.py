@@ -7,8 +7,8 @@ _MAP = st.components.v2.component(
     "kb_bridge_rising_map",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
-#kb-map {position:relative;width:100%;height:590px;min-height:390px;border:1px solid #e9e6de;border-radius:14px;overflow:hidden;background:#f5f3ee}
-#kb-map-status {position:absolute;z-index:2;top:16px;left:16px;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
+#kb-map {position:relative;width:100%;height:100%;min-height:390px;border:1px solid #e9e6de;border-radius:14px;overflow:hidden;background:#f5f3ee}
+#kb-map-status {position:absolute;z-index:2;top:16px;left:min(430px,35vw);max-width:400px;line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
 .kb-rank-marker {display:grid;place-items:center;min-width:66px;max-width:130px;padding:8px 10px;border:2px solid #fff;border-radius:14px;background:#ffbf00;color:#101624;box-shadow:0 3px 12px #0004;font:600 12px sans-serif;cursor:pointer;text-align:center}
 .kb-rank-marker strong {font-size:16px}
 .kb-rank-marker span {display:block;max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -37,6 +37,7 @@ export default async function(component) {
   const root=parentElement.querySelector('#kb-map');
   const status=parentElement.querySelector('#kb-map-status');
   if (!root) return;
+  root.style.height=`${data.height||590}px`;
   try {
     await loadKakao(data.key);
     status.textContent=data.source==='official'?'서울시 기본 순위':'공개 원본 계산 순위';
@@ -86,8 +87,8 @@ export default async function(component) {
 
 
 def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
-             source: str, district: str, radius: int | None = None) -> str | None:
+             source: str, district: str, radius: int | None = None, height: int = 590) -> str | None:
     result = _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
-                                         "selected": selected, "source": source, "district": district, "radius": radius},
-                  height=590, on_selected_change=lambda: None)
+                                         "selected": selected, "source": source, "district": district, "radius": radius, "height": height},
+                  height=height, on_selected_change=lambda: None)
     return getattr(result, "selected", None)
