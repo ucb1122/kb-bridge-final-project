@@ -130,6 +130,7 @@ with st.container(key="rising-canvas"):
         with st.container(key="rising-report-panel"):
             report = load_report(applied["kind"], selected_row["code"], result["quarter"])
             if report:
+                st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
                 head, close = st.columns([5, 1])
                 with head:
                     st.subheader(f"{report['district']} {report['name']} 분석 리포트")
@@ -138,6 +139,7 @@ with st.container(key="rising-canvas"):
                         st.session_state.rising_selected = None
                         st.rerun()
                 st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 공개 원본과 확인된 공식 표시값을 구분합니다.")
+                st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
                 tab = st.segmented_control("보고서 항목", tabs, default="종합의견")
                 if tab == "종합의견":
