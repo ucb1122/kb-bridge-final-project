@@ -1,0 +1,12 @@
+{
+  "quarter": "20262",
+  "unit": "만원/점포/월",
+  "verification": "사용자가 제공한 공식 화면 캡처를 이식 명세에 전사",
+  "reference": "docs/RISING-MIGRATION-SPEC.md §5",
+  "source_date": null,
+  "values": {
+    "dong:11680720": {
+      "current": 868
+    }
+  }
+}

@@ -247,7 +247,7 @@ with st.container(key="rising-canvas"):
                     for line in overview_lines(report):
                         st.markdown("- " + line)
                     selected_rank = next((index for index, row in enumerate(rows, 1) if row["code"] == report["code"]), None)
-                    overview_card_grid(report, selected_rank=selected_rank if applied["metric"] == "stores" else None)
+                    overview_card_grid(report, selected_rank=selected_rank, selected_metric=applied["metric"])
                     if st.button("로컬 AI 종합의견 생성"):
                         with st.spinner("검증된 보고서 수치로 의견을 생성하는 중입니다."):
                             st.session_state[f"opinion-{report['code']}-{report['quarter']}"] = generate_opinion(report)
@@ -302,11 +302,16 @@ with st.container(key="rising-canvas"):
                     benchmark = report.get("benchmarks", {}).get(applied["metric"])
                     if benchmark:
                         st.dataframe([{"범위": "선택 자치구 합계", "값": human_value(applied["metric"], benchmark["district"])}, {"범위": "서울 합계", "값": human_value(applied["metric"], benchmark["city"])}], hide_index=True, alt="자치구와 서울 합계 비교")
+                export_report = {**report, "selected_ranking": {
+                    "metric": applied["metric"], "rank": rank_number, "value": ranked_row["value"],
+                    "value_source": ranked_row["value_source"], "change_source": ranked_row["change_source"],
+                    "industry": applied["industry"], "criterion": applied["criterion"],
+                } if ranked_row else None}
                 exports = st.columns(2)
                 with exports[0]:
-                    st.download_button("현재 항목 PDF", data=build_pdf(report, tab), file_name=f"{report['code']}_{tab}.pdf", mime="application/pdf", width="stretch")
+                    st.download_button("현재 항목 PDF", data=build_pdf(export_report, tab), file_name=f"{report['code']}_{tab}.pdf", mime="application/pdf", width="stretch")
                 with exports[1]:
-                    st.download_button("PDF 5종 ZIP", data=build_zip(report), file_name=f"{report['code']}_reports.zip", mime="application/zip", width="stretch")
+                    st.download_button("PDF 5종 ZIP", data=build_zip(export_report), file_name=f"{report['code']}_reports.zip", mime="application/zip", width="stretch")
                 if st.button("내 상권 경영·금융진단으로 이어가기", type="primary"):
                     st.session_state["consultation_region"] = {"code": report["code"], "kind": report["kind"], "name": report["name"], "district": report["district"], "quarter": report["quarter"]}
                     st.switch_page("app_pages/my_market.py")

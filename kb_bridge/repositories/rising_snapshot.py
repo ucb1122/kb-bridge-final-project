@@ -165,10 +165,17 @@ def report(*, kind: str, code: str, quarter: str) -> dict | None:
         previous = {m: v for m, v in db.execute("SELECT metric,value FROM observations WHERE quarter=? AND kind=? AND region_code=?", (prior, kind, code))}
     snapshot = _snapshot(quarter, "official-rankings")
     sales_snapshot = _snapshot(quarter, "official-report-sales")
+    verified_path = Path(__file__).resolve().parents[2] / "data" / "verified" / f"report-sales-{quarter}.json"
+    verified = json.loads(verified_path.read_text(encoding="utf-8")) if verified_path.is_file() else {}
+    verified_values = verified.get("values", {}) if verified.get("quarter") == quarter else {}
+    existing_values = sales_snapshot.get("values", {})
+    if any(key in existing_values and existing_values[key] != value for key, value in verified_values.items()):
+        raise ValueError("공식 보고서 확인값이 서로 다릅니다.")
+    report_sales = existing_values | verified_values
     metrics = {row["metric"]: {"value": row["value"], "change": (row["value"] - previous[row["metric"]]) / previous[row["metric"]] if previous.get(row["metric"], 0) > 0 else None} for row in observations}
     return {"code": code, "kind": kind, "quarter": quarter, "name": observations[0]["region_name"].replace("?", "·"),
             "district": observations[0]["district"], "metrics": metrics, "history": history,
             "details": details, "industries": industries, "benchmarks": benchmarks,
             "area_m2": snapshot.get("areas", {}).get(f"{kind}:{code}"),
             "official_sales_eok": snapshot.get("values", {}).get(f"{kind}:sales:{code}"),
-            "official_report_sales": sales_snapshot.get("values", {}).get(f"{kind}:{code}")}
+            "official_report_sales": report_sales.get(f"{kind}:{code}")}

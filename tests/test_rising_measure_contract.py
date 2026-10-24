@@ -48,6 +48,18 @@ class SnapshotMeasureTests(unittest.TestCase):
         self.assertEqual(cards["sales"]["year_delta"], -184)
         self.assertEqual(cards["sales"]["source"], "공식 보고서 확인값")
 
+    def test_ilwon_verified_monthly_and_density_keep_raw_total_separate(self):
+        report = rising_snapshot.report(kind="dong", code="11680720", quarter="20262")
+        cards = {card["key"]: card for card in overview_cards(report)}
+        self.assertEqual(cards["stores"]["current"], 462)
+        self.assertEqual(cards["stores"]["previous_delta"], 4)
+        self.assertEqual(cards["stores"]["year_delta"], 3)
+        self.assertEqual(cards["sales"]["current"], 868)
+        self.assertEqual(cards["sales"]["source"], "공식 보고서 확인값")
+        self.assertEqual(round(cards["footfall"]["current"]), 10434)
+        self.assertIsNone(cards["footfall"]["previous_delta"])
+        self.assertIsNone(cards["footfall"]["year_delta"])
+
     def test_official_rank_sales_does_not_replace_unverified_report_monthly(self):
         report = rising_snapshot.report(kind="dong", code="11740600", quarter="20262")
         self.assertIsNone(report["official_report_sales"])
