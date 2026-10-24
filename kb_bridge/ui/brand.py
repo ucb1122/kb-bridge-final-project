@@ -23,7 +23,7 @@ def navigation() -> None:
         font-size:19px;font-weight:500;text-decoration:none;white-space:nowrap}
       .kb-site-header nav a:hover {border-bottom-color:#ffbf00;color:#101624}
       .kb-site-header .kb-project-badge {margin-left:auto;color:#8b8c91;font-size:11px;white-space:nowrap}
-      [data-testid="stMainBlockContainer"]:has(.kb-site-header) {max-width:none;padding:0 0 20px}
+      [data-testid="stMainBlockContainer"]:has(.kb-site-header) {max-width:none;padding:84px 0 20px}
       @media(max-width:850px) {
         .kb-site-header {height:auto;min-height:68px;gap:14px;padding:7px 12px;flex-wrap:wrap}
         .kb-site-symbol {width:42px;height:32px}

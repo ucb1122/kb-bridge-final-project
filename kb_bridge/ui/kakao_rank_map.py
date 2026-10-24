@@ -16,7 +16,7 @@ _MAP = st.components.v2.component(
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
-let fallbackMap=null, fallbackMarkers=[];
+let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
 let mapLibreLoading=null;
 function loadKakao(key) {
   if (window.kakao?.maps) return Promise.resolve();
@@ -25,7 +25,7 @@ function loadKakao(key) {
     const script=document.createElement('script');
     script.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey='+encodeURIComponent(key);
     script.onload=()=>window.kakao.maps.load(resolve);
-    script.onerror=()=>reject(new Error('카카오 지도 인증에 실패했습니다. Kakao Developers 앱의 Web 사이트 도메인에 http://localhost:8501 을 등록한 뒤 새로고침하세요.'));
+    script.onerror=()=>reject(new Error('카카오 지도 인증에 실패했습니다. Kakao Developers [앱] > [플랫폼 키] > [JavaScript 키] > [JavaScript SDK 도메인]에 http://localhost:8501 을 등록한 뒤 새로고침하세요.'));
     document.head.appendChild(script);
   });
   return window.__kbKakaoLoading;
@@ -100,6 +100,7 @@ function loadMapLibre(root) {
 }
 async function renderTileFallback(root,data,setTriggerValue) {
   await loadMapLibre(root);
+  if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
   if(fallbackMap){fallbackMap.remove();fallbackMap=null;}
   fallbackMarkers.forEach(marker=>marker.remove());fallbackMarkers=[];
   root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
@@ -113,6 +114,13 @@ async function renderTileFallback(root,data,setTriggerValue) {
       const timer=setTimeout(()=>reject(new Error('지도 타일 로드 시간 초과')),12000);
       m.once('load',()=>{clearTimeout(timer);resolve();});
       m.once('error',event=>{if(!m.loaded()){clearTimeout(timer);reject(event.error||new Error('지도 타일 로드 실패'));}});
+    });
+    m.resize();
+    fallbackResizeObserver=new ResizeObserver(()=>m.resize());
+    fallbackResizeObserver.observe(inner);
+    requestAnimationFrame(()=>{
+      m.resize();
+      if(!data.selected&&!data.district)m.fitBounds([[126.76,37.41],[127.22,37.71]],{padding:24,duration:0});
     });
     const collection=features=>({type:'FeatureCollection',features:features||[]});
     m.addSource('kb-districts',{type:'geojson',data:collection(data.fallback_districts)});
@@ -140,6 +148,7 @@ async function renderTileFallback(root,data,setTriggerValue) {
     if(selected)m.flyTo({center:[selected.lng,selected.lat],zoom:12});
     else if(data.district&&data.rows?.length)m.flyTo({center:[data.rows[0].lng,data.rows[0].lat],zoom:11});
   } catch(error) {
+    if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
     m.remove();fallbackMap=null;inner.remove();throw error;
   }
 }
@@ -159,6 +168,7 @@ export default async function(component) {
       Object.assign(inner.style,{position:'absolute',inset:'0'}); root.prepend(inner);
       map=new kakao.maps.Map(inner,{center:new kakao.maps.LatLng(37.5665,126.9780),level:9});
       loadedKey=data.key; mapRoot=root;
+      new ResizeObserver(()=>map.relayout()).observe(inner);
     }
     overlays.forEach(o=>o.setMap(null)); overlays=[];
     polygons.forEach(p=>p.setMap(null)); polygons=[];
@@ -193,6 +203,7 @@ export default async function(component) {
     if(selected && Number.isFinite(selected.lat) && Number.isFinite(selected.lng)) {map.setCenter(new kakao.maps.LatLng(selected.lat,selected.lng));map.setLevel(5)}
     else if(data.district && data.rows?.length) {map.setCenter(new kakao.maps.LatLng(data.rows[0].lat,data.rows[0].lng));map.setLevel(7)}
     else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
+    requestAnimationFrame(()=>map.relayout());
   } catch(error) {
     try {
       await renderTileFallback(root,data,setTriggerValue);
