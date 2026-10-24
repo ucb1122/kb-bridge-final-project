@@ -23,7 +23,7 @@ function loadKakao(key) {
     const script=document.createElement('script');
     script.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey='+encodeURIComponent(key);
     script.onload=()=>window.kakao.maps.load(resolve);
-    script.onerror=()=>reject(new Error('카카오 지도 SDK를 불러오지 못했습니다.'));
+    script.onerror=()=>reject(new Error('카카오 지도 인증에 실패했습니다. Kakao Developers 앱의 Web 사이트 도메인에 http://localhost:8501 을 등록한 뒤 새로고침하세요.'));
     document.head.appendChild(script);
   });
   return window.__kbKakaoLoading;
