@@ -120,7 +120,9 @@ def rankings(*, kind: str = "dong", metric: str = "stores", quarter: str | None 
             change = delta / prior if prior and prior > 0 else None
             rows.append({"code": code, "name": item["region_name"].replace("?", "·"),
                          "district": item["district"], "lat": item["lat"], "lng": item["lng"],
-                         "value": value, "previous": prior, "delta": delta, "change": change})
+                         "value": value, "previous": prior, "delta": delta, "change": change,
+                         "value_source": "public_raw", "change_source": "public_raw",
+                         "rank_source": "calculated"})
         source = "calculated"
         if criterion == "growth" and comparison == "previous" and industry == "all" and period == "quarter":
             snapshot = _snapshot(quarter, "official-rankings")
@@ -131,11 +133,14 @@ def rankings(*, kind: str = "dong", metric: str = "stores", quarter: str | None 
                 ordered = [lookup[code] for code in codes]
                 rows = ordered + [row for row in rows if row["code"] not in set(codes)]
                 for row in ordered:
+                    row["rank_source"] = "official"
                     key = f"{kind}:{metric}:{row['code']}"
                     if metric == "sales" and key in snapshot.get("values", {}):
                         row["value"] = round(snapshot["values"][key] * 100_000_000)
+                        row["value_source"] = "official_rank"
                     if key in snapshot.get("rates", {}):
                         row["change"] = snapshot["rates"][key] / 100
+                        row["change_source"] = "official_rank"
         if source == "calculated":
             key = {"growth": "change", "highest": "value", "absolute": "delta"}[criterion]
             rows.sort(key=lambda row: (row[key] if row[key] is not None else float("-inf"), row["value"], row["code"]), reverse=True)
