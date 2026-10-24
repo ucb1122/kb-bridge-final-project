@@ -1,0 +1,416 @@
+[
+  {
+    "id": "korean",
+    "label": "한식음식점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 한식",
+      "일반음식점 · 냉면집",
+      "일반음식점 · 탕류(보신용)",
+      "일반음식점 · 복어취급",
+      "일반음식점 · 식육(숯불구이)"
+    ]
+  },
+  {
+    "id": "chinese",
+    "label": "중식음식점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 중국식"
+    ]
+  },
+  {
+    "id": "japanese",
+    "label": "일식음식점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 일식",
+      "일반음식점 · 횟집"
+    ]
+  },
+  {
+    "id": "western",
+    "label": "양식음식점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 경양식",
+      "일반음식점 · 패밀리레스트랑",
+      "일반음식점 · 뷔페식"
+    ]
+  },
+  {
+    "id": "bakery",
+    "label": "제과점",
+    "category": "외식업",
+    "types": [
+      "휴게음식점 · 과자점",
+      "제과점영업 · 제과점영업",
+      "제과점영업 · 푸드트럭"
+    ]
+  },
+  {
+    "id": "fastfood",
+    "label": "패스트푸드점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 패스트푸드",
+      "휴게음식점 · 패스트푸드"
+    ]
+  },
+  {
+    "id": "chicken",
+    "label": "치킨전문점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 통닭(치킨)"
+    ],
+    "note": "호프/통닭 혼합 업태는 기타음식점에 포함."
+  },
+  {
+    "id": "snack",
+    "label": "분식전문점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 분식",
+      "일반음식점 · 김밥(도시락)",
+      "휴게음식점 · 일반조리판매"
+    ]
+  },
+  {
+    "id": "pub",
+    "label": "호프·간이주점",
+    "category": "외식업",
+    "types": [
+      "일반음식점 · 정종/대포집/소주방",
+      "일반음식점 · 감성주점"
+    ]
+  },
+  {
+    "id": "coffee",
+    "label": "커피·음료",
+    "category": "외식업",
+    "types": [
+      "휴게음식점 · 커피숍",
+      "휴게음식점 · 다방",
+      "휴게음식점 · 전통찻집",
+      "휴게음식점 · 떡카페",
+      "일반음식점 · 까페",
+      "일반음식점 · 커피숍",
+      "일반음식점 · 전통찻집"
+    ]
+  },
+  {
+    "id": "other",
+    "label": "기타음식점",
+    "category": "외식업",
+    "other": true
+  },
+  {
+    "id": "service-0",
+    "label": "일반교습학원",
+    "officialCode": "CS200001",
+    "types": [
+      "학원교습소 · 일반교습학원"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-1",
+    "label": "외국어학원",
+    "officialCode": "CS200002",
+    "types": [
+      "학원교습소 · 외국어학원"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-2",
+    "label": "스포츠 강습",
+    "officialCode": "CS200005",
+    "types": [
+      "스포츠강습 · 체육도장업",
+      "스포츠강습 · 무도학원업",
+      "스포츠강습 · 수영장업",
+      "스포츠강습 · 태권도",
+      "스포츠강습 · 권투",
+      "스포츠강습 · 합기도",
+      "스포츠강습 · 검도",
+      "스포츠강습 · 유도",
+      "스포츠강습 · 레슬링",
+      "스포츠강습 · 우슈"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-3",
+    "label": "일반의원",
+    "officialCode": "CS200006",
+    "types": [
+      "의원 · 의원"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-4",
+    "label": "치과의원",
+    "officialCode": "CS200007",
+    "types": [
+      "의원 · 치과의원"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-5",
+    "label": "한의원",
+    "officialCode": "CS200008",
+    "types": [
+      "의원 · 한의원"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-6",
+    "label": "동물병원",
+    "officialCode": "CS200009",
+    "types": [
+      "동물병원 · 동물병원"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-7",
+    "label": "법무관련 서비스업",
+    "officialCode": null,
+    "types": [],
+    "category": "서비스업",
+    "unavailable": true
+  },
+  {
+    "id": "service-8",
+    "label": "세무사사무소",
+    "officialCode": "CS200015",
+    "types": [],
+    "category": "서비스업",
+    "unavailable": true
+  },
+  {
+    "id": "service-9",
+    "label": "미용실",
+    "officialCode": "CS200028",
+    "types": [
+      "미용업 · 일반미용업",
+      "미용업 · 일반이용업"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-10",
+    "label": "네일숍",
+    "officialCode": "CS200029",
+    "types": [
+      "미용업 · 네일아트업"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-11",
+    "label": "세탁소",
+    "officialCode": "CS200031",
+    "types": [
+      "세탁업 · 일반세탁업",
+      "세탁업 · 빨래방업",
+      "세탁업 · 운동화전문세탁업",
+      "세탁업 · 세탁업 기타"
+    ],
+    "category": "서비스업",
+    "unavailable": false
+  },
+  {
+    "id": "service-art",
+    "label": "예술학원",
+    "category": "서비스업",
+    "officialCode": "CS200003",
+    "types": [
+      "학원교습소 · 예술학원"
+    ]
+  },
+  {
+    "id": "service-computer",
+    "label": "컴퓨터학원",
+    "category": "서비스업",
+    "officialCode": "CS200004",
+    "types": [
+      "학원교습소 · 컴퓨터학원"
+    ]
+  },
+  {
+    "id": "service-study",
+    "label": "독서실",
+    "category": "서비스업",
+    "officialCode": "CS200038",
+    "types": [
+      "학원교습소 · 독서실"
+    ]
+  },
+  {
+    "id": "service-golf",
+    "label": "골프연습장",
+    "category": "서비스업",
+    "officialCode": "CS200017",
+    "types": [
+      "스포츠강습 · 골프연습장업"
+    ]
+  },
+  {
+    "id": "service-gym",
+    "label": "스포츠클럽",
+    "category": "서비스업",
+    "officialCode": "CS200024",
+    "types": [
+      "스포츠강습 · 체력단련장업"
+    ]
+  },
+  {
+    "id": "service-skin",
+    "label": "피부관리실",
+    "category": "서비스업",
+    "officialCode": "CS200030",
+    "types": [
+      "미용업 · 피부미용업"
+    ]
+  },
+  {
+    "id": "service-other",
+    "label": "기타 확보 서비스",
+    "category": "서비스업",
+    "prefixes": [
+      "미용업 ·",
+      "의원 ·"
+    ],
+    "otherService": true,
+    "types": []
+  },
+  {
+    "id": "retail-0",
+    "label": "슈퍼마켓",
+    "officialCode": "CS300001",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-1",
+    "label": "편의점",
+    "officialCode": "CS300002",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-2",
+    "label": "의약품",
+    "officialCode": "CS300018",
+    "types": [
+      "약국 · 약국"
+    ],
+    "category": "소매업",
+    "unavailable": false
+  },
+  {
+    "id": "retail-3",
+    "label": "의료기기",
+    "officialCode": "CS300019",
+    "types": [
+      "의료기기판매 · 의료기기판매"
+    ],
+    "category": "소매업",
+    "unavailable": false
+  },
+  {
+    "id": "retail-4",
+    "label": "일반의류",
+    "officialCode": "CS300011",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-5",
+    "label": "신발",
+    "officialCode": "CS300014",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-6",
+    "label": "안경",
+    "officialCode": "CS300016",
+    "types": [
+      "안경업 · 안경업"
+    ],
+    "category": "소매업",
+    "unavailable": false
+  },
+  {
+    "id": "retail-7",
+    "label": "가방",
+    "officialCode": "CS300015",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-8",
+    "label": "시계·귀금속",
+    "officialCode": "CS300017",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-9",
+    "label": "화장품",
+    "officialCode": "CS300022",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-10",
+    "label": "문구",
+    "officialCode": "CS300021",
+    "types": [],
+    "category": "소매업",
+    "unavailable": true
+  },
+  {
+    "id": "retail-11",
+    "label": "애완동물",
+    "officialCode": "CS300029",
+    "types": [
+      "동물판매업 · 동물판매업"
+    ],
+    "category": "소매업",
+    "unavailable": false
+  },
+  {
+    "id": "retail-facility",
+    "label": "대규모점포(시설)",
+    "category": "소매업",
+    "prefixes": [
+      "대규모점포 ·"
+    ],
+    "types": [],
+    "note": "쇼핑센터·백화점·대형마트 등 시설 단위입니다. 입점 점포수나 슈퍼마켓 전체 통계와 다릅니다."
+  }
+]

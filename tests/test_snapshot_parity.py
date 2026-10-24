@@ -1,0 +1,45 @@
+"""Regression checks migrated from the test project's rankings.test.js."""
+import unittest
+
+from kb_bridge.repositories import rising_snapshot, owner_snapshot
+from kb_bridge.services.rising_analysis import footfall_per_ha, sales_per_store_month
+
+
+@unittest.skipUnless(rising_snapshot.available(), "Local test snapshot is absent")
+class RisingSnapshotParityTests(unittest.TestCase):
+    def test_official_gangnam_order(self):
+        result = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262", district="강남구")
+        self.assertEqual(result["ranking_source"], "official")
+        self.assertEqual([r["code"] for r in result["rows"]], ["11680720", "11680656", "11680565", "11680700", "11680690", "11680660", "11680650", "11680630", "11680510", "11680640"])
+
+    def test_gangdong_official_sales_and_rate(self):
+        rows = rising_snapshot.rankings(kind="dong", metric="sales", quarter="20262", district="강동구")["rows"]
+        row = next(x for x in rows if x["code"] == "11740600")
+        self.assertEqual(row["value"], 287.9e8)
+        self.assertEqual(row["change"], .034)
+
+    def test_detail_filters(self):
+        high = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262", district="강남구", criterion="highest")
+        food = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262", district="강남구", industry="CS1")
+        self.assertEqual((high["rows"][0]["name"], high["rows"][0]["value"]), ("역삼1동", 11922))
+        self.assertEqual((food["rows"][0]["name"], food["rows"][0]["value"]), ("일원본동", 53))
+
+    def test_report_units_and_official_override(self):
+        songcheon = rising_snapshot.report(kind="dong", code="11305555", quarter="20262")
+        self.assertEqual(round(footfall_per_ha(songcheon)[0]), 118254)
+        jamsil = rising_snapshot.report(kind="dong", code="11710690", quarter="20262")
+        self.assertEqual(round(jamsil["metrics"]["sales"]["value"] / 3 / jamsil["metrics"]["stores"]["value"] / 10000), 999)
+        self.assertEqual(sales_per_store_month(jamsil), (1003, "공식 화면 확인값"))
+
+
+@unittest.skipUnless(owner_snapshot.available(), "Local owner snapshot is absent")
+class OwnerSnapshotParityTests(unittest.TestCase):
+    def test_jamsil_beauty_market_statistics(self):
+        report = owner_snapshot.market_report("3120227", "CS200028")
+        self.assertEqual(report["current"]["stores"], 47)
+        self.assertEqual(report["current"]["sales"], 4_594_054_328)
+
+    def test_branch_order_and_distance(self):
+        branches = owner_snapshot.nearest_branches(37.51513667, 127.1016547)
+        self.assertEqual(len(branches), 3)
+        self.assertLessEqual(branches[0]["meters"], branches[1]["meters"])
