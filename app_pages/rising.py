@@ -77,7 +77,7 @@ if "rising_map_district" not in st.session_state:
     st.session_state.rising_map_district = applied["district"]
 if "rising_map_region" not in st.session_state or st.session_state.rising_map_region not in location_by_code:
     st.session_state.rising_map_region = ""
-source = "서울시 기본 순위 스냅샷" if result["ranking_source"] == "official" else "공개 원본 계산값"
+source = "보관된 공식 순위 스냅샷" if result["ranking_source"] == "official" else "테스트 DB 원본 계산값"
 
 with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
@@ -170,7 +170,7 @@ with st.container(key="rising-canvas"):
                     st.rerun()
                 st.caption(f"{percent(row['change'])} · 비교값 {human_value(applied['metric'], row['previous'])}")
     with st.container(key="rising-source-badge"):
-        st.caption("서울시 지도 · 순위 배지나 경계를 선택하면 지역 보고서를 엽니다. 배지는 실제 상권 반경이 아닙니다.")
+        st.caption("순위 배지나 경계를 선택하면 지역 보고서를 엽니다. 값은 테스트 프로젝트 자료의 기준 분기이며 실시간 수치가 아닙니다.")
     selected_row = next((row for row in rows if row["code"] == st.session_state.rising_selected), None)
     if selected_row is None:
         selected_row = location_by_code.get(st.session_state.rising_selected)

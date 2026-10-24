@@ -47,7 +47,9 @@ def apply_rising_layout() -> None:
 .st-key-rising-rank-card [data-testid="stButton"] button {border:0;border-bottom:1px solid #e6e6e6;border-radius:0;background:#fff;padding:6px 0;font-size:13px;font-weight:600;}
 .st-key-rising-rank-card [data-testid="stCaptionContainer"] {text-align:right;color:#a27100;margin-top:-5px;}
 .st-key-rising-rank-card [data-testid="stVerticalBlock"] {gap:0.2rem;}
-.st-key-rising-controls-card [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#D69C00;color:#101624;}
+.st-key-rising-controls-card [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;width:100%;}
+.st-key-rising-controls-card [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;white-space:nowrap;padding:5px 2px;font-size:11px;}
+.st-key-rising-controls-card [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#FFBF00;color:#101624;}
 .st-key-rising-filter-panel [data-testid="stCaptionContainer"] { font-size: 11px; }
 .st-key-rising-report-panel h3 { margin-top: 0; font-size: 21px; }
 .kb-rising-report-banner {margin:-18px -22px 14px;padding:15px 22px;background:#FFBF00;color:#101624;font-size:19px;font-weight:700;}
