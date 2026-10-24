@@ -29,6 +29,14 @@ class RisingSnapshotParityTests(unittest.TestCase):
         self.assertEqual(high["rows"][0]["rank_source"], "calculated")
         self.assertEqual((food["rows"][0]["name"], food["rows"][0]["value"]), ("일원본동", 53))
 
+    def test_official_rank_scope_is_exact(self):
+        base = dict(kind="dong", metric="sales", quarter="20262", district="강동구")
+        self.assertEqual(rising_snapshot.rankings(**base)["ranking_source"], "official")
+        for override in ({"criterion": "highest"}, {"comparison": "same"},
+                         {"industry": "CS1"}, {"period": "year", "year": "2026"},
+                         {"quarter": "20261"}):
+            self.assertEqual(rising_snapshot.rankings(**(base | override))["ranking_source"], "calculated")
+
     def test_map_selector_can_open_region_outside_city_top_ten(self):
         city_top = {row["code"] for row in rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262")["rows"]}
         regions = rising_snapshot.locations(kind="dong", quarter="20262")

@@ -84,7 +84,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-report-panel [data-testid="stMetric"] { border:1px solid #e9e5d9; border-radius:4px; }
 .st-key-rising-report-panel [data-testid="stAlert"] { border-color:#f0dc9a; background:#fffaf0; }
 .st-key-rising-filter-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#087dd1;color:#fff;}
-.st-key-rising-filter-panel [data-testid="stFormSubmitButton"] button { background:#FFBF00; border-color:#FFBF00; color:#101624; justify-content:center; }
+.st-key-rising-filter-panel [data-testid="stFormSubmitButton"] button[kind="primaryFormSubmit"] { background:#FFBF00; border-color:#FFBF00; color:#101624; justify-content:center; }
 .st-key-rising-filter-panel [data-testid="stRadio"] label,
 .st-key-rising-filter-panel [data-testid="stSelectbox"] label { margin-bottom: 0; }
 .st-key-rising-filter-panel [data-testid="stVerticalBlockBorderWrapper"] { border-radius: 4px; }

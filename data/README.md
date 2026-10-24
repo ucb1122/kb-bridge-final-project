@@ -18,6 +18,6 @@
 - data/local/: 생성된 SQLite DB.
 - output/: 생성된 PDF·ZIP 및 검증 산출물.
 
-원본과 가공본, DB, output은 Git에서 제외된다. ZIP은 원본 그대로 두고, 적재기가 내부 파일을 읽거나 검증된 작업 공간에 풀도록 구현한다. 파일을 복사하는 것만으로 DB나 화면에 자동 반영되지는 않는다. 원본 CSV 적재 명령은 아직 없다. 테스트 프로젝트의 검증된 생성 스냅샷을 복사하는 `scripts/prepare_test_data.py`는 별개이며 `data/local/`에만 쓴다.
+원본과 가공본, DB, output은 Git에서 제외된다. ZIP은 원본 그대로 두고, 적재기가 내부 파일을 읽거나 검증된 작업 공간에 풀도록 구현한다. 파일을 복사하는 것만으로 DB나 화면에 자동 반영되지는 않는다. 테스트 프로젝트의 서울시 ZIP과 행정동 CSV를 현재 스냅샷 스키마로 재생성하려면 python scripts/import-raw.py --source <ZIP 경로> --db data/processed/rebuild.sqlite를 실행한다. 이 명령은 원본 ZIP의 형식과 원본 ZIP 옆 data/raw/dong 폴더의 4개 행정동 CSV·경계를 요구한다. 최종 정규화 스키마 적재와는 별개다. 테스트 프로젝트의 검증된 생성 스냅샷을 복사하는 `scripts/prepare_test_data.py`는 별개이며 `data/local/`에만 쓴다.
 
 데이터를 팀과 공유할 때는 Git에 대용량 원본을 올리는 대신 출처 URL, 수집일, SHA-256, 기간, 인코딩과 재현 명령을 기록한다. 개인정보가 포함될 수 있는 인허가 원본은 필요한 열만 선별해 가공한다.
