@@ -4,6 +4,10 @@
 
 Run python -m unittest discover -s tests -v and python -m compileall -q app.py app_pages kb_bridge. The current tests verify configuration path resolution and SQLite schema behavior. Navigation can be checked by starting Streamlit and opening all three pages; the pages intentionally show scaffolding text.
 
+## Issue #3 snapshot parity
+
+With prepared local snapshots, `tests/test_snapshot_parity.py` checks official Gangnam ordering, Gangdong sales value/rate, detail filters, Jamsil report sales override, the team owner Jamsil beauty example, nearest-branch distance order, and the provided rent/loan arithmetic example. Without local snapshots these checks skip. Streamlit AppTest smoke checks both owner modes, the finance form, and rising selection. Browser Kakao interaction could not be visually checked in this environment and needs manual confirmation.
+
 ## Next slices
 
 - Domain unit tests: quarterly-to-monthly conversion, per-store and per-hectare units, period comparisons, ranking ties and missing values.
