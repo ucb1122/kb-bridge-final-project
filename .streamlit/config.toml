@@ -1,5 +1,7 @@
 [theme]
 base = "light"
+font = "KB Noto Sans KR"
+headingFont = "KB Noto Sans KR"
 primaryColor = "#E5A900"
 backgroundColor = "#FBFAF7"
 secondaryBackgroundColor = "#FFFFFF"
@@ -14,3 +16,21 @@ paddingTop = "1.2rem"
 [theme.sidebar]
 backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#FBFAF7"
+
+[server]
+enableStaticServing = true
+
+[[theme.fontFaces]]
+family = "KB Noto Sans KR"
+url = "app/static/fonts/NotoSansKR-Regular.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "KB Noto Sans KR"
+url = "app/static/fonts/NotoSansKR-Medium.woff2"
+weight = 500
+
+[[theme.fontFaces]]
+family = "KB Noto Sans KR"
+url = "app/static/fonts/NotoSansKR-Bold.woff2"
+weight = 700
