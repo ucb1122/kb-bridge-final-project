@@ -8,14 +8,16 @@ _MAP = st.components.v2.component(
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:1px solid #e9e6de;border-radius:14px;overflow:hidden;background:#f5f3ee}
+#kb-map-status:empty {display:none}
 #kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
-.kb-rank-marker {display:grid;grid-template-columns:26px 112px;min-width:138px;padding:0;border:1px solid #edc146;border-radius:9px;background:#fff;color:#101624;box-shadow:0 3px 12px #0003;font:600 12px sans-serif;cursor:pointer;text-align:center;overflow:hidden}
-.kb-rank-marker strong {grid-row:span 2;display:grid;place-items:center;background:#ffbf00;font-size:16px}
-.kb-rank-marker span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px;background:#ffbf00}.kb-rank-marker small {display:block;padding:4px;background:#fff;color:#344054;font-size:11px}
-.kb-rank-marker.active {outline:3px solid #101624;z-index:10}
+.kb-rank-marker {display:grid;grid-template-columns:26px 112px;min-width:138px;padding:0;border:1px solid #7545c9;border-radius:7px;background:#fff;color:#101624;box-shadow:0 3px 12px #0003;font:600 12px sans-serif;cursor:pointer;text-align:center;overflow:hidden}
+.kb-rank-marker strong {grid-row:span 2;display:grid;place-items:center;background:#7241c4;color:white;font-size:16px}
+.kb-rank-marker span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px;background:#7241c4;color:white}.kb-rank-marker small {display:block;padding:4px;background:#fff;color:#344054;font-size:11px}
+.kb-rank-marker.active {outline:3px solid #ffc400;z-index:10}
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
+let kakaoResizeObserver=null;
 let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
 let mapLibreLoading=null;
 function loadKakao(key) {
@@ -160,34 +162,48 @@ export default async function(component) {
   root.style.height=`${data.height||590}px`;
   try {
     await loadKakao(data.key);
+    if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
+    if(fallbackMap){fallbackMap.remove();fallbackMap=null;}
+    fallbackMarkers.forEach(marker=>marker.remove());fallbackMarkers=[];
     root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
-    status.textContent=data.source==='official'?'서울시 기본 순위':'공개 원본 계산 순위';
     if (!map || mapRoot!==root || loadedKey!==data.key) {
+      if(kakaoResizeObserver){kakaoResizeObserver.disconnect();kakaoResizeObserver=null;}
       root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
       const inner=document.createElement('div'); inner.className='kb-map-inner';
       Object.assign(inner.style,{position:'absolute',inset:'0'}); root.prepend(inner);
       map=new kakao.maps.Map(inner,{center:new kakao.maps.LatLng(37.5665,126.9780),level:9});
       loadedKey=data.key; mapRoot=root;
-      new ResizeObserver(()=>map.relayout()).observe(inner);
+      kakaoResizeObserver=new ResizeObserver(()=>map.relayout());
+      kakaoResizeObserver.observe(inner);
     }
+    status.textContent='';
     overlays.forEach(o=>o.setMap(null)); overlays=[];
     polygons.forEach(p=>p.setMap(null)); polygons=[];
+    let boundaryErrors=0, markerErrors=0;
     for (const feature of data.boundaries||[]) {
-      for (const path of paths(feature.geometry)) {
-        const polygon=new kakao.maps.Polygon({path,strokeWeight:2,strokeColor:'#B8953B',strokeOpacity:.6,fillColor:'#FFCB45',fillOpacity:.06});
-        polygon.setMap(map); polygons.push(polygon);
-        kakao.maps.event.addListener(polygon,'mouseover',()=>polygon.setOptions({fillOpacity:.2,strokeWeight:3}));
-        kakao.maps.event.addListener(polygon,'mouseout',()=>polygon.setOptions({fillOpacity:.06,strokeWeight:2}));
-        kakao.maps.event.addListener(polygon,'click',()=>setTriggerValue('selected',String(feature.properties.code)));
+      let boundaryPaths=[];
+      try {boundaryPaths=paths(feature.geometry);} catch(error) {boundaryErrors++;console.warn('상권 경계 좌표 실패',error);}
+      for (const path of boundaryPaths) {
+        try {
+          const polygon=new kakao.maps.Polygon({path,strokeWeight:2,strokeColor:'#7142c6',strokeOpacity:.8,fillColor:'#9165db',fillOpacity:.12});
+          polygon.setMap(map); polygons.push(polygon);
+          kakao.maps.event.addListener(polygon,'mouseover',()=>polygon.setOptions({fillOpacity:.24,strokeWeight:3}));
+          kakao.maps.event.addListener(polygon,'mouseout',()=>polygon.setOptions({fillOpacity:.12,strokeWeight:2}));
+          kakao.maps.event.addListener(polygon,'click',()=>setTriggerValue('selected',String(feature.properties.code)));
+        } catch(error) {boundaryErrors++;console.warn('상권 경계 표시 실패',error);}
       }
     }
     if (data.radius && data.rows?.length === 1) {
       const row=data.rows[0];
-      const circle=new kakao.maps.Circle({center:new kakao.maps.LatLng(row.lat,row.lng),radius:data.radius,strokeWeight:2,strokeColor:'#D49A00',strokeOpacity:.9,fillColor:'#FFCB45',fillOpacity:.12});
-      circle.setMap(map);polygons.push(circle);
+      try {
+        const circle=new kakao.maps.Circle({center:new kakao.maps.LatLng(row.lat,row.lng),radius:data.radius,strokeWeight:2,strokeColor:'#7142c6',strokeOpacity:.9,fillColor:'#9165db',fillOpacity:.12});
+        circle.setMap(map);polygons.push(circle);
+      } catch(error) {boundaryErrors++;console.warn('선택 반경 표시 실패',error);}
     }
     (data.rows||[]).forEach((row,index)=>{
-      if (!Number.isFinite(row.lat)||!Number.isFinite(row.lng)) return;
+      const lat=Number(row.lat),lng=Number(row.lng);
+      if (!Number.isFinite(lat)||!Number.isFinite(lng)) return;
+      try {
       const marker=document.createElement('button'); marker.type='button';
       marker.className='kb-rank-marker'+(row.code===data.selected?' active':'');
       marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
@@ -196,18 +212,27 @@ export default async function(component) {
       const value=document.createElement('small');value.textContent=row.display||'';
       marker.append(rank,name,value);
       marker.onclick=()=>setTriggerValue('selected',String(row.code));
-      const overlay=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(row.lat,row.lng),content:marker,yAnchor:.5,zIndex:100-index});
+      const overlay=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(lat,lng),content:marker,yAnchor:.5,zIndex:100-index});
       overlay.setMap(map);overlays.push(overlay);
+      } catch(error) {markerErrors++;console.warn('순위 배지 표시 실패',error);}
     });
     const selected=(data.rows||[]).find(r=>r.code===data.selected);
     if(selected && Number.isFinite(selected.lat) && Number.isFinite(selected.lng)) {map.setCenter(new kakao.maps.LatLng(selected.lat,selected.lng));map.setLevel(5)}
     else if(data.district && data.rows?.length) {map.setCenter(new kakao.maps.LatLng(data.rows[0].lat,data.rows[0].lng));map.setLevel(7)}
     else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
     requestAnimationFrame(()=>map.relayout());
+    if(boundaryErrors||markerErrors) status.textContent=`카카오 지도 표시 일부 실패 · 경계 ${boundaryErrors}건, 순위 배지 ${markerErrors}건`;
   } catch(error) {
+    console.error('카카오 지도 초기화 실패',error);
+    if(map && mapRoot===root){status.textContent='카카오 지도 일부 표시 실패: '+error.message;return;}
+    overlays.forEach(o=>o.setMap(null));overlays=[];
+    polygons.forEach(p=>p.setMap(null));polygons=[];
+    if(kakaoResizeObserver){kakaoResizeObserver.disconnect();kakaoResizeObserver=null;}
+    root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
+    map=null;mapRoot=null;loadedKey=null;
     try {
       await renderTileFallback(root,data,setTriggerValue);
-      status.textContent='카카오 지도 인증 전 · OpenFreeMap 임시 배경지도';
+      status.textContent='카카오 지도 초기화 실패 · 대체 지도 표시: '+error.message;
     } catch(fallbackError) {
       renderSvgFallback(root,data,setTriggerValue);
       status.textContent='카카오 지도 인증 전 · 서울시 경계 임시 보기. '+error.message;
