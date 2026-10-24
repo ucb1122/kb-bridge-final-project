@@ -4,7 +4,12 @@ from __future__ import annotations
 import streamlit as st
 
 
-def navigation() -> None:
+def navigation(active: str = "") -> None:
+    links = "".join(
+        f'<a href="{path}" class="{"active" if active == label else ""}">{label}</a>'
+        for path, label in (("/", "뜨는 상권"), ("/my_market", "내상권 분석"),
+                            ("/warning", "젠트리피케이션 경고"))
+    )
     st.html("""
     <style>
       .kb-site-header {height:102px;display:flex;align-items:center;gap:54px;
@@ -21,7 +26,8 @@ def navigation() -> None:
       .kb-site-header nav a {display:inline-flex;align-items:center;height:102px;flex:none;
         border-bottom:3px solid transparent;padding-top:3px;color:#172032;
         font-size:19px;font-weight:500;text-decoration:none;white-space:nowrap}
-      .kb-site-header nav a:hover {border-bottom-color:#ffbf00;color:#101624}
+      .kb-site-header nav a:hover,.kb-site-header nav a.active {border-bottom-color:#ffbf00;color:#101624}
+      .kb-site-header nav a.active {font-weight:700}
       .kb-site-header .kb-project-badge {margin-left:auto;color:#8b8c91;font-size:11px;white-space:nowrap}
       [data-testid="stHeader"], [data-testid="stDecoration"] {display:none}
       [data-testid="stMainBlockContainer"]:has(.kb-site-header) {max-width:none;padding:10px 0 20px}
@@ -40,13 +46,9 @@ def navigation() -> None:
         <span class="kb-site-symbol" aria-hidden="true"><img src="/app/static/assets/kb-bank-brand-source.png" alt=""></span>
         <span class="kb-site-name">상권브릿지</span>
       </a>
-      <nav aria-label="주 메뉴">
-        <a href="/">뜨는 상권</a>
-        <a href="/my_market">내상권 분석</a>
-        <a href="/warning">젠트리피케이션 경고</a>
-      </nav>
+      <nav aria-label="주 메뉴">__KB_NAV_LINKS__</nav>
       <span class="kb-project-badge">교육용 프로젝트</span>
-    </header>""")
+    </header>""".replace("__KB_NAV_LINKS__", links))
 
 
 def header(section: str) -> None:
