@@ -32,6 +32,54 @@ function paths(geometry) {
   const rings=geometry?.type==='Polygon'?[geometry.coordinates]:geometry?.type==='MultiPolygon'?geometry.coordinates:[];
   return rings.map(poly=>poly[0].map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
 }
+function renderBoundaryFallback(root, data, setTriggerValue) {
+  root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
+  const width=1200, height=750;
+  const districts=data.fallback_districts||[];
+  const coordinateSets=[];
+  const polygons=(feature)=>feature.geometry?.type==='Polygon'?[feature.geometry.coordinates]:feature.geometry?.type==='MultiPolygon'?feature.geometry.coordinates:[];
+  for(const feature of districts) for(const polygon of polygons(feature)) for(const point of polygon[0]) coordinateSets.push(point);
+  if (!coordinateSets.length) return;
+  const longitudes=coordinateSets.map(p=>p[0]), latitudes=coordinateSets.map(p=>p[1]);
+  const minLng=Math.min(...longitudes), maxLng=Math.max(...longitudes);
+  const minLat=Math.min(...latitudes), maxLat=Math.max(...latitudes);
+  const span=Math.max((maxLng-minLng)*.85,maxLat-minLat);
+  const centerLng=(minLng+maxLng)/2, centerLat=(minLat+maxLat)/2;
+  const x=lng=>width/2+(lng-centerLng)/span*height;
+  const y=lat=>height/2-(lat-centerLat)/span*height;
+  const ns='http://www.w3.org/2000/svg';
+  const fallback=document.createElement('div');fallback.className='kb-fallback';
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',background:'#eef0ed'});
+  const draw=(feature,top)=>{
+    for(const polygon of polygons(feature)) {
+      const ring=polygon[0];if(!ring?.length)continue;
+      const path=document.createElementNS(ns,'path');
+      path.setAttribute('d',ring.map(([lng,lat],i)=>`${i?'L':'M'}${x(lng).toFixed(1)} ${y(lat).toFixed(1)}`).join(' ')+' Z');
+      path.setAttribute('fill',top?'#ffe4a1':'#f8f8f5');
+      path.setAttribute('stroke',top?'#d49a00':'#cfd4d0');
+      path.setAttribute('stroke-width',top?'2.5':'1.3');
+      if(top){path.style.cursor='pointer';path.onclick=()=>setTriggerValue('selected',String(feature.properties.code));}
+      svg.appendChild(path);
+    }
+  };
+  districts.forEach(f=>draw(f,false));
+  (data.boundaries||[]).forEach(f=>draw(f,true));
+  fallback.appendChild(svg);
+  (data.rows||[]).forEach((row,index)=>{
+    if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
+    const marker=document.createElement('button');marker.type='button';
+    marker.className='kb-rank-marker'+(row.code===data.selected?' active':'');
+    marker.textContent=`${index+1} ${row.name}`;
+    marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
+    Object.assign(marker.style,{position:'absolute',left:`${x(row.lng)/width*100}%`,top:`${y(row.lat)/height*100}%`,transform:'translate(-50%,-50%)',zIndex:String(30-index)});
+    marker.onclick=()=>setTriggerValue('selected',String(row.code));
+    fallback.appendChild(marker);
+  });
+  Object.assign(fallback.style,{position:'absolute',inset:'0',overflow:'hidden'});
+  root.prepend(fallback);
+}
 export default async function(component) {
   const {data,parentElement,setTriggerValue}=component;
   const root=parentElement.querySelector('#kb-map');
@@ -40,6 +88,7 @@ export default async function(component) {
   root.style.height=`${data.height||590}px`;
   try {
     await loadKakao(data.key);
+    root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
     status.textContent=data.source==='official'?'서울시 기본 순위':'공개 원본 계산 순위';
     if (!map || mapRoot!==root || loadedKey!==data.key) {
       root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
@@ -80,15 +129,20 @@ export default async function(component) {
     if(selected && Number.isFinite(selected.lat) && Number.isFinite(selected.lng)) {map.setCenter(new kakao.maps.LatLng(selected.lat,selected.lng));map.setLevel(5)}
     else if(data.district && data.rows?.length) {map.setCenter(new kakao.maps.LatLng(data.rows[0].lat,data.rows[0].lng));map.setLevel(7)}
     else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
-  } catch(error) {status.textContent=error.message;}
+  } catch(error) {
+    renderBoundaryFallback(root,data,setTriggerValue);
+    status.textContent='카카오 지도 인증 전 · 서울시 경계 임시 보기. '+error.message;
+  }
 }
 """,
 )
 
 
 def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
-             source: str, district: str, radius: int | None = None, height: int = 590) -> str | None:
+             source: str, district: str, radius: int | None = None, height: int = 590,
+             fallback_districts: list[dict] | None = None) -> str | None:
     result = _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
-                                         "selected": selected, "source": source, "district": district, "radius": radius, "height": height},
+                                         "selected": selected, "source": source, "district": district, "radius": radius, "height": height,
+                                         "fallback_districts": fallback_districts or []},
                   height=height, on_selected_change=lambda: None)
     return getattr(result, "selected", None)
