@@ -3,7 +3,7 @@ import unittest
 
 from kb_bridge.repositories import rising_snapshot
 from kb_bridge.services.rising_analysis import (
-    monthly_sales_from_totals, overview_cards, sales_per_store_month,
+    monthly_sales_from_totals, overview_cards, ranking_change_label, sales_per_store_month,
 )
 
 
@@ -12,6 +12,12 @@ class PureMeasureTests(unittest.TestCase):
         self.assertEqual(monthly_sales_from_totals(300_000_000, 10), 1000)
         self.assertIsNone(monthly_sales_from_totals(300_000_000, 0))
         self.assertIsNone(monthly_sales_from_totals(None, 10))
+
+    def test_absolute_rank_uses_metric_units_and_missing_remains_missing(self):
+        self.assertEqual(ranking_change_label("stores", {"delta": 12, "change": .06}, "absolute"), "+12개")
+        self.assertEqual(ranking_change_label("stores", {"delta": -3, "change": -.02}, "absolute"), "−3개")
+        self.assertEqual(ranking_change_label("stores", {"delta": None, "change": None}, "absolute"), "비교 자료 없음")
+        self.assertEqual(ranking_change_label("stores", {"delta": 12, "change": .06}, "growth"), "+6.0%")
 
     def test_each_comparison_uses_its_own_quarter_store_count(self):
         report = {

@@ -57,7 +57,12 @@ function drawKakaoBoundaries(root,map,features,setTriggerValue) {
         const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
         shape.setAttribute('fill','#f3c53a');shape.setAttribute('fill-opacity','.14');
         shape.setAttribute('stroke','#c59800');shape.setAttribute('stroke-width','2');
-        shape.style.pointerEvents='visibleStroke';shape.style.cursor='pointer';
+        shape.style.pointerEvents='visiblePainted';shape.style.cursor='pointer';
+        const title=document.createElementNS('http://www.w3.org/2000/svg','title');
+        title.textContent=feature.properties.name||String(feature.properties.code);
+        shape.appendChild(title);
+        shape.addEventListener('mouseenter',()=>{shape.setAttribute('fill-opacity','.26');shape.setAttribute('stroke-width','3');});
+        shape.addEventListener('mouseleave',()=>{shape.setAttribute('fill-opacity','.14');shape.setAttribute('stroke-width','2');});
         shape.addEventListener('click',()=>setTriggerValue('selected',String(feature.properties.code)));
         svg.appendChild(shape);boundaryPaths.push({shape,ring});
       }
