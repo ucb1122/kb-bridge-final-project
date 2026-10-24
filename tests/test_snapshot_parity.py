@@ -24,6 +24,14 @@ class RisingSnapshotParityTests(unittest.TestCase):
         self.assertEqual((high["rows"][0]["name"], high["rows"][0]["value"]), ("역삼1동", 11922))
         self.assertEqual((food["rows"][0]["name"], food["rows"][0]["value"]), ("일원본동", 53))
 
+    def test_map_selector_can_open_region_outside_city_top_ten(self):
+        city_top = {row["code"] for row in rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262")["rows"]}
+        regions = rising_snapshot.locations(kind="dong", quarter="20262")
+        selected = next(row for row in regions if row["district"] == "강남구" and row["code"] not in city_top)
+        self.assertIsNotNone(rising_snapshot.report(kind="dong", code=selected["code"], quarter="20262"))
+        self.assertIsInstance(selected["lat"], float)
+        self.assertIsInstance(selected["lng"], float)
+
     def test_report_units_and_official_override(self):
         songcheon = rising_snapshot.report(kind="dong", code="11305555", quarter="20262")
         self.assertEqual(round(footfall_per_ha(songcheon)[0]), 118254)

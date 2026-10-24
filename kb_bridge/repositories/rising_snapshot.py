@@ -43,6 +43,21 @@ def filters() -> dict:
     return {"quarters": quarters, "districts": districts}
 
 
+
+def locations(*, kind: str, quarter: str) -> list[dict]:
+    """Regions available for the map selector in a given quarter."""
+    if kind not in KINDS or len(quarter) != 5 or not quarter.isdigit():
+        raise ValueError("잘못된 지역 또는 분기입니다.")
+    with _connect() as db:
+        rows = db.execute("""SELECT DISTINCT region_code AS code, region_name AS name,
+            district, lat, lng FROM observations
+            WHERE kind=? AND metric='stores' AND quarter=?
+            ORDER BY district, region_name""", (kind, quarter)).fetchall()
+    return [{"code": str(row["code"]), "name": row["name"].replace("?", "·"),
+             "district": row["district"], "lat": row["lat"], "lng": row["lng"]}
+            for row in rows]
+
+
 def _previous_quarter(quarter: str) -> str:
     year, part = int(quarter[:4]), int(quarter[4])
     return f"{year - 1}4" if part == 1 else f"{year}{part - 1}"

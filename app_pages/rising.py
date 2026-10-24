@@ -32,6 +32,10 @@ def load_rankings(**kwargs) -> dict:
 def load_report(kind: str, code: str, quarter: str) -> dict | None:
     return rising_snapshot.report(kind=kind, code=code, quarter=quarter)
 
+@st.cache_data(max_entries=16)
+def load_locations(kind: str, quarter: str) -> list[dict]:
+    return rising_snapshot.locations(kind=kind, quarter=quarter)
+
 @st.cache_data(max_entries=1)
 def seoul_district_boundaries() -> list[dict]:
     path = Path(__file__).resolve().parents[1] / "assets" / "seoul-district-boundaries.geojson"
@@ -62,6 +66,16 @@ if "rising_selected" not in st.session_state:
 applied = st.session_state.rising_filters
 result = load_rankings(**applied)
 rows = result["rows"]
+locations = load_locations(applied["kind"], result["quarter"])
+location_by_code = {item["code"]: item for item in locations}
+if "rising_map_pending_district" in st.session_state:
+    st.session_state.rising_map_district = st.session_state.pop("rising_map_pending_district")
+if "rising_map_pending_region" in st.session_state:
+    st.session_state.rising_map_region = st.session_state.pop("rising_map_pending_region")
+if "rising_map_district" not in st.session_state:
+    st.session_state.rising_map_district = applied["district"]
+if "rising_map_region" not in st.session_state or st.session_state.rising_map_region not in location_by_code:
+    st.session_state.rising_map_region = ""
 source = "서울시 기본 순위 스냅샷" if result["ranking_source"] == "official" else "공개 원본 계산값"
 
 with st.container(key="rising-canvas"):
@@ -70,49 +84,79 @@ with st.container(key="rising-canvas"):
                             rows=[{**r, "display": human_value(applied["metric"], r["value"])} for r in rows],
                             boundaries=boundaries(applied["kind"], applied["district"], tuple(r["code"] for r in rows)),
                             fallback_districts=seoul_district_boundaries(),
-                            selected=st.session_state.rising_selected, source=result["ranking_source"], district=applied["district"], height=820)
+                            selected=st.session_state.rising_selected,
+                            selected_location=location_by_code.get(st.session_state.rising_selected),
+                            source=result["ranking_source"], district=applied["district"], height=820)
         if selected and selected != st.session_state.rising_selected and selected in {r["code"] for r in rows}:
             st.session_state.rising_selected = selected
+            st.session_state.rising_map_region = selected
             st.rerun()
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도는 표시되지 않습니다. 왼쪽 순위 목록으로 보고서를 열 수 있습니다.")
+    with st.container(key="rising-map-selector"):
+        city, map_district_col, map_region_col = st.columns([1.25, 1, 1])
+        with city:
+            st.html('<div class="kb-rising-city">◉ &nbsp;서울특별시</div>')
+        with map_district_col:
+            map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
+                                        key="rising_map_district", format_func=lambda value: value or "전체",
+                                        label_visibility="collapsed")
+        if map_district != applied["district"]:
+            st.session_state.rising_filters = {**applied, "district": map_district}
+            st.session_state.rising_map_region = ""
+            st.session_state.rising_selected = None
+            st.rerun()
+        visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
+        visible_codes = {item["code"] for item in visible_locations}
+        if st.session_state.rising_map_region not in visible_codes:
+            st.session_state.rising_map_region = ""
+        with map_region_col:
+            map_region = st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
+                                      key="rising_map_region", label_visibility="collapsed",
+                                      format_func=lambda value: location_by_code[value]["name"] if value else "전체")
+        if map_region and map_region != st.session_state.rising_selected:
+            st.session_state.rising_selected = map_region
+            st.rerun()
     with st.container(key="rising-filter-panel"):
-        st.markdown("## 뜨는 상권")
-        st.caption("같은 자료, 지역 변화에 맞는 해석")
-        with st.form("rising-filters", border=False):
-            st.subheader("분석 조건")
-            kind = st.segmented_control("지역 유형", options=["dong", "area"], format_func=lambda x: {"dong": "뜨는 동네", "area": "뜨는 상권"}[x], default=applied["kind"])
-            metric = st.segmented_control("분석 지표", options=list(LABELS), format_func=lambda x: LABELS[x], default=applied["metric"])
-            district = st.selectbox("자치구", ["", *options["districts"]], index=["", *options["districts"]].index(applied["district"]) if applied["district"] in options["districts"] else 0, format_func=lambda x: x or "서울 전체")
-            quarter_col, criterion_col = st.columns(2)
-            with quarter_col:
-                quarter = st.selectbox("기준 분기", options["quarters"], index=options["quarters"].index(applied["quarter"]) if applied["quarter"] in options["quarters"] else 0,
-                                       format_func=lambda x: f"{x[:4]}년 {x[-1]}분기")
-            with criterion_col:
-                criterion = st.selectbox("정렬 기준", ["growth", "highest", "absolute"], index=["growth", "highest", "absolute"].index(applied["criterion"]),
-                                         format_func=lambda x: {"growth": "비교증가율", "highest": "최고순위", "absolute": "비교절대값"}[x])
-            with st.expander("상세조건"):
-                detail1, detail2 = st.columns(2)
-                with detail1:
-                    period = st.segmented_control("기간", ["quarter", "year"], format_func=lambda x: "분기" if x == "quarter" else "년도", default=applied["period"])
-                with detail2:
-                    year_options = sorted({q[:4] for q in options["quarters"]}, reverse=True)
-                    year = st.selectbox("기준년도", year_options, index=year_options.index(applied["year"]) if applied["year"] in year_options else 0)
-                comparison = st.segmented_control("조회분기", ["previous", "same"], format_func=lambda x: "전분기" if x == "previous" else "전년 동분기", default=applied["comparison"])
-                industry = st.selectbox("업종", ["all", "CS1", "CS2", "CS3"], index=["all", "CS1", "CS2", "CS3"].index(applied["industry"]),
-                                        format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
-            submitted = st.form_submit_button("조건 적용", type="primary", width="stretch")
-        if submitted:
-            if industry != "all" and metric not in {"stores", "sales"}:
-                st.error("업종 조건은 점포수와 매출에만 적용됩니다.")
-            else:
-                st.session_state.rising_filters = {"kind": kind, "metric": metric, "quarter": quarter, "district": district,
-                                                    "criterion": criterion, "comparison": comparison, "industry": industry,
-                                                    "period": period, "year": year}
-                st.session_state.rising_selected = None
-                st.rerun()
-        st.caption(f"{result['quarter'][:4]}년 {result['quarter'][-1]}분기 · {source} · {applied['district'] or '서울 전체'}")
-        with st.container(border=True):
+        with st.container(key="rising-controls-card"):
+            st.markdown("## 뜨는 상권")
+            st.caption("같은 자료, 지역 변화에 맞는 해석")
+            with st.form("rising-filters", border=False):
+                st.subheader("분석 조건")
+                kind = st.segmented_control("지역 유형", options=["dong", "area"], format_func=lambda x: {"dong": "뜨는 동네", "area": "뜨는 상권"}[x], default=applied["kind"])
+                metric = st.segmented_control("분석 지표", options=list(LABELS), format_func=lambda x: LABELS[x], default=applied["metric"])
+                district = st.selectbox("자치구", ["", *options["districts"]], index=["", *options["districts"]].index(applied["district"]) if applied["district"] in options["districts"] else 0, format_func=lambda x: x or "서울 전체")
+                quarter_col, criterion_col = st.columns(2)
+                with quarter_col:
+                    quarter = st.selectbox("기준 분기", options["quarters"], index=options["quarters"].index(applied["quarter"]) if applied["quarter"] in options["quarters"] else 0,
+                                           format_func=lambda x: f"{x[:4]}년 {x[-1]}분기")
+                with criterion_col:
+                    criterion = st.selectbox("정렬 기준", ["growth", "highest", "absolute"], index=["growth", "highest", "absolute"].index(applied["criterion"]),
+                                             format_func=lambda x: {"growth": "비교증가율", "highest": "최고순위", "absolute": "비교절대값"}[x])
+                with st.expander("상세조건"):
+                    detail1, detail2 = st.columns(2)
+                    with detail1:
+                        period = st.segmented_control("기간", ["quarter", "year"], format_func=lambda x: "분기" if x == "quarter" else "년도", default=applied["period"])
+                    with detail2:
+                        year_options = sorted({q[:4] for q in options["quarters"]}, reverse=True)
+                        year = st.selectbox("기준년도", year_options, index=year_options.index(applied["year"]) if applied["year"] in year_options else 0)
+                    comparison = st.segmented_control("조회분기", ["previous", "same"], format_func=lambda x: "전분기" if x == "previous" else "전년 동분기", default=applied["comparison"])
+                    industry = st.selectbox("업종", ["all", "CS1", "CS2", "CS3"], index=["all", "CS1", "CS2", "CS3"].index(applied["industry"]),
+                                            format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
+                submitted = st.form_submit_button("조건 적용", type="primary", width="stretch")
+            if submitted:
+                if industry != "all" and metric not in {"stores", "sales"}:
+                    st.error("업종 조건은 점포수와 매출에만 적용됩니다.")
+                else:
+                    st.session_state.rising_filters = {"kind": kind, "metric": metric, "quarter": quarter, "district": district,
+                                                        "criterion": criterion, "comparison": comparison, "industry": industry,
+                                                        "period": period, "year": year}
+                    st.session_state.rising_selected = None
+                    st.session_state.rising_map_pending_district = district
+                    st.session_state.rising_map_pending_region = ""
+                    st.rerun()
+            st.caption(f"{result['quarter'][:4]}년 {result['quarter'][-1]}분기 · {source} · {applied['district'] or '서울 전체'}")
+        with st.container(key="rising-rank-card"):
             st.subheader("순위 TOP 10")
             st.caption(LABELS[applied["metric"]] + " · " + source)
             if not rows:
@@ -121,11 +165,14 @@ with st.container(key="rising-canvas"):
                 label = f"{index:02d}  {row['district']} {row['name']}  ·  {human_value(applied['metric'], row['value'])}"
                 if st.button(label, key=f"rank-{row['code']}", width="stretch", type="primary" if row["code"] == st.session_state.rising_selected else "secondary"):
                     st.session_state.rising_selected = row["code"]
+                    st.session_state.rising_map_pending_region = row["code"]
                     st.rerun()
                 st.caption(f"{percent(row['change'])} · 비교값 {human_value(applied['metric'], row['previous'])}")
     with st.container(key="rising-source-badge"):
         st.caption("서울시 지도 · 순위 배지나 경계를 선택하면 지역 보고서를 엽니다. 배지는 실제 상권 반경이 아닙니다.")
     selected_row = next((row for row in rows if row["code"] == st.session_state.rising_selected), None)
+    if selected_row is None:
+        selected_row = location_by_code.get(st.session_state.rising_selected)
     if selected_row:
         with st.container(key="rising-report-panel"):
             report = load_report(applied["kind"], selected_row["code"], result["quarter"])
@@ -137,6 +184,7 @@ with st.container(key="rising-canvas"):
                 with close:
                     if st.button("닫기", key="rising-close-report"):
                         st.session_state.rising_selected = None
+                        st.session_state.rising_map_pending_region = ""
                         st.rerun()
                 st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 공개 원본과 확인된 공식 표시값을 구분합니다.")
                 st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
