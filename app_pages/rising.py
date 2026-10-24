@@ -137,7 +137,7 @@ with st.container(key="rising-canvas"):
         with st.container(key="rising-controls-card"):
             st.markdown("## 뜨는 상권")
             st.caption("같은 자료, 지역 변화에 맞는 해석")
-            with st.form("rising-filters", border=False):
+            with st.form("rising-filters", border=False, clear_on_submit=True):
                 st.subheader("분석 조건")
                 kind = st.segmented_control("지역 유형", options=["dong", "area"], format_func=lambda x: {"dong": "뜨는 동네", "area": "뜨는 상권"}[x], default=applied["kind"])
                 with st.container(key="rising-metric-control"):
@@ -162,7 +162,13 @@ with st.container(key="rising-canvas"):
                         industry = st.segmented_control("업종", ["all", "CS1", "CS2", "CS3"],
                                                         default=applied["industry"], width="stretch", wrap=False,
                                                         format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
-                submitted = st.form_submit_button("조건 적용", type="primary", width="stretch")
+                cancel_col, apply_col = st.columns(2)
+                with cancel_col:
+                    cancelled = st.form_submit_button("취소", width="stretch")
+                with apply_col:
+                    submitted = st.form_submit_button("조건 적용", type="primary", width="stretch")
+            if cancelled:
+                st.rerun()
             if submitted:
                 if industry != "all" and metric not in {"stores", "sales"}:
                     industry = "all"
