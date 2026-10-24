@@ -7,7 +7,7 @@ import streamlit as st
 def navigation() -> None:
     st.html("""
     <style>
-      .kb-site-header {height:76px;display:flex;align-items:center;gap:54px;
+      .kb-site-header {height:102px;display:flex;align-items:center;gap:54px;
         padding:0 4.5%;background:#fff;border-bottom:1px solid #f0ece4;
         font-family:'KB Noto Sans KR','Malgun Gothic',sans-serif}
       .kb-site-brand {display:inline-flex;align-items:center;gap:10px;flex:none;
@@ -16,11 +16,11 @@ def navigation() -> None:
         overflow:hidden;flex:none}
       .kb-site-symbol img {position:absolute;display:block;max-width:none;width:312px;
         height:auto;left:-42.4px;top:-82.5px}
-      .kb-site-name {font-size:27px;font-weight:700;letter-spacing:-1.1px;white-space:nowrap}
+      .kb-site-name {font-size:30px;font-weight:700;letter-spacing:-1.1px;white-space:nowrap}
       .kb-site-header nav {display:flex;align-items:center;gap:34px;min-width:0;overflow-x:auto}
-      .kb-site-header nav a {display:inline-flex;align-items:center;height:76px;flex:none;
+      .kb-site-header nav a {display:inline-flex;align-items:center;height:102px;flex:none;
         border-bottom:3px solid transparent;padding-top:3px;color:#172032;
-        font-size:16px;font-weight:500;text-decoration:none;white-space:nowrap}
+        font-size:19px;font-weight:500;text-decoration:none;white-space:nowrap}
       .kb-site-header nav a:hover {border-bottom-color:#ffbf00;color:#101624}
       .kb-site-header .kb-project-badge {margin-left:auto;color:#8b8c91;font-size:11px;white-space:nowrap}
       [data-testid="stMainBlockContainer"]:has(.kb-site-header) {max-width:none;padding:0 0 20px}

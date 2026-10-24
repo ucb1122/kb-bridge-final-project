@@ -66,10 +66,11 @@ source = "서울시 기본 순위 스냅샷" if result["ranking_source"] == "off
 
 with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
-        selected = show_map(key=load_settings().kakao_map_javascript_key, rows=rows,
+        selected = show_map(key=load_settings().kakao_map_javascript_key,
+                            rows=[{**r, "display": human_value(applied["metric"], r["value"])} for r in rows],
                             boundaries=boundaries(applied["kind"], applied["district"], tuple(r["code"] for r in rows)),
                             fallback_districts=seoul_district_boundaries(),
-                            selected=st.session_state.rising_selected, source=result["ranking_source"], district=applied["district"], height=750)
+                            selected=st.session_state.rising_selected, source=result["ranking_source"], district=applied["district"], height=820)
         if selected and selected != st.session_state.rising_selected and selected in {r["code"] for r in rows}:
             st.session_state.rising_selected = selected
             st.rerun()
@@ -77,7 +78,7 @@ with st.container(key="rising-canvas"):
             st.info("카카오 지도 키가 없어 지도는 표시되지 않습니다. 왼쪽 순위 목록으로 보고서를 열 수 있습니다.")
     with st.container(key="rising-filter-panel"):
         st.markdown("## 뜨는 상권")
-        st.caption("지역 변화를 살피고 다음 판단에 필요한 근거를 확인하세요.")
+        st.caption("같은 자료, 지역 변화에 맞는 해석")
         with st.form("rising-filters", border=False):
             st.subheader("분석 조건")
             kind = st.segmented_control("지역 유형", options=["dong", "area"], format_func=lambda x: {"dong": "뜨는 동네", "area": "뜨는 상권"}[x], default=applied["kind"])

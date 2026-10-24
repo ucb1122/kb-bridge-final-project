@@ -8,14 +8,16 @@ _MAP = st.components.v2.component(
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:1px solid #e9e6de;border-radius:14px;overflow:hidden;background:#f5f3ee}
-#kb-map-status {position:absolute;z-index:2;top:16px;left:min(430px,35vw);max-width:400px;line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
-.kb-rank-marker {display:grid;place-items:center;min-width:66px;max-width:130px;padding:8px 10px;border:2px solid #fff;border-radius:14px;background:#ffbf00;color:#101624;box-shadow:0 3px 12px #0004;font:600 12px sans-serif;cursor:pointer;text-align:center}
-.kb-rank-marker strong {font-size:16px}
-.kb-rank-marker span {display:block;max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.kb-rank-marker.active {background:#101624;color:white;z-index:10}
+#kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
+.kb-rank-marker {display:grid;grid-template-columns:26px 112px;min-width:138px;padding:0;border:1px solid #edc146;border-radius:9px;background:#fff;color:#101624;box-shadow:0 3px 12px #0003;font:600 12px sans-serif;cursor:pointer;text-align:center;overflow:hidden}
+.kb-rank-marker strong {grid-row:span 2;display:grid;place-items:center;background:#ffbf00;font-size:16px}
+.kb-rank-marker span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px;background:#ffbf00}.kb-rank-marker small {display:block;padding:4px;background:#fff;color:#344054;font-size:11px}
+.kb-rank-marker.active {outline:3px solid #101624;z-index:10}
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
+let fallbackMap=null, fallbackMarkers=[];
+let mapLibreLoading=null;
 function loadKakao(key) {
   if (window.kakao?.maps) return Promise.resolve();
   if (!key) return Promise.reject(new Error('카카오 지도 JavaScript 키가 없습니다.'));
@@ -32,7 +34,7 @@ function paths(geometry) {
   const rings=geometry?.type==='Polygon'?[geometry.coordinates]:geometry?.type==='MultiPolygon'?geometry.coordinates:[];
   return rings.map(poly=>poly[0].map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
 }
-function renderBoundaryFallback(root, data, setTriggerValue) {
+function renderSvgFallback(root, data, setTriggerValue) {
   root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
   const width=1200, height=750;
   const districts=data.fallback_districts||[];
@@ -80,6 +82,67 @@ function renderBoundaryFallback(root, data, setTriggerValue) {
   Object.assign(fallback.style,{position:'absolute',inset:'0',overflow:'hidden'});
   root.prepend(fallback);
 }
+function loadMapLibre(root) {
+  if (!root.getRootNode().querySelector?.('link[data-kb-maplibre]')) {
+    const link=document.createElement('link');link.rel='stylesheet';
+    link.href='/app/static/vendor/maplibre-gl.css';link.dataset.kbMaplibre='';
+    root.getRootNode().appendChild(link);
+  }
+  if (window.maplibregl) return Promise.resolve();
+  if (!mapLibreLoading) mapLibreLoading=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='/app/static/vendor/maplibre-gl.js';
+    script.onload=()=>window.maplibregl?resolve():reject(new Error('MapLibre 로드 실패'));
+    script.onerror=()=>reject(new Error('MapLibre 로드 실패'));
+    document.head.appendChild(script);
+  });
+  return mapLibreLoading;
+}
+async function renderTileFallback(root,data,setTriggerValue) {
+  await loadMapLibre(root);
+  if(fallbackMap){fallbackMap.remove();fallbackMap=null;}
+  fallbackMarkers.forEach(marker=>marker.remove());fallbackMarkers=[];
+  root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
+  const inner=document.createElement('div');inner.className='kb-fallback';
+  Object.assign(inner.style,{position:'absolute',inset:'0'});root.prepend(inner);
+  const m=new maplibregl.Map({container:inner,style:'https://tiles.openfreemap.org/styles/bright',
+    center:[126.978,37.5665],zoom:10,attributionControl:true});
+  fallbackMap=m;
+  try {
+    await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(new Error('지도 타일 로드 시간 초과')),12000);
+      m.once('load',()=>{clearTimeout(timer);resolve();});
+      m.once('error',event=>{if(!m.loaded()){clearTimeout(timer);reject(event.error||new Error('지도 타일 로드 실패'));}});
+    });
+    const collection=features=>({type:'FeatureCollection',features:features||[]});
+    m.addSource('kb-districts',{type:'geojson',data:collection(data.fallback_districts)});
+    m.addLayer({id:'kb-district-line',type:'line',source:'kb-districts',paint:{'line-color':'#b4bcb0','line-width':1}});
+    m.addSource('kb-rank-areas',{type:'geojson',data:collection(data.boundaries)});
+    m.addLayer({id:'kb-rank-fill',type:'fill',source:'kb-rank-areas',paint:{'fill-color':'#ffbf00','fill-opacity':.14}});
+    m.addLayer({id:'kb-rank-line',type:'line',source:'kb-rank-areas',paint:{'line-color':'#c59600','line-width':2}});
+    m.on('click','kb-rank-fill',event=>{
+      const code=event.features?.[0]?.properties?.code;
+      if(code!=null)setTriggerValue('selected',String(code));
+    });
+    (data.rows||[]).forEach((row,index)=>{
+      if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
+      const marker=document.createElement('button');marker.type='button';
+      marker.className='kb-rank-marker'+(row.code===data.selected?' active':'');
+      marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
+      const rank=document.createElement('strong');rank.textContent=String(index+1);
+      const name=document.createElement('span');name.textContent=row.name;
+      const value=document.createElement('small');value.textContent=row.display||'';
+      marker.append(rank,name,value);
+      marker.onclick=()=>setTriggerValue('selected',String(row.code));
+      fallbackMarkers.push(new maplibregl.Marker({element:marker,anchor:'center'}).setLngLat([row.lng,row.lat]).addTo(m));
+    });
+    const selected=(data.rows||[]).find(row=>row.code===data.selected);
+    if(selected)m.flyTo({center:[selected.lng,selected.lat],zoom:12});
+    else if(data.district&&data.rows?.length)m.flyTo({center:[data.rows[0].lng,data.rows[0].lat],zoom:11});
+  } catch(error) {
+    m.remove();fallbackMap=null;inner.remove();throw error;
+  }
+}
 export default async function(component) {
   const {data,parentElement,setTriggerValue}=component;
   const root=parentElement.querySelector('#kb-map');
@@ -120,7 +183,8 @@ export default async function(component) {
       marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
       const rank=document.createElement('strong');rank.textContent=String(index+1);
       const name=document.createElement('span');name.textContent=row.name;
-      marker.append(rank,name);
+      const value=document.createElement('small');value.textContent=row.display||'';
+      marker.append(rank,name,value);
       marker.onclick=()=>setTriggerValue('selected',String(row.code));
       const overlay=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(row.lat,row.lng),content:marker,yAnchor:.5,zIndex:100-index});
       overlay.setMap(map);overlays.push(overlay);
@@ -130,8 +194,13 @@ export default async function(component) {
     else if(data.district && data.rows?.length) {map.setCenter(new kakao.maps.LatLng(data.rows[0].lat,data.rows[0].lng));map.setLevel(7)}
     else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
   } catch(error) {
-    renderBoundaryFallback(root,data,setTriggerValue);
-    status.textContent='카카오 지도 인증 전 · 서울시 경계 임시 보기. '+error.message;
+    try {
+      await renderTileFallback(root,data,setTriggerValue);
+      status.textContent='카카오 지도 인증 전 · OpenFreeMap 임시 배경지도';
+    } catch(fallbackError) {
+      renderSvgFallback(root,data,setTriggerValue);
+      status.textContent='카카오 지도 인증 전 · 서울시 경계 임시 보기. '+error.message;
+    }
   }
 }
 """,
