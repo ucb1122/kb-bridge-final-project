@@ -10,11 +10,19 @@ _MAP = st.components.v2.component(
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
 #kb-map-status:empty {display:none}
 #kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
-.kb-rank-marker {display:grid;grid-template-columns:26px 112px;position:relative;isolation:isolate;min-width:138px;padding:0;border:1px solid #7545c9;border-radius:4px;background:#fff;color:#101624;box-shadow:0 3px 12px #0003;font:600 12px sans-serif;cursor:pointer;text-align:center;overflow:visible}
-.kb-rank-marker::before {content:"";position:absolute;z-index:-1;left:50%;top:50%;width:96px;height:96px;transform:translate(-50%,-50%);border-radius:50%;background:#7142c655;pointer-events:none}
-.kb-rank-marker strong {grid-row:span 2;display:grid;place-items:center;background:#7241c4;color:white;font-size:16px}
-.kb-rank-marker span {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px;background:#7241c4;color:white;overflow:hidden}.kb-rank-marker small {display:block;padding:4px;background:#fff;color:#344054;font-size:11px}
-.kb-rank-marker.active {outline:3px solid #ffc400;z-index:10}
+.kb-rank-marker {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:82px;height:86px;padding:0;border:0;background:transparent;color:#101624;font:700 11px 'Malgun Gothic',sans-serif;cursor:pointer;text-align:center;overflow:visible;filter:drop-shadow(0 2px 5px #3c331b55)}
+.kb-rank-marker::before {content:"";position:absolute;z-index:-1;top:12px;left:4px;width:74px;height:74px;border-radius:50%;background:#efb900aa;pointer-events:none}
+.kb-rank-marker::after {content:"";position:absolute;z-index:-2;top:12px;left:4px;width:74px;height:74px;border:2px solid #d59c00;border-radius:50%;pointer-events:none;animation:kb-rank-pulse 3.6s ease-out infinite}
+.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff0bf;border:1px solid #af7f00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#473200;font-size:14px;font-weight:800}
+.kb-rank-marker span {position:relative;display:block;max-width:78px;width:73px;margin-top:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#f4b900;color:#101624}
+.kb-rank-marker small {position:relative;display:block;width:67px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#fff;color:#4d3900;font-size:10px}
+.kb-rank-marker.active::before {background:#efb900e8}
+.kb-rank-marker.active span {background:#ffca20}
+.kb-rank-marker:hover::after,.kb-rank-marker:focus-visible::after {animation-duration:2.6s;border-color:#af7f00}
+.kb-rank-marker:focus-visible {outline:2px solid #101624;outline-offset:5px}
+@keyframes kb-rank-pulse {0%{transform:scale(1);opacity:.75}75%,100%{transform:scale(1.9);opacity:0}}
+@media(prefers-reduced-motion:reduce){.kb-rank-marker::after{animation:none;transform:scale(1.15);opacity:.45}}
+
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
@@ -50,9 +58,9 @@ function drawKakaoBoundaries(root,map,features,setTriggerValue) {
       if(points.length<3)continue;
       const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
       shape.setAttribute('d',points.map((point,index)=>`${index?'L':'M'}${point.x} ${point.y}`).join(' ')+' Z');
-      shape.setAttribute('fill','#9165db');shape.setAttribute('fill-opacity','.12');
-      shape.setAttribute('stroke','#7142c6');shape.setAttribute('stroke-width','2');
-      shape.style.pointerEvents='visiblePainted';shape.style.cursor='pointer';
+      shape.setAttribute('fill','#f3c53a');shape.setAttribute('fill-opacity','.14');
+      shape.setAttribute('stroke','#c59800');shape.setAttribute('stroke-width','2');
+      shape.style.pointerEvents='visibleStroke';shape.style.cursor='pointer';
       shape.addEventListener('click',()=>setTriggerValue('selected',String(feature.properties.code)));
       svg.appendChild(shape);
     }
@@ -98,7 +106,10 @@ function renderSvgFallback(root, data, setTriggerValue) {
     if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
     const marker=document.createElement('button');marker.type='button';
     marker.className='kb-rank-marker'+(row.code===data.selected?' active':'');
-    marker.textContent=`${index+1} ${row.name}`;
+    const rank=document.createElement('strong');rank.textContent=String(index+1);
+    const name=document.createElement('span');name.textContent=row.name;
+    const value=document.createElement('small');value.textContent=row.display||'';
+    marker.append(rank,name,value);
     marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
     Object.assign(marker.style,{position:'absolute',left:`${x(row.lng)/width*100}%`,top:`${y(row.lat)/height*100}%`,transform:'translate(-50%,-50%)',zIndex:String(30-index)});
     marker.onclick=()=>setTriggerValue('selected',String(row.code));
@@ -211,7 +222,7 @@ export default async function(component) {
     if (data.radius && data.rows?.length === 1) {
       const row=data.rows[0];
       try {
-        const circle=new kakao.maps.Circle({center:new kakao.maps.LatLng(row.lat,row.lng),radius:data.radius,strokeWeight:2,strokeColor:'#7142c6',strokeOpacity:.9,fillColor:'#9165db',fillOpacity:.12});
+        const circle=new kakao.maps.Circle({center:new kakao.maps.LatLng(row.lat,row.lng),radius:data.radius,strokeWeight:2,strokeColor:'#c59800',strokeOpacity:.9,fillColor:'#f3c53a',fillOpacity:.12});
         circle.setMap(map);polygons.push(circle);
       } catch(error) {boundaryError=error;console.warn('선택 반경 표시 실패',error);}
     }

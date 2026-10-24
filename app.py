@@ -12,5 +12,5 @@ page = st.navigation(
     ],
     position="hidden",
 )
-navigation()
+navigation(page.title)
 page.run()
