@@ -242,7 +242,7 @@ with st.container(key="rising-canvas"):
                     st.caption("선택 지역은 현재 TOP 10 순위 밖입니다. 임의 순위를 붙이지 않습니다.")
                 st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
-                tab = st.segmented_control("보고서 항목", tabs, default="종합의견")
+                tab = st.segmented_control("보고서 항목", tabs, default="종합의견", width="stretch", wrap=False)
                 if tab == "종합의견":
                     for line in overview_lines(report):
                         st.markdown("- " + line)

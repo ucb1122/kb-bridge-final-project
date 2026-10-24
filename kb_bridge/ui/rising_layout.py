@@ -57,6 +57,7 @@ def apply_rising_layout() -> None:
 }
 .st-key-rising-rank-card [class*="st-key-rising-rank-row-"] [data-testid="stButton"] button:hover {color:#b57a00;background:#fff8df;}
 .kb-rank-number {display:block;text-align:left;font-size:12px;color:#172033;}
+.st-key-rising-rank-row-1 .kb-rank-number,.st-key-rising-rank-row-2 .kb-rank-number,.st-key-rising-rank-row-3 .kb-rank-number {color:#c79c00;font-weight:800;}
 .kb-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;color:#101624;}
 .kb-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;color:#e23570;}
 .st-key-rising-controls-card [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;width:100%;}
