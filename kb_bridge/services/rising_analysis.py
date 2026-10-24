@@ -17,6 +17,17 @@ def percent(value: float | None) -> str:
     return "비교 자료 없음" if value is None else f"{value * 100:+.1f}%"
 
 
+def ranking_change_label(metric: str, row: dict, criterion: str) -> str:
+    """Show absolute sorting in metric units; other rankings show rates."""
+    if criterion == "absolute":
+        delta = row.get("delta")
+        if delta is None:
+            return "비교 자료 없음"
+        sign = "+" if delta > 0 else "−" if delta < 0 else ""
+        return f"{sign}{human_value(metric, abs(delta))}"
+    return percent(row.get("change"))
+
+
 def monthly_sales_from_totals(sales: float | None, stores: float | None) -> float | None:
     """Return 만 원/점포/월 from one quarter's matching raw observations."""
     if sales is None or stores is None or stores <= 0:

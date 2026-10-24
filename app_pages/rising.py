@@ -10,7 +10,7 @@ import streamlit as st
 from kb_bridge.config import load_settings
 from kb_bridge.integrations.ollama_opinion import generate_opinion
 from kb_bridge.repositories import rising_snapshot
-from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, overview_lines, percent, sales_per_store_month
+from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, overview_lines, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
 from kb_bridge.ui.kakao_rank_map import show_map
 from kb_bridge.ui.rising_layout import apply_rising_layout
@@ -199,9 +199,9 @@ with st.container(key="rising-canvas"):
                     with value_col:
                         st.html(f'<strong class="kb-rank-value">{escape(human_value(applied["metric"], row["value"]))}</strong>')
                     with change_col:
-                        change = row["change"]
-                        arrow = "↑" if change is not None and change >= 0 else "↓" if change is not None else ""
-                        st.html(f'<span class="kb-rank-change">{escape(percent(change))} {arrow}</span>')
+                        change = row["delta"] if applied["criterion"] == "absolute" else row["change"]
+                        arrow = "↑" if change is not None and change > 0 else "↓" if change is not None and change < 0 else ""
+                        st.html(f'<span class="kb-rank-change">{escape(ranking_change_label(applied["metric"], row, applied["criterion"]))} {arrow}</span>')
     with st.container(key="rising-left-toggle"):
         if not st.session_state.rising_left_open:
             st.html('<span class="kb-left-collapsed-flag" hidden></span>')
