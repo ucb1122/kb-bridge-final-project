@@ -3,7 +3,7 @@ import unittest
 
 from kb_bridge.repositories import rising_snapshot
 from kb_bridge.services.rising_analysis import (
-    monthly_sales_from_totals, overview_cards, ranking_change_label, sales_per_store_month,
+    monthly_sales_from_totals, overview_cards, overview_lines, ranking_change_label, sales_per_store_month,
 )
 
 
@@ -19,6 +19,15 @@ class PureMeasureTests(unittest.TestCase):
         self.assertEqual(ranking_change_label("stores", {"delta": None, "change": None}, "absolute"), "비교 자료 없음")
         self.assertEqual(ranking_change_label("stores", {"delta": 12, "change": .06}, "growth"), "+6.0%")
 
+    def test_missing_open_close_counts_are_not_reported_as_zero(self):
+        report = {
+            "quarter": "20262",
+            "metrics": {"stores": {"value": 10, "change": None}},
+            "details": {"20262": {"stores": {"opened": None, "closed": 2}}},
+        }
+        lines = overview_lines(report)
+        self.assertEqual(len(lines), 1)
+        self.assertNotIn("개업 점포", lines[0])
     def test_each_comparison_uses_its_own_quarter_store_count(self):
         report = {
             "quarter": "20262", "metrics": {
