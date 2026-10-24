@@ -8,7 +8,7 @@ def apply_rising_layout() -> None:
     st.html("""<style>
 /* The page uses the same map canvas and floating panels as the team owner screen. */
 [data-testid="stMainBlockContainer"]:has(.st-key-rising-canvas) {
-  max-width: none; padding: 0 16px 16px;
+  max-width: none; padding: 84px 16px 16px;
 }
 [data-testid="stMainBlockContainer"]:has(.st-key-rising-canvas) > [data-testid="stVerticalBlock"] {
   gap: 0.3rem;
