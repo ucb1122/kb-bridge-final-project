@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from html import escape
 from pathlib import Path
 
 import streamlit as st
@@ -81,6 +82,7 @@ if "rising_map_district" not in st.session_state:
 if "rising_map_region" not in st.session_state or st.session_state.rising_map_region not in location_by_code:
     st.session_state.rising_map_region = ""
 source = "보관된 공식 순위 스냅샷" if result["ranking_source"] == "official" else "테스트 DB 원본 계산값"
+metric_labels = {"stores": "점포수", "sales": "매출", "footfall": "유동인구", "residents": "주거인구"}
 
 with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
@@ -138,7 +140,8 @@ with st.container(key="rising-canvas"):
             with st.form("rising-filters", border=False):
                 st.subheader("분석 조건")
                 kind = st.segmented_control("지역 유형", options=["dong", "area"], format_func=lambda x: {"dong": "뜨는 동네", "area": "뜨는 상권"}[x], default=applied["kind"])
-                metric = st.segmented_control("분석 지표", options=list(LABELS), format_func=lambda x: LABELS[x], default=applied["metric"])
+                with st.container(key="rising-metric-control"):
+                    metric = st.segmented_control("분석 지표", options=list(LABELS), format_func=lambda x: metric_labels[x], default=applied["metric"])
                 district = st.selectbox("자치구", ["", *options["districts"]], index=["", *options["districts"]].index(applied["district"]) if applied["district"] in options["districts"] else 0, format_func=lambda x: x or "서울 전체")
                 quarter_col, criterion_col = st.columns(2)
                 with quarter_col:
@@ -172,16 +175,26 @@ with st.container(key="rising-canvas"):
             st.caption(f"{result['quarter'][:4]}년 {result['quarter'][-1]}분기 · {source} · {applied['district'] or '서울 전체'}")
         with st.container(key="rising-rank-card"):
             st.subheader("순위 TOP 10")
-            st.caption(LABELS[applied["metric"]] + " · " + source)
+            st.caption(metric_labels[applied["metric"]] + " · " + source)
             if not rows:
                 st.info("선택한 조건에 해당하는 순위 자료가 없습니다.")
             for index, row in enumerate(rows, 1):
-                label = f"{index:02d}  {row['district']} {row['name']}  ·  {human_value(applied['metric'], row['value'])}"
-                if st.button(label, key=f"rank-{row['code']}", width="stretch", type="primary" if row["code"] == st.session_state.rising_selected else "secondary"):
-                    st.session_state.rising_selected = row["code"]
-                    st.session_state.rising_map_pending_region = row["code"]
-                    st.rerun()
-                st.caption(f"{percent(row['change'])} · 비교값 {human_value(applied['metric'], row['previous'])}")
+                with st.container(key=f"rising-rank-row-{index}"):
+                    rank_col, place_col, value_col, change_col = st.columns([0.24, 1.65, 0.83, 0.68], gap="small", vertical_alignment="center")
+                    with rank_col:
+                        st.html(f'<span class="kb-rank-number">{index}</span>')
+                    with place_col:
+                        if st.button(f"{row['district']} {row['name']}", key=f"rank-{row['code']}", width="stretch",
+                                     type="primary" if row["code"] == st.session_state.rising_selected else "secondary"):
+                            st.session_state.rising_selected = row["code"]
+                            st.session_state.rising_map_pending_region = row["code"]
+                            st.rerun()
+                    with value_col:
+                        st.html(f'<strong class="kb-rank-value">{escape(human_value(applied["metric"], row["value"]))}</strong>')
+                    with change_col:
+                        change = row["change"]
+                        arrow = "↑" if change is not None and change >= 0 else "↓" if change is not None else ""
+                        st.html(f'<span class="kb-rank-change">{escape(percent(change))} {arrow}</span>')
     with st.container(key="rising-left-toggle"):
         if not st.session_state.rising_left_open:
             st.html('<span class="kb-left-collapsed-flag" hidden></span>')
@@ -189,8 +202,6 @@ with st.container(key="rising-canvas"):
                      help="왼쪽 분석 조건 접기 또는 펼치기"):
             st.session_state.rising_left_open = not st.session_state.rising_left_open
             st.rerun()
-    with st.container(key="rising-source-badge"):
-        st.caption("순위 배지나 경계를 선택하면 지역 보고서를 엽니다. 값은 테스트 프로젝트 자료의 기준 분기이며 실시간 수치가 아닙니다.")
     selected_row = next((row for row in rows if row["code"] == st.session_state.rising_selected), None)
     if selected_row is None:
         selected_row = location_by_code.get(st.session_state.rising_selected)
