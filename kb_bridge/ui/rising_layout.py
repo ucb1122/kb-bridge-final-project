@@ -8,14 +8,13 @@ def apply_rising_layout() -> None:
     st.html("""<style>
 /* The page uses the same map canvas and floating panels as the team owner screen. */
 [data-testid="stMainBlockContainer"]:has(.st-key-rising-canvas) {
-  box-sizing: border-box; max-width: none; height: 100dvh;
-  padding: 8px 10px 0; overflow: hidden;
+  max-width: none; padding: 8px 10px 0;
 }
 [data-testid="stMainBlockContainer"]:has(.st-key-rising-canvas) > [data-testid="stVerticalBlock"] {
-  display: flex; flex-direction: column; height: 100%; min-height: 0; gap: 0.3rem;
+  gap: 0.3rem;
 }
 .st-key-rising-canvas {
-  position: relative; flex: 1 1 0; height: auto; min-height: 0;
+  position: relative; height: calc(100dvh - 30px); min-height: 650px;
   overflow: hidden; background: #edece7; isolation: isolate;
 }
 .st-key-rising-map-canvas { position: absolute; inset: 0; z-index: 0; }
@@ -129,8 +128,6 @@ def apply_rising_layout() -> None:
 .kb-overview-rank strong {color:#213047;}
 .kb-overview-card p {font-size:10px;color:#6a7280;text-align:center;margin:0;padding:6px 3px;}
 @media (max-width: 1350px) {
-  [data-testid="stMainBlockContainer"]:has(.st-key-rising-canvas) {height:auto;min-height:100dvh;overflow:visible;}
-  [data-testid="stMainBlockContainer"]:has(.st-key-rising-canvas) > [data-testid="stVerticalBlock"] {height:auto;}
   .st-key-rising-canvas { height: auto; min-height: 0; overflow: visible; display: flex; flex-direction: column; }
   .st-key-rising-map-canvas, .st-key-rising-filter-panel, .st-key-rising-report-panel {position:relative;inset:auto;width:auto;max-width:none;}
   .st-key-rising-map-selector {position:relative;inset:auto;transform:none;left:auto!important;order:2;width:auto!important;margin:12px;}
