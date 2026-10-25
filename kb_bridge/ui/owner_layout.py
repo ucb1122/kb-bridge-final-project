@@ -146,6 +146,7 @@ def apply_owner_layout() -> None:
 .st-key-owner-report-footer [data-testid="stHorizontalBlock"] {gap:12px;}
 .st-key-owner-report-footer [data-testid="stButton"] button {min-height:54px;font-weight:800;font-size:16px;border-radius:10px;}
 .st-key-owner-report-footer [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#111c31;border-color:#ffbf00;}
+.st-key-owner-report-pdf-actions [data-testid="stButton"] button {min-height:38px;font-size:13px;font-weight:500;border:1px solid #d8e0eb;background:#fff;}
 .st-key-owner-right-toggle {right:18px;top:14px;z-index:10002;}
 .st-key-owner-right-toggle button {border:0;background:transparent;box-shadow:none;color:#34465e;font-size:30px;}
 .st-key-owner-canvas:has(.kb-owner-right-collapsed) .st-key-owner-right-toggle {right:0;top:20px;}
