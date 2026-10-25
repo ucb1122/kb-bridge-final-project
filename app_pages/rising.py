@@ -244,13 +244,13 @@ with st.container(key="rising-canvas"):
                                  args=("kind", "rising_quick_kind"), width="stretch")
             with st.container(key="rising-metric-control"):
                 st.html('<div class="kb-metric-label">분석 지표</div>')
-                for metric_pair in (("stores", "sales"), ("footfall", "residents")):
-                    metric_columns = st.columns(2, gap="small")
-                    for metric, column in zip(metric_pair, metric_columns):
-                        with column:
-                            st.button(metric_labels[metric], key=f"rising-metric-{metric}",
-                                      type="primary" if applied["metric"] == metric else "secondary",
-                                      on_click=choose_metric, args=(metric,), width="stretch")
+                metrics = ("stores", "sales", "footfall", "residents")
+                metric_columns = st.columns(4, gap="small", wrap=False)
+                for metric, column in zip(metrics, metric_columns):
+                    with column:
+                        st.button(metric_labels[metric], key=f"rising-metric-{metric}",
+                                  type="primary" if applied["metric"] == metric else "secondary",
+                                  on_click=choose_metric, args=(metric,), width="stretch")
             with st.expander("상세조건", icon=":material/filter_alt:"):
                 with st.form("rising-filters", border=False):
                     criterion = st.segmented_control("기준조건", ["highest", "growth", "absolute"],
