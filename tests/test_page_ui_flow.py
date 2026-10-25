@@ -22,6 +22,18 @@ class RisingPageInteractionTests(unittest.TestCase):
         self.ai_mock = self.ai.start()
         self.addCleanup(self.ai.stop)
 
+    def test_stale_map_module_is_reloaded_before_page_render(self):
+        from kb_bridge.ui import kakao_rank_map
+
+        def previous_show_map(*, key, rows, boundaries, selected, source, district,
+                              fallback_districts=None):
+            return None
+
+        with patch.object(kakao_rank_map, "show_map", previous_show_map):
+            app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
+        self.assertFalse(app.exception)
+        self.assertTrue(any(button.key and button.key.startswith("rank-") for button in app.button))
+
     def test_quick_metric_refreshes_rankings_without_apply(self):
         with patch("kb_bridge.ui.kakao_rank_map._MAP", return_value=SimpleNamespace(selected=None)) as map_component:
             app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
