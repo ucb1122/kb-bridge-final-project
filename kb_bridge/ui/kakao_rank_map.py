@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-COMPONENT_VERSION = 4
+COMPONENT_VERSION = 5
 
 _MAP = st.components.v2.component(
-    "kb_bridge_rising_map_v4",
+    "kb_bridge_rising_map_v5",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
@@ -37,7 +37,7 @@ _MAP = st.components.v2.component(
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
-let kakaoResizeObserver=null, boundarySvg=null, boundaryDraw=null, boundaryPaths=[], boundaryDots=[];
+let kakaoResizeObserver=null, canvasResizeObserver=null, observedCanvas=null, boundarySvg=null, boundaryDraw=null, boundaryPaths=[], boundaryDots=[];
 let rankLayer=null, rankMarkers=[], positionKakaoMarkers=null, redrawFrame=null, viewKey=null, viewportResizeBound=false;
 let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
 let mapLibreLoading=null;
@@ -117,7 +117,7 @@ function resizeMapViewport() {
   const compact=window.innerWidth<=1100;
   const size=compact?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-mapRoot.getBoundingClientRect().top));
   mapRoot.style.height=`${size}px`;
-  map?.relayout();scheduleKakaoDecorations();
+  map?.relayout();fallbackMap?.resize();scheduleKakaoDecorations();
 }
 function scheduleKakaoDecorations() {
   if(redrawFrame!==null)return;
@@ -324,6 +324,12 @@ export default async function(component) {
   const host=root.getRootNode().host||root;
   const canvas=host.closest?.('.st-key-rising-canvas, .st-key-owner-canvas');
   root.style.height=`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
+  if (canvas && observedCanvas!==canvas) {
+    canvasResizeObserver?.disconnect();
+    observedCanvas=canvas;
+    canvasResizeObserver=new ResizeObserver(resizeMapViewport);
+    canvasResizeObserver.observe(canvas);
+  }
   try {
     await loadKakao(data.key);
     if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
