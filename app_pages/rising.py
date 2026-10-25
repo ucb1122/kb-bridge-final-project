@@ -233,7 +233,6 @@ with st.container(key="rising-canvas"):
     with st.container(key="rising-filter-panel"):
         with st.container(key="rising-controls-card"):
             st.markdown("## 뜨는 상권")
-            st.caption("같은 자료, 지역 변화에 맞는 해석")
             st.selectbox("자치구", ["", *options["districts"]],
                          key="rising_left_district", format_func=lambda x: x or "서울시 전체",
                          on_change=update_quick_filter, args=("district", "rising_left_district"))
@@ -287,7 +286,6 @@ with st.container(key="rising-canvas"):
                 st.session_state.rising_map_pending_district = applied["district"]
                 st.session_state.rising_map_pending_region = ""
                 st.rerun()
-            st.caption(f"{result['quarter'][:4]}년 {result['quarter'][-1]}분기 · {source} · {applied['district'] or '서울 전체'}")
         with st.container(key="rising-rank-card"):
             st.subheader("순위 TOP 10")
             st.caption(metric_labels[applied["metric"]] + " · " + source)
