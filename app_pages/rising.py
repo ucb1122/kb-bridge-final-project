@@ -366,21 +366,20 @@ with st.container(key="rising-canvas"):
                 st.info("선택한 조건에 해당하는 순위 자료가 없습니다.")
             for index, row in enumerate(rows, 1):
                 with st.container(key=f"rising-rank-row-{index}"):
-                    rank_col, place_col, value_col, change_col = st.columns([0.24, 1.65, 0.83, 0.68], gap="small", vertical_alignment="center")
-                    with rank_col:
-                        st.html(f'<span class="kb-rank-number">{index}</span>')
-                    with place_col:
-                        if st.button(f"{row['district']} {row['name']}", key=f"rank-{row['code']}", width="stretch",
-                                     type="primary" if row["code"] == st.session_state.rising_selected else "secondary"):
-                            st.session_state.rising_selected = row["code"]
-                            st.session_state.rising_map_pending_region = row["code"]
-                            st.rerun()
-                    with value_col:
-                        st.html(f'<strong class="kb-rank-value">{escape(human_value(applied["metric"], row["value"]))}</strong>')
-                    with change_col:
-                        change = row["delta"] if applied["criterion"] == "absolute" else row["change"]
-                        arrow = "↑" if change is not None and change > 0 else "↓" if change is not None and change < 0 else ""
-                        st.html(f'<span class="kb-rank-change">{escape(ranking_change_label(applied["metric"], row, applied["criterion"]))} {arrow}</span>')
+                    change = row["delta"] if applied["criterion"] == "absolute" else row["change"]
+                    arrow = "↑" if change is not None and change > 0 else "↓" if change is not None and change < 0 else ""
+                    st.html(
+                        f'<div class="kb-rank-line">'
+                        f'<span class="kb-rank-number">{index}</span>'
+                        f'<span class="kb-rank-name">{escape(row["district"])} {escape(row["name"])}</span>'
+                        f'<strong class="kb-rank-value">{escape(human_value(applied["metric"], row["value"]))}</strong>'
+                        f'<span class="kb-rank-change">{escape(ranking_change_label(applied["metric"], row, applied["criterion"]))} {arrow}</span>'
+                        '</div>'
+                    )
+                    if st.button(f"{row['district']} {row['name']}", key=f"rank-{row['code']}", width="stretch"):
+                        st.session_state.rising_selected = row["code"]
+                        st.session_state.rising_map_pending_region = row["code"]
+                        st.rerun()
     with st.container(key="rising-left-toggle"):
         if not st.session_state.rising_left_open:
             st.html('<span class="kb-left-collapsed-flag" hidden></span>')

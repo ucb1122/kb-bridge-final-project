@@ -98,22 +98,22 @@ def apply_owner_layout() -> None:
   .st-key-owner-left-toggle {left:auto;top:auto;}
 }
 
-[class*="st-key-owner-rank-row-"] {border-bottom:1px solid #dedede;min-height:39px;}
-[class*="st-key-owner-rank-row-"] [data-testid="stHorizontalBlock"] {display:grid!important;grid-template-columns:24px minmax(0,1fr) minmax(76px,22%) minmax(76px,22%);align-items:center;gap:6px!important;}
-[class*="st-key-owner-rank-row-"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {width:auto!important;min-width:0!important;flex:none!important;}
+[class*="st-key-owner-rank-row-"] {position:relative;border-bottom:1px solid #dedede;min-height:39px;}
 [class*="st-key-owner-rank-row-"] [data-testid="stVerticalBlock"] {gap:0;}
-.st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button {
-  display:flex!important;align-items:center;justify-content:flex-start!important;width:100%;min-height:38px;padding:0 2px;border:0;border-radius:0;
-  background:transparent;color:#172033;text-align:left;font-size:12px;font-weight:500;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
-.st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button p {width:100%;margin:0;text-align:left!important;}
-.kb-owner-rank-number {display:block;text-align:left;font-size:12px;color:#172033;}
+.kb-owner-rank-line {display:grid;grid-template-columns:20px minmax(0,1fr) minmax(70px,max-content) 70px;align-items:center;column-gap:6px;width:100%;min-height:39px;font-size:12px;color:#172033;}
+.kb-owner-rank-line > span,.kb-owner-rank-line > strong {min-width:0;}
+.kb-owner-rank-number {text-align:left;color:#172033;}
 .st-key-owner-rank-row-1 .kb-owner-rank-number,.st-key-owner-rank-row-2 .kb-owner-rank-number,.st-key-owner-rank-row-3 .kb-owner-rank-number {color:#c79c00;font-weight:800;}
-.kb-owner-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;font-weight:700;color:#101624;}
-.kb-owner-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;}
+.kb-owner-rank-name {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;}
+.kb-owner-rank-value {text-align:right;white-space:nowrap;font-weight:700;color:#101624;}
+.kb-owner-rank-change {text-align:right;white-space:nowrap;font-size:11px;}
 .kb-owner-rank-change.up {color:#e23570;}
 .kb-owner-rank-change.down {color:#278ce0;}
 .kb-owner-rank-change.flat {color:#667085;}
+[class*="st-key-owner-rank-row-"] [data-testid="stElementContainer"]:has([data-testid="stButton"]) {position:absolute;inset:0;z-index:2;width:100%;height:100%;}
+[class*="st-key-owner-rank-row-"] [data-testid="stButton"],
+[class*="st-key-owner-rank-row-"] [data-testid="stButton"] button {width:100%;height:100%;min-height:39px;margin:0;padding:0;border:0;background:transparent;}
+[class*="st-key-owner-rank-row-"] [data-testid="stButton"] button {opacity:0;cursor:pointer;}
+[class*="st-key-owner-rank-row-"]:has([data-testid="stButton"] button:hover) .kb-owner-rank-line {background:#fff8df;}
+[class*="st-key-owner-rank-row-"]:has([data-testid="stButton"] button:focus-visible) {outline:2px solid #b98200;outline-offset:-2px;}
 </style>""")
