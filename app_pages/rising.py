@@ -252,22 +252,31 @@ with st.container(key="rising-canvas"):
                                   on_click=choose_metric, args=(metric,), width="stretch")
             with st.expander("상세조건", icon=":material/filter_alt:"):
                 with st.form("rising-filters", border=False):
-                    criterion = st.segmented_control("기준조건", ["highest", "growth", "absolute"],
-                                                     format_func=lambda x: {"growth": "비교증가율", "highest": "최고순위", "absolute": "비교절대값"}[x],
-                                                     default=applied["criterion"], width="stretch")
-                    quarter = st.segmented_control("기준분기", options["quarters"][:5],
-                                                   format_func=lambda x: f"{x[:4]} {x[-1]}분기",
-                                                   default=applied["quarter"], width="stretch")
-                    detail1, detail2 = st.columns(2)
-                    with detail1:
-                        period = st.segmented_control("기간", ["quarter", "year"], format_func=lambda x: "분기" if x == "quarter" else "년도", default=applied["period"])
-                    with detail2:
-                        year_options = sorted({q[:4] for q in options["quarters"]}, reverse=True)
-                        year = st.selectbox("기준년도", year_options, index=year_options.index(applied["year"]) if applied["year"] in year_options else 0)
-                    comparison = st.segmented_control("조회분기", ["previous", "same"], format_func=lambda x: "전분기" if x == "previous" else "전년 동분기", default=applied["comparison"])
-                    with st.container(key="rising-industry-control"):
+                    with st.container(key="rising-detail-criterion"):
+                        criterion = st.segmented_control("기준조건", ["highest", "growth", "absolute"],
+                                                         format_func=lambda x: {"growth": "비교증가율", "highest": "최고순위", "absolute": "비교절대값"}[x],
+                                                         default=applied["criterion"], width="stretch")
+                    with st.container(key="rising-detail-quarter"):
+                        quarter = st.segmented_control("기준분기", list(reversed(options["quarters"][:5])),
+                                                       format_func=lambda x: f"{x[:4]}년 {x[-1]}분기",
+                                                       default=applied["quarter"], width="stretch")
+                    with st.container(key="rising-detail-period"):
+                        period = st.segmented_control("기간", ["quarter", "year"],
+                                                      format_func=lambda x: "분기" if x == "quarter" else "년도",
+                                                      default=applied["period"], width="stretch")
+                    with st.container(key="rising-detail-comparison"):
+                        comparison = st.segmented_control("조회분기", ["previous", "same"],
+                                                          format_func=lambda x: "전분기" if x == "previous" else "전년 동분기",
+                                                          default=applied["comparison"], width="stretch")
+                    year_options = sorted({q[:4] for q in options["quarters"]})
+                    with st.container(key="rising-detail-year"):
+                        year = st.segmented_control("기준년도", year_options,
+                                                    format_func=lambda x: f"{x}년",
+                                                    default=applied["year"] if applied["year"] in year_options else year_options[-1],
+                                                    width="stretch")
+                    with st.container(key="rising-detail-industry"):
                         industry = st.segmented_control("업종", ["all", "CS1", "CS2", "CS3"],
-                                                        default=applied["industry"], width="stretch", wrap=True,
+                                                        default=applied["industry"], width="stretch",
                                                         format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
                     cancel_col, apply_col = st.columns(2)
                     with cancel_col:

@@ -73,8 +73,6 @@ def apply_rising_layout() -> None:
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button {flex:1 1 0;min-width:0;min-height:48px;padding:5px 3px;margin:0!important;border:0!important;border-radius:12px!important;background:#f1f2f5!important;color:#101624!important;font-size:12px;font-weight:800!important;line-height:1.2;white-space:normal;box-shadow:none!important;}
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button p {color:inherit!important;font-weight:800!important;}
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
-.st-key-rising-industry-control [data-testid="stButtonGroup"] {width:100%;min-width:0;}
-.st-key-rising-industry-control [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:6px!important;}
 .kb-metric-label {font-size:13px;font-weight:400!important;margin:4px 0 6px;color:#172033}
 .st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%}
 .st-key-rising-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
@@ -82,10 +80,26 @@ def apply_rising_layout() -> None:
 .st-key-rising-metric-control [data-testid="stButton"] button p {font-size:14px;font-weight:800!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
 .st-key-rising-metric-control [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#101624}
 .st-key-rising-metric-control [data-testid="stButton"] button:hover {background:#ffe182;color:#101624}
-.st-key-rising-industry-control [data-testid="stButtonGroup"] button {flex:1 1 calc(50% - 6px)!important;min-width:calc(50% - 6px)!important;min-height:42px;white-space:nowrap!important;}
 .st-key-rising-controls-card [data-testid="stExpander"] {border:0;border-top:1px solid #e4e4e4;border-radius:0;margin-top:8px;}
 .st-key-rising-controls-card [data-testid="stExpander"] summary {font-weight:700;}
-.st-key-rising-controls-card [data-testid="stExpander"] [data-testid="stButtonGroup"] button {line-height:1.2;min-height:42px;}
+[class*="st-key-rising-detail-"] {min-width:0;}
+.st-key-rising-detail-criterion {--detail-columns:3;}
+.st-key-rising-detail-quarter {--detail-columns:5;--detail-height:58px;}
+.st-key-rising-detail-period,.st-key-rising-detail-comparison {--detail-columns:2;}
+.st-key-rising-detail-year {--detail-columns:2;}
+.st-key-rising-detail-industry {--detail-columns:4;}
+.st-key-rising-controls-card [class*="st-key-rising-detail-"] [data-testid="stButtonGroup"] [role="radiogroup"] {
+  display:grid!important;grid-template-columns:repeat(var(--detail-columns),minmax(0,1fr));
+  gap:6px!important;width:100%;
+}
+.st-key-rising-controls-card [class*="st-key-rising-detail-"] [data-testid="stButtonGroup"] button {
+  box-sizing:border-box;width:100%;min-width:0!important;min-height:var(--detail-height,50px)!important;
+  padding:5px 2px!important;justify-content:center;align-items:center;
+  font-size:12px!important;line-height:1.2;white-space:normal!important;
+}
+.st-key-rising-controls-card [class*="st-key-rising-detail-"] [data-testid="stButtonGroup"] button p {
+  text-align:center;white-space:normal!important;word-break:keep-all;overflow-wrap:normal;
+}
 .st-key-rising-filter-panel [data-testid="stCaptionContainer"] { font-size: 11px; }
 .st-key-rising-report-panel h3 { margin-top: 0; font-size: 21px; }
 .kb-rising-report-banner {margin:-18px -22px 14px;padding:15px 22px 15px 62px;background:#FFBF00;color:#101624;font-size:19px;font-weight:700;}
