@@ -198,3 +198,52 @@ def report(*, kind: str, code: str, quarter: str, industry: str = "all") -> dict
             "area_m2": snapshot.get("areas", {}).get(f"{kind}:{code}"),
             "official_sales_eok": snapshot.get("values", {}).get(f"{kind}:sales:{code}"),
             "official_report_sales": report_sales.get(f"{kind}:{code}") if industry == "all" else None}
+
+
+def overview_ranks(*, kind: str, code: str, quarter: str, district: str,
+                   industry: str = "all") -> dict[str, tuple[int, int]]:
+    """Rank each card's raw measure among comparable regions in its district."""
+    if kind not in KINDS or industry not in INDUSTRIES or not code.isdigit() or not district or len(quarter) != 5 or not quarter.isdigit():
+        raise ValueError("잘못된 지역 또는 분기입니다.")
+    with _connect() as db:
+        rows = db.execute("""SELECT region_code, metric, value FROM observations
+            WHERE kind=? AND quarter=? AND district=? AND metric IN ('stores','sales','footfall')""",
+            (kind, quarter, district)).fetchall()
+        values: dict[str, dict[str, float]] = {}
+        for region_code, metric, value in rows:
+            if value is not None:
+                values.setdefault(str(region_code), {})[metric] = float(value)
+        if industry != "all":
+            grouped = db.execute("""SELECT region_code, SUM(stores), SUM(sales) FROM report_industries
+                WHERE kind=? AND quarter=? AND substr(industry_code,1,3)=?
+                GROUP BY region_code""", (kind, quarter, industry)).fetchall()
+            by_code = {str(region_code): (stores, sales) for region_code, stores, sales in grouped}
+            for region_code, metrics in values.items():
+                stores, sales = by_code.get(region_code, (None, None))
+                metrics["stores"] = float(stores) if stores is not None else None
+                metrics["sales"] = float(sales) if sales is not None else None
+    if code not in values:
+        return {}
+    areas = _snapshot(quarter, "official-rankings").get("areas", {})
+    density_based = bool(areas.get(f"{kind}:{code}"))
+
+    def measure(region_code: str, metric: str) -> float | None:
+        record = values[region_code]
+        if metric == "stores":
+            return record.get("stores")
+        if metric == "sales":
+            stores, sales = record.get("stores"), record.get("sales")
+            return sales / stores if stores and stores > 0 and sales is not None else None
+        footfall = record.get("footfall")
+        if not density_based:
+            return footfall
+        area = areas.get(f"{kind}:{region_code}")
+        return footfall / area if footfall is not None and area and area > 0 else None
+
+    ranks = {}
+    for metric in ("stores", "sales", "footfall"):
+        current = measure(code, metric)
+        peers = [value for region_code in values if (value := measure(region_code, metric)) is not None]
+        if current is not None and peers:
+            ranks[metric] = (1 + sum(value > current for value in peers), len(peers))
+    return ranks

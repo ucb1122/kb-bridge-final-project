@@ -45,6 +45,18 @@ class RisingSnapshotParityTests(unittest.TestCase):
         self.assertIsInstance(selected["lat"], float)
         self.assertIsInstance(selected["lng"], float)
 
+    def test_overview_card_ranks_use_same_district_and_card_units(self):
+        ranks = rising_snapshot.overview_ranks(kind="dong", code="11530800",
+                                              quarter="20262", district="구로구")
+        self.assertEqual(ranks, {"stores": (16, 16), "sales": (16, 16), "footfall": (15, 16)})
+
+    def test_industry_card_ranks_use_industry_store_and_sales_values(self):
+        ranks = rising_snapshot.overview_ranks(kind="dong", code="11530800",
+                                              quarter="20262", district="구로구", industry="CS1")
+        self.assertEqual(set(ranks), {"stores", "sales", "footfall"})
+        self.assertEqual(ranks["footfall"], (15, 16))
+        self.assertTrue(all(1 <= rank <= total <= 16 for rank, total in ranks.values()))
+
     def test_report_units_and_official_override(self):
         songcheon = rising_snapshot.report(kind="dong", code="11305555", quarter="20262")
         self.assertEqual(round(footfall_per_ha(songcheon)[0]), 118254)

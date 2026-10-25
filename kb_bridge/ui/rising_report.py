@@ -2,11 +2,25 @@
 from __future__ import annotations
 
 from html import escape
+import re
 
 import pandas as pd
 import streamlit as st
 
 from kb_bridge.services.rising_analysis import LABELS, overview_cards
+
+
+_TREND_WORDS = re.compile(r"급증|급감|증가|감소|상승|하락")
+_UP_WORDS = {"급증", "증가", "상승"}
+
+
+def highlight_trends(line: str) -> str:
+    """Escape generated text before highlighting trend words."""
+    safe = escape(line)
+    return _TREND_WORDS.sub(
+        lambda match: f'<strong class="kb-ai-trend {"up" if match.group() in _UP_WORDS else "down"}">{match.group()}</strong>',
+        safe,
+    )
 
 
 def history_chart(report: dict, metric: str) -> bool:
@@ -68,10 +82,11 @@ def history_table(report: dict) -> None:
         st.caption("매출은 분기 추정매출 합계(원)이며 점포당 월평균 매출과 다릅니다.")
 
 
-def overview_card_grid(report: dict, *, selected_rank: int | None = None, selected_metric: str | None = None) -> None:
+def overview_card_grid(report: dict, *, ranks: dict[str, tuple[int, int]] | None = None) -> None:
     """Source-labeled cards matching the three-column reference report."""
     cards = overview_cards(report)
     columns = st.columns(3, gap="small")
+    ranks = ranks or {}
     for column, card in zip(columns, cards):
         def formatted(value: float | None, *, signed: bool = False) -> str:
             if value is None:
@@ -81,13 +96,14 @@ def overview_card_grid(report: dict, *, selected_rank: int | None = None, select
             return f"{prefix}{magnitude}{card['unit']}"
         def delta_class(value: float | None) -> str:
             return "unknown" if value is None else "up" if value > 0 else "down" if value < 0 else "flat"
-        rank_text = f"{selected_rank}위" if selected_rank is not None else "순위 미확인"
+        rank = ranks.get(card["key"])
+        rank_text = f"{rank[0]}/{rank[1]}위" if rank else "비교 자료 없음"
         with column:
             st.html(f"""<article class="kb-overview-card">
               <h4>{escape(card['title'])}</h4>
               <div class="kb-overview-delta {delta_class(card['previous_delta'])}"><small>전분기 대비</small><strong>{escape(formatted(card['previous_delta'], signed=True))}</strong></div>
               <div class="kb-overview-current"><small>{report['quarter'][:4]}년 {report['quarter'][-1]}분기</small><strong>{escape(formatted(card['current']))}</strong></div>
               <div class="kb-overview-delta {delta_class(card['year_delta'])}"><small>전년 동분기 대비</small><strong>{escape(formatted(card['year_delta'], signed=True))}</strong></div>
-              <div class="kb-overview-rank"><small>나의 등수</small><strong>{rank_text if card['key'] == selected_metric else '확인 자료 없음'}</strong></div>
+              <div class="kb-overview-rank"><small>자치구 내 원본 순위</small><strong>{escape(rank_text)}</strong></div>
               <p>{escape(card['source'])}</p>
             </article>""")
