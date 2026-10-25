@@ -3,6 +3,7 @@ from __future__ import annotations
 
 LABELS = {"stores": "점포수", "sales": "추정매출액", "footfall": "유동인구", "residents": "상주인구"}
 UNITS = {"stores": "개", "sales": "원", "footfall": "명", "residents": "명"}
+OVERVIEW_CARDS_VERSION = 2
 
 
 def human_value(metric: str, value: float | None) -> str:
@@ -94,17 +95,23 @@ def overview_cards(report: dict) -> list[dict]:
 
     footfall = report["metrics"].get("footfall", {}).get("value")
     area = report.get("area_m2")
-    density = footfall / (area / 10_000) if footfall is not None and area and area > 0 else None
+    area_ha = area / 10_000 if area and area > 0 else None
+    density = footfall / area_ha if footfall is not None and area_ha else None
+    previous_footfall = _history_value(report, "footfall", previous)
+    year_footfall = _history_value(report, "footfall", year_ago)
+    # Historical population observations use the same verified analysis area as the
+    # current quarter, so each comparison has the same 명/ha denominator.
+    divisor = area_ha or 1
     cards.append({
         "key": "footfall",
-        "title": "유동인구 (3개월간 1ha당 인구수)" if density is not None else "유동인구 (분기 총량)",
+        "title": "유동인구 밀도" if density is not None else "유동인구 (분기 총량)",
         "unit": "명/ha" if density is not None else "명",
         "current": density if density is not None else footfall,
-        "previous_delta": None if density is not None or footfall is None or _history_value(report, "footfall", previous) is None
-            else footfall - _history_value(report, "footfall", previous),
-        "year_delta": None if density is not None or footfall is None or _history_value(report, "footfall", year_ago) is None
-            else footfall - _history_value(report, "footfall", year_ago),
-        "source": "공개 원본·분석 면적 계산값" if density is not None else "공개 원본",
+        "previous_delta": (footfall - previous_footfall) / divisor
+            if footfall is not None and previous_footfall is not None else None,
+        "year_delta": (footfall - year_footfall) / divisor
+            if footfall is not None and year_footfall is not None else None,
+        "source": f"3개월·1ha당 · 공개 원본 / {quarter[:4]}년 {quarter[-1]}분기 분석 면적" if density is not None else "공개 원본",
         "rank": None,
     })
     return cards
