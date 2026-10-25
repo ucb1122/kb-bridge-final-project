@@ -22,9 +22,9 @@ from kb_bridge.ui import kakao_rank_map, rising_layout, rising_report
 if getattr(rising_analysis, "OVERVIEW_CARDS_VERSION", 0) != 2:
     importlib.reload(rising_analysis)
     importlib.reload(rising_report)
-elif not hasattr(rising_report, "highlight_trends"):
+elif getattr(rising_report, "RISING_REPORT_VERSION", 0) != 2:
     importlib.reload(rising_report)
-if not hasattr(rising_snapshot, "overview_ranks"):
+if getattr(rising_snapshot, "REPORT_RANKS_VERSION", 0) != 2:
     importlib.reload(rising_snapshot)
 
 from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, percent, ranking_change_label, sales_per_store_month
@@ -102,12 +102,13 @@ def load_rankings(**kwargs) -> dict:
     return rising_snapshot.rankings(**kwargs)
 
 @st.cache_data(max_entries=80)
-def load_report(kind: str, code: str, quarter: str, industry: str) -> dict | None:
+def load_report(kind: str, code: str, quarter: str, industry: str,
+                rank_version: int = 2) -> dict | None:
     return rising_snapshot.report(kind=kind, code=code, quarter=quarter, industry=industry)
 
 @st.cache_data(max_entries=200)
 def load_overview_ranks(kind: str, code: str, quarter: str, district: str,
-                        industry: str) -> dict[str, tuple[int, int]]:
+                        industry: str, rank_version: int = 2) -> dict[str, tuple[int, int]]:
     return rising_snapshot.overview_ranks(kind=kind, code=code, quarter=quarter,
                                           district=district, industry=industry)
 
@@ -391,7 +392,7 @@ with st.container(key="rising-canvas"):
         selected_row = location_by_code.get(st.session_state.rising_selected)
     if selected_row:
         with st.container(key="rising-report-panel"):
-            report = load_report(applied["kind"], selected_row["code"], result["quarter"], applied["industry"])
+            report = load_report(applied["kind"], selected_row["code"], result["quarter"], applied["industry"], rank_version=2)
             if report:
                 st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
                 st.subheader(f"{report['district']} {report['name']} 분석 리포트")
@@ -403,14 +404,12 @@ with st.container(key="rising-canvas"):
                 if applied["industry"] != "all":
                     st.caption("업종별 세부 구성·요일·연령 자료는 확인되지 않아 해당 그래프에는 전체 업종 원본만 사용합니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
-                first_tab = {"stores": "업종분석", "sales": "매출분석",
-                             "footfall": "인구분석", "residents": "인구분석"}[applied["metric"]]
-                tab = st.segmented_control("보고서 항목", tabs, default=first_tab,
-                                           key=f"rising-report-tab-{applied['metric']}",
+                tab = st.segmented_control("보고서 항목", tabs, default="종합의견",
+                                           key=f"rising-report-tab-{report['kind']}-{report['code']}-{report['quarter']}-{report['industry']}-{applied['metric']}",
                                            width="stretch", wrap=False)
                 if tab == "종합의견":
                     card_ranks = load_overview_ranks(report["kind"], report["code"], report["quarter"],
-                                                    report["district"], report["industry"])
+                                                    report["district"], report["industry"], rank_version=2)
                     overview_card_grid(report, ranks=card_ranks)
                     st.divider()
                     for metric in ("stores", "sales", "footfall"):

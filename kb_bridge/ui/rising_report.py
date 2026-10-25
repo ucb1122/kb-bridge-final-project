@@ -9,6 +9,8 @@ import streamlit as st
 
 from kb_bridge.services.rising_analysis import LABELS, overview_cards
 
+RISING_REPORT_VERSION = 2
+
 
 _TREND_WORDS = re.compile(r"급증|급감|증가|감소|상승|하락")
 _UP_WORDS = {"급증", "증가", "상승"}
@@ -98,12 +100,13 @@ def overview_card_grid(report: dict, *, ranks: dict[str, tuple[int, int]] | None
             return "unknown" if value is None else "up" if value > 0 else "down" if value < 0 else "flat"
         rank = ranks.get(card["key"])
         rank_text = f"{rank[0]}/{rank[1]}위" if rank else "비교 자료 없음"
+        rank_source = "자치구 내 공식 순위" if card["key"] in (report.get("official_report_ranks") or {}) else "자치구 내 원본 계산 순위"
         with column:
             st.html(f"""<article class="kb-overview-card">
               <h4>{escape(card['title'])}</h4>
               <div class="kb-overview-delta {delta_class(card['previous_delta'])}"><small>전분기 대비</small><strong>{escape(formatted(card['previous_delta'], signed=True))}</strong></div>
               <div class="kb-overview-current"><small>{report['quarter'][:4]}년 {report['quarter'][-1]}분기</small><strong>{escape(formatted(card['current']))}</strong></div>
               <div class="kb-overview-delta {delta_class(card['year_delta'])}"><small>전년 동분기 대비</small><strong>{escape(formatted(card['year_delta'], signed=True))}</strong></div>
-              <div class="kb-overview-rank"><small>자치구 내 원본 순위</small><strong>{escape(rank_text)}</strong></div>
+              <div class="kb-overview-rank"><small>{rank_source}</small><strong>{escape(rank_text)}</strong></div>
               <p>{escape(card['source'])}</p>
             </article>""")

@@ -117,7 +117,7 @@ class RisingPageInteractionTests(unittest.TestCase):
         self.assertEqual(self.ai_mock.call_count, 2)
         self.assertFalse(app.exception)
 
-    def test_selected_metric_opens_matching_report_section(self):
+    def test_selected_region_opens_overview_then_allows_other_sections(self):
         for metric, section in (("stores", "업종분석"), ("sales", "매출분석"),
                                 ("footfall", "인구분석"), ("residents", "인구분석")):
             with self.subTest(metric=metric):
@@ -129,7 +129,18 @@ class RisingPageInteractionTests(unittest.TestCase):
                 first_rank.click().run()
                 selected_tabs = [widget.value for widget in app.get("segmented_control")
                                  if widget.label == "보고서 항목"]
-                self.assertEqual(selected_tabs, [section])
+                self.assertEqual(selected_tabs, ["종합의견"])
+                next(widget for widget in app.get("segmented_control")
+                     if widget.label == "보고서 항목").set_value(section).run()
+                self.assertEqual(next(widget.value for widget in app.get("segmented_control")
+                                      if widget.label == "보고서 항목"), section)
+                if metric == "stores":
+                    second_rank = next(button for button in app.button
+                                       if button.key and button.key.startswith("rank-")
+                                       and button.key != first_rank.key)
+                    second_rank.click().run()
+                    self.assertEqual(next(widget.value for widget in app.get("segmented_control")
+                                          if widget.label == "보고서 항목"), "종합의견")
                 self.assertFalse(app.exception)
 
     def test_left_panel_collapse_and_selected_district_outline(self):
