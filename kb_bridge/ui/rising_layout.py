@@ -103,6 +103,8 @@ def apply_rising_layout() -> None:
 .st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-right-toggle {right:0;}
 .st-key-rising-left-toggle button,.st-key-rising-right-toggle button {min-width:32px;height:42px;padding:0;border:1px solid #e2d6aa;background:#fff;color:#8a6400;font-size:24px;border-radius:0 6px 6px 0;box-shadow:0 2px 8px #0002;}
 .st-key-rising-right-toggle button {border-radius:6px 0 0 6px;}
+.st-key-rising-canvas:not(:has(.kb-right-collapsed-flag)) .st-key-rising-right-toggle {display:none;}
+.st-key-rising-report-panel .st-key-rising-collapse-report button {white-space:nowrap;font-size:12px;padding:5px 8px;}
 .st-key-rising-map-selector:has(.kb-selector-collapsed-flag) {width:135px;padding:5px;}
 .st-key-rising-map-selector [data-testid="stButton"] button {min-height:36px;width:100%;padding:0 4px;border:0;border-left:1px solid #e8e2d7;border-radius:0;justify-content:center;background:#fff;color:#8a6400;font-size:11px;white-space:nowrap;}
 .st-key-rising-map-selector [data-testid="stButton"] button:hover {background:#fff8df;color:#614900;}
