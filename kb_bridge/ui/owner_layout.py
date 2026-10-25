@@ -62,4 +62,12 @@ def apply_owner_layout() -> None:
 .st-key-owner-rank-card h3 {font-size:16px;margin:0 0 8px;}
 .st-key-owner-rank-card [data-testid="stButton"] button {justify-content:flex-start;border:0;border-bottom:1px solid #dedede;border-radius:0;box-shadow:none;padding:8px 2px;min-height:38px;font-size:12px;white-space:normal;text-align:left;}
 .st-key-owner-rank-card [data-testid="stButton"] button:hover {color:#b57a00;background:#fff8df;}
-.kb-owner-field-heading {font-size:13px;font-weight:400;margin:8px 0 3px;color:#101624;}</style>""")
+.kb-owner-field-heading {font-size:13px;font-weight:400;margin:8px 0 3px;color:#101624;}
+.st-key-owner-report-panel [data-testid="stMetric"] {min-width:0;padding:8px;}
+.st-key-owner-report-panel [data-testid="stMetricLabel"] {font-size:11px;}
+.st-key-owner-report-panel [data-testid="stMetricValue"] {font-size:18px;line-height:1.2;}
+.st-key-owner-report-panel [data-testid="stMetricDelta"] {font-size:11px;}
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] {width:100%;overflow-x:auto;}
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button {min-width:0;min-height:46px;padding:4px 2px;font-size:11px;white-space:normal;}
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button p {font-size:11px;line-height:1.2;white-space:normal;}
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}</style>""")

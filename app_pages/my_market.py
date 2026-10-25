@@ -10,6 +10,7 @@ from kb_bridge.domain.finance import amortizing_payment
 from kb_bridge.repositories import owner_snapshot
 from kb_bridge.ui.kakao_rank_map import show_map
 from kb_bridge.ui.owner_layout import apply_owner_layout
+from kb_bridge.ui.owner_report import render_section
 
 apply_owner_layout()
 
@@ -240,59 +241,19 @@ with st.container(key="owner-canvas"):
                     st.session_state.owner_right_open = False
                     st.rerun()
             st.caption(f"{mode} · {market.get('type', '상권')} · {report['quarter'][:4]}년 {report['quarter'][-1]}분기 · {group['label']}")
-            current, prior = report["current"], report["prior"]
-            st.metric(metric_labels[metric], metric_display(metric, metric_value(report, metric)), border=True)
-            st.caption("점포수·매출은 선택한 공식 업종·상권, 인구는 상권 전체 기준입니다.")
             if industry_code == "unmapped":
                 st.info("선택한 인허가 업태에 대응하는 공식 서비스업종 코드가 없어 점포수·매출은 표시하지 않습니다.")
             report_tab = st.segmented_control("분석 항목",
-                ["간략보고서", "업종분석", "매출분석", "인구분석", "지역(배후지)분석", "금융상담 준비"],
-                default="간략보고서", key=f"owner-report-tab-{mode}", width="stretch", wrap=False)
-            if report_tab == "간략보고서":
-                a, b = st.columns(2)
-                with a:
-                    st.metric("선택 업종 공식 점포수", metric_display("stores", current.get("stores")), border=True)
-                with b:
-                    st.metric("선택 상권·업종 추정매출", metric_display("sales", current.get("sales")), border=True)
-                if mode == "나는 사장":
-                    if selected_business:
-                        obs = load_licences(selected_business["lat"], selected_business["lng"], radius, group_id)
-                        a, b = st.columns(2)
-                        with a:
-                            st.metric("선택 업태 인허가 관측", f"{obs['selected']:,}건", border=True)
-                        with b:
-                            st.metric("반경 안 확보 인허가 관측", f"{obs['total']:,}건", border=True)
-                        st.caption(f"점포 위치 반경 {radius:,}m의 확보 인허가 기록이며 공식 상권 전체 통계와 범위가 다릅니다.")
-                        if obs["examples"]:
-                            st.dataframe(obs["examples"], hide_index=True, alt="주변 인허가 업소 예시")
-                    else:
-                        st.info("상호·주소를 검색해 점포 위치를 선택하면 주변 인허가 관측을 볼 수 있습니다.")
-                else:
-                    st.metric("상권 전체 유동인구", metric_display("floating", report.get("floating")), border=True)
-                    st.caption("순위는 전분기 대비 변화율 기준입니다. 점포수·매출은 선택 업종 기준입니다.")
-            elif report_tab == "업종분석":
-                st.metric("선택 업종 공식 점포수", metric_display("stores", current.get("stores")), border=True)
-                if prior.get("stores") is not None:
-                    st.caption(f"이전 분기 {prior['stores']:,.0f}개")
-                st.metric("개업 점포", metric_display("stores", current.get("opened")), border=True)
-                st.metric("폐업 점포", metric_display("stores", current.get("closed")), border=True)
-                st.caption("업종별 공식 집계와 주변 인허가 업태는 별도의 지표입니다.")
-            elif report_tab == "매출분석":
-                sales = current.get("sales")
-                st.metric("선택 상권·업종 추정매출", f"{sales:,.0f}원" if sales is not None else "자료 없음", border=True)
-                if sales is not None and prior.get("sales") is not None and prior["sales"] > 0:
-                    st.caption(f"전분기 대비 {(sales/prior['sales']-1)*100:+.1f}% · 전분기 {prior['sales']:,.0f}원")
-                st.caption("상권 전체의 공식 집계입니다. 선택 반경이나 개별 업소의 매출로 환산하지 않습니다.")
-            elif report_tab == "인구분석":
-                order = [("resident", "거주인구"), ("floating", "유동인구"), ("worker", "직장인구")] if metric == "resident" else [("floating", "유동인구"), ("resident", "거주인구"), ("worker", "직장인구")]
-                for key, label in order:
-                    st.metric(label, f"{report[key]:,.0f}명" if report.get(key) is not None else "자료 없음", border=True)
-                st.caption("서로 다른 모집단과 집계 기간을 합산하지 않습니다.")
-            elif report_tab == "지역(배후지)분석":
-                st.metric("상권 면적", f"{report['area']['area']:,.0f}㎡" if report['area'].get('area') is not None else "자료 없음", border=True)
-                st.metric("거주인구", metric_display("resident", report.get("resident")), border=True)
-                st.metric("직장인구", metric_display("floating", report.get("worker")), border=True)
-                st.caption("상권 전체의 공개 지역 집계이며 선택 점포 반경 인구로 환산하지 않습니다.")
+                ["한눈에 보기", "업종·경쟁", "매출", "고객·인구", "주변 환경", "금융상담 준비"],
+                default="한눈에 보기", key=f"owner-report-tab-{mode}", width="stretch", wrap=False)
+            if report_tab != "금융상담 준비":
+                observations = (load_licences(selected_business["lat"], selected_business["lng"],
+                                              radius, group_id)
+                                if mode == "나는 사장" and selected_business and
+                                report_tab in {"한눈에 보기", "업종·경쟁", "주변 환경"} else None)
+                render_section(report_tab, report=report, market=market, mode=mode,
+                               selected_business=selected_business, radius=radius,
+                               observations=observations, metric=metric, ranking=ranked)
             else:
                 st.subheader("경영·금융진단")
                 st.caption("직접 입력한 가정만 계산합니다. 은행 대출 심사·사업자 인증·실제 상담 접수는 연결되지 않았습니다.")
