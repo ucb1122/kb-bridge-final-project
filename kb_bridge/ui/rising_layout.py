@@ -17,8 +17,8 @@ def apply_rising_layout() -> None:
   position: relative; height: calc(100dvh - 30px); min-height: 650px;
   overflow: hidden; background: #edece7; isolation: isolate;
 }
-.st-key-rising-map-canvas { position: absolute; inset: 0; z-index: 0; }
-.st-key-rising-map-canvas [data-testid="stVerticalBlock"] { gap: 0; }
+.st-key-rising-map-canvas { position: absolute; inset: 0; z-index: 0; height: 100%; }
+.st-key-rising-map-canvas [data-testid="stVerticalBlock"] { gap: 0; height: 100%; }
 .st-key-rising-filter-panel,
 .st-key-rising-report-panel {position:absolute;z-index:4;overflow-y:auto;scrollbar-width:thin;}
 .st-key-rising-filter-panel {top:0;bottom:0;left:0;width:clamp(380px,23vw,440px);padding:0;background:#fff;border:0;box-shadow:2px 0 8px #0001;}
@@ -74,7 +74,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
 .st-key-rising-industry-control [data-testid="stButtonGroup"] {width:100%;min-width:0;}
 .st-key-rising-industry-control [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:6px!important;}
-.kb-metric-label {font-size:13px;font-weight:600;margin:4px 0 6px;color:#172033}
+.kb-metric-label {font-size:13px;font-weight:400;margin:4px 0 6px;color:#172033}
 .st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%}
 .st-key-rising-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
 .st-key-rising-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#101624;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;overflow:visible;text-overflow:clip}
@@ -131,7 +131,8 @@ def apply_rising_layout() -> None:
   .st-key-rising-canvas { height: auto; min-height: 0; overflow: visible; display: flex; flex-direction: column; }
   .st-key-rising-map-canvas, .st-key-rising-filter-panel, .st-key-rising-report-panel {position:relative;inset:auto;width:auto;max-width:none;}
   .st-key-rising-map-selector {position:relative;inset:auto;transform:none;left:auto!important;order:2;width:auto!important;margin:12px;}
-  .st-key-rising-map-canvas { order: 1; }
+  .st-key-rising-map-canvas { order: 1; height: auto; }
+  .st-key-rising-map-canvas [data-testid="stVerticalBlock"] { height: auto; }
   .st-key-rising-left-toggle,.st-key-rising-right-toggle {position:relative;top:auto;left:auto;right:auto;transform:none;margin:0 12px;order:3;}
   .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-filter-panel,.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-report-panel {display:none;}
   .st-key-rising-filter-panel { order: 3; margin: 12px; max-height: none; }
