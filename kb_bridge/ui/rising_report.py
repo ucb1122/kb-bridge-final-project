@@ -4,12 +4,12 @@ from __future__ import annotations
 from html import escape
 import re
 
-import pandas as pd
 import streamlit as st
 
 from kb_bridge.services.rising_analysis import LABELS, overview_cards
+from kb_bridge.ui import static_chart
 
-RISING_REPORT_VERSION = 2
+RISING_REPORT_VERSION = 3
 
 
 _TREND_WORDS = re.compile(r"급증|급감|증가|감소|상승|하락")
@@ -32,11 +32,9 @@ def history_chart(report: dict, metric: str) -> bool:
         return False
     divisor = 100_000_000 if metric == "sales" else 1
     unit = "억 원" if metric == "sales" else "개" if metric == "stores" else "명"
-    frame = pd.DataFrame({"분기": [f"{row['quarter'][:4]}년 {row['quarter'][-1]}분기" for row in rows],
-                          "값": [row["value"] / divisor for row in rows]})
-    st.subheader(f"{LABELS[metric]} 추이")
-    st.line_chart(frame, x="분기", y="값", color="#E5A900",
-                  alt=f"{report['name']}의 분기별 {LABELS[metric]} 추이")
+    static_chart.bars(f"{LABELS[metric]} 추이",
+                      [f"{row['quarter'][:4]}년 {row['quarter'][-1]}분기" for row in rows],
+                      [row["value"] / divisor for row in rows], unit)
     st.caption(f"단위: {unit} · 공개 원본의 분기별 지역 집계값")
     return True
 
@@ -48,9 +46,7 @@ def breakdown_chart(report: dict, *, category: str, title: str,
     if not any(value is not None for value in values):
         st.info(f"{title} 원본 자료가 없습니다.")
         return False
-    frame = pd.DataFrame({"구분": names, "값": values})
-    st.subheader(title)
-    st.bar_chart(frame, x="구분", y="값", color="#E5A900", alt=f"{report['name']}의 {title}")
+    static_chart.bars(title, names, values, unit, current_last=False)
     st.caption(f"단위: {unit} · 공개 원본의 {report['quarter'][:4]}년 {report['quarter'][-1]}분기 집계값")
     return True
 
@@ -64,9 +60,7 @@ def industry_chart(report: dict) -> bool:
     if not any(groups.values()):
         st.info("업종별 점포 원본 자료가 없습니다.")
         return False
-    st.subheader("업종분포")
-    st.bar_chart(pd.DataFrame({"업종군": list(groups), "점포수": list(groups.values())}),
-                 x="업종군", y="점포수", color="#E5A900", alt=f"{report['name']}의 업종군별 점포수")
+    static_chart.bars("업종분포", list(groups), list(groups.values()), "개", current_last=False)
     st.caption("서비스 업종 코드를 외식업·서비스업·소매업으로 묶은 공개 원본 집계값입니다.")
     return True
 
@@ -110,3 +104,55 @@ def overview_card_grid(report: dict, *, ranks: dict[str, tuple[int, int]] | None
               <div class="kb-overview-rank"><small>{rank_source}</small><strong>{escape(rank_text)}</strong></div>
               <p>{escape(card['source'])}</p>
             </article>""")
+
+
+def _quarter_label(quarter: str) -> str:
+    return f"{quarter[:4]}년 {quarter[-1]}분기"
+
+
+def _change(current: float | None, earlier: float | None, unit: str) -> str:
+    if current is None or earlier is None:
+        return "비교 자료 없음"
+    direction = "증가" if current > earlier else "감소" if current < earlier else "변동 없음"
+    return f"{abs(current-earlier):,.0f}{unit} {direction}"
+
+
+def _detail_trend(report: dict, key: str, title: str) -> None:
+    detail = report.get("details", {})
+    quarters = sorted(q for q in detail if detail[q].get("stores", {}).get(key) is not None)
+    if quarters:
+        static_chart.bars(title, [_quarter_label(q) for q in quarters],
+                          [detail[q]["stores"][key] for q in quarters], "개")
+
+
+def industry_insights(report: dict) -> None:
+    """팀 보고서의 업종 분석을 공개 원본에서 확인 가능한 항목으로 구성한다."""
+    detail = report.get("details", {})
+    quarter = report["quarter"]
+    stores = detail.get(quarter, {}).get("stores", {})
+    previous = f"{int(quarter)-1}" if quarter[-1] != "1" else f"{int(quarter[:4])-1}4"
+    year = f"{int(quarter[:4])-1}{quarter[-1]}"
+    previous_stores = detail.get(previous, {}).get("stores", {})
+    year_stores = detail.get(year, {}).get("stores", {})
+    store_metric = report.get("metrics", {}).get("stores", {})
+    count = store_metric.get("value")
+    if count is not None:
+        st.subheader(f"점포수는 {count:,.0f}개입니다.")
+        st.caption(f"전분기 대비 {_change(count, next((row['value'] for row in report['history'] if row['metric']=='stores' and row['quarter']==previous), None), '개')} · 서울시 공개 지역 집계")
+    regular, franchise = stores.get("regular"), stores.get("franchise")
+    if regular is not None or franchise is not None:
+        static_chart.shares("일반점포와 프랜차이즈 점포수", {"일반점포": regular, "프랜차이즈": franchise}, "개")
+        st.caption("일반점포와 프랜차이즈는 선택 지역·분기의 공개 원본 구분입니다.")
+    for key, label in (("opened", "개업수"), ("closed", "폐업수")):
+        current = stores.get(key)
+        if current is None:
+            continue
+        st.subheader(f"{label}는 {current:,.0f}개입니다.")
+        st.write(f"전분기 대비 {_change(current, previous_stores.get(key), '개')} · 전년 동분기 대비 {_change(current, year_stores.get(key), '개')}")
+        _detail_trend(report, key, f"{label} 추이")
+    if stores.get("opened") is not None and stores.get("closed") is not None:
+        opened, closed = stores["opened"], stores["closed"]
+        if opened < previous_stores.get("opened", opened) and closed < previous_stores.get("closed", closed):
+            st.info("개업과 폐업이 모두 전분기보다 줄었습니다. 업종별 변화와 집계 기준을 함께 확인해 보세요.")
+        st.caption("개업−폐업과 점포수의 분기 변화는 집계 시점과 범위 차이로 일치하지 않을 수 있습니다.")
+    st.info("평균 영업기간과 신생기업 3년 생존율은 현재 연결된 원본에 없어 표시하지 않습니다.")

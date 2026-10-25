@@ -1,12 +1,12 @@
 """Right-hand owner report sections built from the team's local snapshot."""
 from __future__ import annotations
 
-import pandas as pd
 import streamlit as st
 
 from kb_bridge.repositories.owner_snapshot import distance_m
+from kb_bridge.ui import static_chart
 
-OWNER_REPORT_VERSION = 3
+OWNER_REPORT_VERSION = 4
 
 
 def _number(value: float | None, unit: str = "") -> str:
@@ -108,12 +108,12 @@ def render_section(section: str, *, report: dict, market: dict, mode: str,
                     history.setdefault(row["quarter"], {})[row["metric"]] = row["value"]
             quarters = sorted(history)
             if quarters:
-                st.markdown("### 점포수 추이")
-                st.line_chart(pd.DataFrame({"점포수": [history[q].get("stores") for q in quarters]},
-                                           index=[f"{q[:4]}년 {q[-1]}분기" for q in quarters]), height=160)
-                st.markdown("### 분기 추정매출 추이")
-                st.line_chart(pd.DataFrame({"억 원": [(history[q].get("sales") or 0) / 100_000_000 for q in quarters]},
-                                           index=[f"{q[:4]}년 {q[-1]}분기" for q in quarters]), height=160)
+                labels = [f"{q[:4]}년 {q[-1]}분기" for q in quarters]
+                static_chart.bars("점포수 추이", labels,
+                                  [history[q].get("stores") for q in quarters], "개")
+                static_chart.bars("분기 추정매출 추이", labels,
+                                  [history[q].get("sales") / 100_000_000 if history[q].get("sales") is not None else None for q in quarters],
+                                  "억 원")
             with st.expander("분석 설명·집계 기준"):
                 st.write(f"{market['district']} {market['name']} · {scope_label} 전체 · {report['quarter'][:4]}년 {report['quarter'][-1]}분기. 지역 통계와 우리 가게의 실제 실적을 함께 확인해 보세요.")
                 st.write("추정매출은 지역·업종 집계값이며 개별 점포의 실매출·이익·대출 가능액을 뜻하지 않습니다.")

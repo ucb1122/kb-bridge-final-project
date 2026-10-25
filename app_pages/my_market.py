@@ -20,7 +20,7 @@ if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
     importlib.reload(owner_snapshot)
 if getattr(owner_dong, "OWNER_REGION_VERSION", 0) != 2:
     importlib.reload(owner_dong)
-if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 3:
+if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 4:
     importlib.reload(owner_report)
 importlib.reload(owner_layout)
 if getattr(kakao_rank_map, "COMPONENT_VERSION", 0) != 9:

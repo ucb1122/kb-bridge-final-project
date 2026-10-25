@@ -1,3 +1,3 @@
-# Visual assets
+# 화면 자산
 
-Add versioned icons, fonts, map styles and images here only after source, license and attribution have been recorded. Generated map tiles and report images belong in output/, not this folder. The financial consultation flow image is a design reference, not a runtime asset yet.
+아이콘, 글꼴, 지도 스타일과 이미지는 출처·사용 권한·표기 방법을 확인한 뒤 이 폴더에 넣는다. 생성된 지도 타일과 보고서 이미지는 `output/`에 보관한다. 금융상담 흐름 이미지는 현재 디자인 참고 자료이며 앱 실행에 필요한 자산은 아니다.
