@@ -10,17 +10,24 @@ from kb_bridge.services.rising_analysis import LABELS, human_value, overview_lin
 
 SYSTEM = (
     "서울시 상권분석 보고서의 종합의견을 한국어 문장 4개로 작성하세요. "
-    "점포·매출·인구 변화와 신중한 종합 판단을 순서대로 설명하세요. "
+    "우선 분석 지표를 중심으로 점포·매출·인구 변화와 신중한 종합 판단을 설명하세요. "
     "주어진 수치, 기간, 단위와 출처만 사용하세요. 없는 임대료·소득·폐업 확률·대출 적격성을 만들지 마세요. "
     "지역 통계를 개인 점포의 재무정보로 해석하지 마세요. 결과는 JSON opinions 문자열 배열로 반환하세요."
 )
 
 
-def generate_opinion(report: dict) -> dict:
+def generate_opinion(report: dict, focus_metric: str | None = None) -> dict:
     settings = load_settings()
+    stores = report.get("details", {}).get(report["quarter"], {}).get("stores", {})
     facts = {"지역": f"{report['district']} {report['name']}", "분기": report["quarter"],
+             "업종범위": report.get("industry", "all"),
+             "우선분석지표": LABELS.get(focus_metric, "종합"),
              "지표": {LABELS[key]: {"현재": human_value(key, item["value"]), "전분기": percent(item["change"])}
-                    for key, item in report["metrics"].items() if key in LABELS}}
+                    for key, item in report["metrics"].items() if key in LABELS},
+             "개업점포": stores.get("opened"), "폐업점포": stores.get("closed")}
+    if report.get("industry", "all") != "all":
+        facts.pop("개업점포")
+        facts.pop("폐업점포")
     body = {"model": settings.ollama_model, "stream": False, "think": False,
             "format": {"type": "object", "properties": {"opinions": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "string"}}},
                        "required": ["opinions"], "additionalProperties": False},
@@ -39,5 +46,5 @@ def generate_opinion(report: dict) -> dict:
             raise ValueError("의견 4개를 받지 못했습니다.")
         return {"mode": "ai", "lines": [line.strip() for line in opinions],
                 "note": f"로컬 Ollama {settings.ollama_model} 생성 문장 · 수치는 원본 보고서에서 확인하세요."}
-    except (HTTPError, URLError, TimeoutError, KeyError, ValueError, json.JSONDecodeError) as error:
+    except (HTTPError, URLError, TimeoutError, OSError, KeyError, ValueError, json.JSONDecodeError) as error:
         return {**fallback, "note": f"{type(error).__name__}: {fallback['note']}"}

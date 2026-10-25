@@ -11,14 +11,14 @@ _MAP = st.components.v2.component(
 #kb-map-status:empty {display:none}
 #kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
 .kb-rank-marker {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:82px;height:86px;padding:0;border:0;background:transparent;color:#101624;font:700 11px 'Malgun Gothic',sans-serif;cursor:pointer;text-align:center;overflow:visible;filter:drop-shadow(0 2px 5px #3c331b55)}
-.kb-rank-marker::before {content:"";position:absolute;z-index:-1;top:12px;left:4px;width:74px;height:74px;border-radius:50%;background:#6433d988;pointer-events:none}
-.kb-rank-marker::after {content:"";position:absolute;z-index:-2;top:12px;left:4px;width:74px;height:74px;border:2px solid #6433d9;border-radius:50%;pointer-events:none;animation:kb-rank-pulse 3.6s ease-out infinite}
-.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#ede3ff;border:1px solid #6433d9;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#3c177b;font-size:14px;font-weight:800}
-.kb-rank-marker span {position:relative;display:block;max-width:78px;width:73px;margin-top:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#6433d9;color:#fff}
-.kb-rank-marker small {position:relative;display:block;width:67px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#fff;color:#3c177b;font-size:10px}
-.kb-rank-marker.active::before {background:#6433d9bb}
-.kb-rank-marker.active span {background:#5221c8}
-.kb-rank-marker:hover::after,.kb-rank-marker:focus-visible::after {animation-duration:2.6s;border-color:#6433d9}
+.kb-rank-marker::before {content:"";position:absolute;z-index:-1;top:12px;left:4px;width:74px;height:74px;border-radius:50%;background:#ffbf0066;pointer-events:none}
+.kb-rank-marker::after {content:"";position:absolute;z-index:-2;top:12px;left:4px;width:74px;height:74px;border:2px solid #d69c00;border-radius:50%;pointer-events:none;animation:kb-rank-pulse 3.6s ease-out infinite}
+.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff8df;border:1px solid #d69c00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#5c4400;font-size:14px;font-weight:800}
+.kb-rank-marker span {position:relative;display:block;max-width:78px;width:73px;margin-top:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#d69c00;color:#fff}
+.kb-rank-marker small {position:relative;display:block;width:67px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#fff;color:#5c4400;font-size:10px}
+.kb-rank-marker.active::before {background:#ffbf0099}
+.kb-rank-marker.active span {background:#b98200}
+.kb-rank-marker:hover::after,.kb-rank-marker:focus-visible::after {animation-duration:2.6s;border-color:#d69c00}
 .kb-rank-marker.top-rank strong {background:#ffe500;color:#1c2140;border-color:#d9b800;}
 .kb-rank-marker:focus-visible {outline:2px solid #101624;outline-offset:5px}
 @keyframes kb-rank-pulse {0%{transform:scale(1);opacity:.75}75%,100%{transform:scale(1.9);opacity:0}}
@@ -27,7 +27,7 @@ _MAP = st.components.v2.component(
 """,
     js="""
 let map, mapRoot=null, overlays=[], polygons=[], loadedKey=null;
-let kakaoResizeObserver=null, boundarySvg=null, boundaryDraw=null, boundaryPaths=[];
+let kakaoResizeObserver=null, boundarySvg=null, boundaryDraw=null, boundaryPaths=[], boundaryDots=[];
 let rankLayer=null, rankMarkers=[], positionKakaoMarkers=null, redrawFrame=null, viewKey=null, viewportResizeBound=false;
 let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
 let mapLibreLoading=null;
@@ -47,10 +47,29 @@ function paths(geometry) {
   const rings=geometry?.type==='Polygon'?[geometry.coordinates]:geometry?.type==='MultiPolygon'?geometry.coordinates:[];
   return rings.map(poly=>poly[0].map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
 }
-function drawKakaoBoundaries(root,map,features,setTriggerValue) {
+function drawKakaoBoundaries(root,map,features,districts,showAll,allLocations,setTriggerValue) {
   if (!boundarySvg) {
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
     Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',zIndex:'2',pointerEvents:'none'});
+    for(const feature of districts||[]) {
+      for(const ring of paths(feature.geometry)) {
+        if(ring.length<3)continue;
+        const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
+        shape.setAttribute('fill','none');
+        shape.setAttribute('stroke','#ec4d95');
+        shape.setAttribute('stroke-opacity',showAll?'.85':'.55');
+        shape.setAttribute('stroke-width',showAll?'2':'1.4');
+        shape.style.pointerEvents='none';
+        svg.appendChild(shape);boundaryPaths.push({shape,ring});
+      }
+    }
+    for(const location of allLocations||[]) {
+      if(!Number.isFinite(Number(location.lat))||!Number.isFinite(Number(location.lng)))continue;
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('r','3');dot.setAttribute('fill','#b98200');
+      dot.setAttribute('fill-opacity','.8');dot.style.pointerEvents='none';
+      svg.appendChild(dot);boundaryDots.push({dot,lat:Number(location.lat),lng:Number(location.lng)});
+    }
     for(const feature of features||[]) {
       for(const ring of paths(feature.geometry)) {
         if(ring.length<3)continue;
@@ -75,6 +94,10 @@ function drawKakaoBoundaries(root,map,features,setTriggerValue) {
   for(const {shape,ring} of boundaryPaths) {
     const points=ring.map(coord=>projection.containerPointFromCoords(coord));
     shape.setAttribute('d',points.map((point,index)=>`${index?'L':'M'}${point.x} ${point.y}`).join(' ')+' Z');
+  }
+  for(const {dot,lat,lng} of boundaryDots) {
+    const point=projection.containerPointFromCoords(new kakao.maps.LatLng(lat,lng));
+    dot.setAttribute('cx',String(point.x));dot.setAttribute('cy',String(point.y));
   }
 }
 function resizeMapViewport() {
@@ -121,13 +144,20 @@ function renderSvgFallback(root, data, setTriggerValue) {
       const path=document.createElementNS(ns,'path');
       path.setAttribute('d',ring.map(([lng,lat],i)=>`${i?'L':'M'}${x(lng).toFixed(1)} ${y(lat).toFixed(1)}`).join(' ')+' Z');
       path.setAttribute('fill',top?'#ffe4a1':'#f8f8f5');
-      path.setAttribute('stroke',top?'#d49a00':'#cfd4d0');
+      path.setAttribute('stroke',top?'#d49a00':'#ec4d95');
       path.setAttribute('stroke-width',top?'2.5':'1.3');
       if(top){path.style.cursor='pointer';path.onclick=()=>setTriggerValue('selected',String(feature.properties.code));}
       svg.appendChild(path);
     }
   };
   districts.forEach(f=>draw(f,false));
+  (data.all_locations||[]).forEach(location=>{
+    if(!Number.isFinite(Number(location.lat))||!Number.isFinite(Number(location.lng)))return;
+    const dot=document.createElementNS(ns,'circle');
+    dot.setAttribute('cx',String(x(Number(location.lng))));
+    dot.setAttribute('cy',String(y(Number(location.lat))));
+    dot.setAttribute('r','3');dot.setAttribute('fill','#b98200');svg.appendChild(dot);
+  });
   (data.boundaries||[]).forEach(f=>draw(f,true));
   fallback.appendChild(svg);
   (data.rows||[]).forEach((row,index)=>{
@@ -188,7 +218,11 @@ async function renderTileFallback(root,data,setTriggerValue) {
     });
     const collection=features=>({type:'FeatureCollection',features:features||[]});
     m.addSource('kb-districts',{type:'geojson',data:collection(data.fallback_districts)});
-    m.addLayer({id:'kb-district-line',type:'line',source:'kb-districts',paint:{'line-color':'#b4bcb0','line-width':1}});
+    m.addLayer({id:'kb-district-line',type:'line',source:'kb-districts',paint:{'line-color':'#ec4d95','line-width':data.show_all_boundaries?2:1.4,'line-opacity':data.show_all_boundaries?.85:.55}});
+    if(data.all_locations?.length){
+      m.addSource('kb-all-locations',{type:'geojson',data:{type:'FeatureCollection',features:data.all_locations.map(location=>({type:'Feature',geometry:{type:'Point',coordinates:[Number(location.lng),Number(location.lat)]}}))}});
+      m.addLayer({id:'kb-all-location-dots',type:'circle',source:'kb-all-locations',paint:{'circle-radius':3,'circle-color':'#b98200','circle-opacity':.8}});
+    }
     m.addSource('kb-rank-areas',{type:'geojson',data:collection(data.boundaries)});
     m.addLayer({id:'kb-rank-fill',type:'fill',source:'kb-rank-areas',paint:{'fill-color':'#ffbf00','fill-opacity':.14}});
     m.addLayer({id:'kb-rank-line',type:'line',source:'kb-rank-areas',paint:{'line-color':'#c59600','line-width':2}});
@@ -250,11 +284,11 @@ export default async function(component) {
     status.textContent='';
     overlays.forEach(o=>o.setMap(null)); overlays=[];
     polygons.forEach(p=>p.setMap(null)); polygons=[];
-    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryPaths=[];
+    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryPaths=[];boundaryDots=[];
     if(rankLayer){rankLayer.remove();rankLayer=null;}rankMarkers=[];
     let boundaryError=null, markerErrors=0;
     boundaryDraw=()=>{
-      try {drawKakaoBoundaries(root,map,data.boundaries,setTriggerValue);}
+      try {drawKakaoBoundaries(root,map,data.boundaries,data.fallback_districts,data.show_all_boundaries,data.all_locations,setTriggerValue);}
       catch(error) {boundaryError=error;console.warn('상권 경계 표시 실패',error);}
     };
     if (data.radius && data.rows?.length === 1) {
@@ -309,7 +343,7 @@ export default async function(component) {
     overlays.forEach(o=>o.setMap(null));overlays=[];
     polygons.forEach(p=>p.setMap(null));polygons=[];
     if(kakaoResizeObserver){kakaoResizeObserver.disconnect();kakaoResizeObserver=null;}
-    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryPaths=[];boundaryDraw=null;
+    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryPaths=[];boundaryDots=[];boundaryDraw=null;
     if(rankLayer){rankLayer.remove();rankLayer=null;}rankMarkers=[];positionKakaoMarkers=null;viewKey=null;
     root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
     map=null;mapRoot=null;loadedKey=null;
@@ -328,9 +362,11 @@ export default async function(component) {
 
 def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
              source: str, district: str, selected_location: dict | None = None, radius: int | None = None, height: int = 590,
-             fallback_districts: list[dict] | None = None) -> str | None:
+             fallback_districts: list[dict] | None = None, show_all_boundaries: bool = False,
+             all_locations: list[dict] | None = None) -> str | None:
     result = _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
                                          "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
-                                         "fallback_districts": fallback_districts or []},
+                                         "fallback_districts": fallback_districts or [], "show_all_boundaries": show_all_boundaries,
+                                         "all_locations": all_locations or []},
                   height="content", on_selected_change=lambda: None)
     return getattr(result, "selected", None)
