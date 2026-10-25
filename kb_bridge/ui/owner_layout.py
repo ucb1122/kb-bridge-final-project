@@ -99,17 +99,20 @@ def apply_owner_layout() -> None:
 }
 
 [class*="st-key-owner-rank-row-"] {border-bottom:1px solid #dedede;min-height:39px;}
-[class*="st-key-owner-rank-row-"] [data-testid="stHorizontalBlock"] {align-items:center;gap:4px;}
+[class*="st-key-owner-rank-row-"] [data-testid="stHorizontalBlock"] {display:grid!important;grid-template-columns:24px minmax(0,1fr) minmax(76px,22%) minmax(76px,22%);align-items:center;gap:6px!important;}
+[class*="st-key-owner-rank-row-"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {width:auto!important;min-width:0!important;flex:none!important;}
 [class*="st-key-owner-rank-row-"] [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button {
-  display:block;width:100%;min-height:38px;padding:0 2px;border:0;border-radius:0;
+  display:flex!important;align-items:center;justify-content:flex-start!important;width:100%;min-height:38px;padding:0 2px;border:0;border-radius:0;
   background:transparent;color:#172033;text-align:left;font-size:12px;font-weight:500;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
+.st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
+.st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button p {width:100%;margin:0;text-align:left!important;}
 .kb-owner-rank-number {display:block;text-align:left;font-size:12px;color:#172033;}
 .st-key-owner-rank-row-1 .kb-owner-rank-number,.st-key-owner-rank-row-2 .kb-owner-rank-number,.st-key-owner-rank-row-3 .kb-owner-rank-number {color:#c79c00;font-weight:800;}
-.kb-owner-rank-value {display:block;text-align:left;white-space:nowrap;font-size:12px;font-weight:700;color:#101624;}
-.kb-owner-rank-change {display:block;text-align:left;white-space:nowrap;font-size:11px;}
+.kb-owner-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;font-weight:700;color:#101624;}
+.kb-owner-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;}
 .kb-owner-rank-change.up {color:#e23570;}
 .kb-owner-rank-change.down {color:#278ce0;}
 .kb-owner-rank-change.flat {color:#667085;}
