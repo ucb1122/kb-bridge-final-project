@@ -23,7 +23,7 @@ rising_layout.apply_rising_layout()
 
 # Streamlit can rerun this page while retaining a previously imported map helper.
 # Reload it when the running helper predates the current component arguments.
-if getattr(kakao_rank_map, "COMPONENT_VERSION", None) != 7 or "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
+if getattr(kakao_rank_map, "COMPONENT_VERSION", None) != 8 or "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
     importlib.reload(kakao_rank_map)
 show_map = kakao_rank_map.show_map
 map_helper_parameters = inspect.signature(show_map).parameters

@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-COMPONENT_VERSION = 7
+COMPONENT_VERSION = 8
 
 _MAP = st.components.v2.component(
-    "kb_bridge_rising_map_v7",
+    "kb_bridge_rising_map_v8",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
@@ -278,6 +278,7 @@ async function renderTileFallback(root,data,setTriggerValue) {
       if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
       const marker=document.createElement('button');marker.type='button';
       marker.className='kb-rank-marker'+(index<3?' top-rank':'')+(row.code===data.selected?' active':'');
+      marker.style.zIndex=String(30-index);
       marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
       const rank=document.createElement('strong');rank.textContent=String(index+1);
       const name=document.createElement('span');name.textContent=row.name;
@@ -400,7 +401,7 @@ export default async function(component) {
         const name=document.createElement('span');name.textContent=row.name;
         const value=document.createElement('small');value.textContent=row.display||'';
         marker.append(rank,name,value);
-        Object.assign(marker.style,{position:'absolute',transform:'translate(-50%,-50%)',pointerEvents:'auto'});
+        Object.assign(marker.style,{position:'absolute',transform:'translate(-50%,-50%)',pointerEvents:'auto',zIndex:String(30-index)});
         marker.onclick=()=>setTriggerValue('selected',String(row.code));
         rankLayer.appendChild(marker);rankMarkers.push({marker,lat,lng});
       } catch(error) {markerErrors++;console.warn('순위 배지 표시 실패',error);}
