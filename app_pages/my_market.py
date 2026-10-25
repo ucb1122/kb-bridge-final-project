@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib
 import json
+from pathlib import Path
 
 import streamlit as st
 
@@ -52,6 +53,16 @@ def market_boundary(code: str) -> list[dict]:
         return []
     return [feature for feature in json.loads(path.read_text(encoding="utf-8"))["features"]
             if str(feature["properties"].get("code")) == code]
+
+
+@st.cache_data(max_entries=26)
+def district_outline(district: str) -> list[dict]:
+    path = Path(__file__).resolve().parents[1] / "assets" / "seoul-district-boundaries.geojson"
+    if not path.is_file():
+        return []
+    features = json.loads(path.read_text(encoding="utf-8"))["features"]
+    return [feature for feature in features
+            if not district or feature["properties"].get("district") == district]
 
 
 def metric_value(report: dict, metric: str) -> float | None:
@@ -163,7 +174,9 @@ with st.container(key="owner-canvas"):
                     nearest = min(candidates, key=lambda item: owner_snapshot.distance_m(
                         selected_business["lat"], selected_business["lng"], item["lat"], item["lng"]))
                     st.session_state.owner_market_choice = nearest["code"]
-                ranked = []
+                ranked = owner_snapshot.growth_rankings(
+                    industry_scope=None if industry_code == "unmapped" else industry_code,
+                    metric=metric, district=district)
                 st.caption("점포와 중심 좌표가 가까운 공식 상권을 먼저 제안합니다. 상권 포함 여부는 확정하지 않으며, 보고서 수치는 선택한 공식 상권 전체 기준입니다." if selected_business else "공식 상권을 고르면 해당 상권 전체의 집계값을 보여줍니다.")
             else:
                 dong_names = sorted({item["dong"] for item in owner_snapshot.markets(district=district)
@@ -218,15 +231,26 @@ with st.container(key="owner-canvas"):
                          "lng": selected_business["lng"], "display": f"반경 {radius:,}m"}]
             map_selected = "selected-business"
         else:
-            map_rows = ([{"code": market["code"], "name": market["name"], "district": market["district"],
-                         "lat": market["lat"], "lng": market["lng"],
-                         "display": metric_display(metric, metric_value(report, metric))}] if market else [])
-            map_selected = market["code"] if market else None
-        show_map(key=load_settings().kakao_map_javascript_key, rows=map_rows,
+            visible_ranked = ranked[:10]
+            selected_rank = next((item for item in ranked if item["code"] == chosen_code), None)
+            if selected_rank and selected_rank not in visible_ranked:
+                visible_ranked = [*visible_ranked, selected_rank]
+            map_rows = [{**item, "display": metric_display(metric, item["value"])} for item in visible_ranked]
+            if market and not selected_rank:
+                map_rows.append({"code": market["code"], "name": market["name"],
+                                 "district": market["district"], "lat": market["lat"], "lng": market["lng"],
+                                 "display": metric_display(metric, metric_value(report, metric))})
+            map_selected = chosen_code or None
+        map_result = show_map(key=load_settings().kakao_map_javascript_key, rows=map_rows,
                  boundaries=market_boundary(market["code"]) if market else [],
                  selected=map_selected, source="official",
                  district=market["district"] if market else "",
+                 fallback_districts=district_outline(district),
                  radius=radius if mode == "나는 사장" and selected_business else None, height=820)
+        clicked_code = getattr(map_result, "selected", map_result)
+        if clicked_code and clicked_code in codes and clicked_code != chosen_code:
+            select_owner_market(clicked_code)
+            st.rerun()
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도를 표시할 수 없습니다. 왼쪽 조건과 보고서는 이용할 수 있습니다.")
 
@@ -241,13 +265,7 @@ with st.container(key="owner-canvas"):
 
         with st.container(key="owner-report-panel"):
             st.caption("지역 데이터에 기반한 참고 보고서")
-            report_title, collapse = st.columns([5, 1])
-            with report_title:
-                st.subheader(f"{market['district']} {market['name']} 분석 리포트")
-            with collapse:
-                if st.button("접기 ›", key="owner-collapse-report", help="내 상권 보고서 접기"):
-                    st.session_state.owner_right_open = False
-                    st.rerun()
+            st.subheader(f"{market['district']} {market['name']} 분석 리포트")
             st.caption(f"{mode} · {market.get('type', '상권')} · {report['quarter'][:4]}년 {report['quarter'][-1]}분기 · {group['label']}")
             if industry_code == "unmapped":
                 st.info("선택한 인허가 업태에 대응하는 공식 서비스업종 코드가 없어 점포수·매출은 표시하지 않습니다.")

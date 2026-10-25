@@ -176,8 +176,17 @@ class RisingPageInteractionTests(unittest.TestCase):
 class OwnerPageInteractionTests(unittest.TestCase):
     def setUp(self):
         map_patch = patch("kb_bridge.ui.kakao_rank_map.show_map")
-        map_patch.start()
+        self.map_component = map_patch.start()
         self.addCleanup(map_patch.stop)
+    def test_default_owner_map_has_ranked_markers_and_fallback_geometry(self):
+        app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        self.assertFalse(app.exception)
+        kwargs = self.map_component.call_args.kwargs
+        self.assertEqual(len(kwargs["rows"]), 10)
+        self.assertTrue(all(isinstance(row["lat"], (int, float)) and
+                            isinstance(row["lng"], (int, float)) for row in kwargs["rows"]))
+        self.assertTrue(kwargs["fallback_districts"])
+
     def test_stale_owner_repository_is_reloaded_before_search(self):
         with patch.object(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0), \
              patch.object(owner_snapshot, "search_businesses", None):
@@ -189,7 +198,7 @@ class OwnerPageInteractionTests(unittest.TestCase):
         first_code = owner_snapshot.markets()[0]["code"]
         next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value(first_code).run()
         self.assertEqual(next(widget for widget in app.selectbox if widget.label == "분석 상권").value, first_code)
-        self.assertTrue(any(button.key == "owner-collapse-report" for button in app.button))
+        self.assertTrue(any(button.key == "owner-right-collapse" for button in app.button))
         self.assertFalse(app.exception)
 
     def test_selection_report_collapse_and_finance_calculation(self):
@@ -199,7 +208,7 @@ class OwnerPageInteractionTests(unittest.TestCase):
         next(button for button in app.button
              if button.key and button.key.startswith("owner-rank-")).click().run()
         self.assertFalse(app.exception)
-        app.button(key="owner-collapse-report").click().run()
+        app.button(key="owner-right-collapse").click().run()
         self.assertFalse(app.session_state["owner_right_open"])
         app.button(key="owner-right-collapse").click().run()
         self.assertTrue(app.session_state["owner_right_open"])

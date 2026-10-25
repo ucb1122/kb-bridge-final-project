@@ -7,10 +7,10 @@ import streamlit as st
 def apply_owner_layout() -> None:
     st.html("""<style>
 [data-testid="stMainBlockContainer"]:has(.st-key-owner-canvas) {max-width:none;padding:8px 10px 0;}
-[data-testid="stMainBlockContainer"]:has(.st-key-owner-canvas) > [data-testid="stVerticalBlock"] {gap:0;}
+[data-testid="stMainBlockContainer"]:has(.st-key-owner-canvas) > [data-testid="stVerticalBlock"] {gap:.3rem;}
 .st-key-owner-canvas {position:fixed;top:calc(8px + 76px + 0.3rem);bottom:0;left:10px;right:10px;width:auto;height:auto;min-height:0;overflow:hidden;background:#edf0e8;isolation:isolate;}
-.st-key-owner-map-canvas {position:absolute;inset:0;z-index:0;}
-.st-key-owner-map-canvas [data-testid="stVerticalBlock"] {gap:0;}
+.st-key-owner-map-canvas {position:absolute;inset:0;z-index:0;height:100%;}
+.st-key-owner-map-canvas [data-testid="stVerticalBlock"] {gap:0;height:100%;}
 .st-key-owner-filter-panel,.st-key-owner-report-panel {position:absolute;top:0;bottom:0;z-index:4;overflow-y:auto;scrollbar-width:thin;background:#fff;box-shadow:0 2px 12px #0002;}
 .st-key-owner-filter-panel {left:0;width:clamp(380px,23vw,440px);padding:0;box-shadow:2px 0 8px #0001;}
 .st-key-owner-report-panel {right:0;width:clamp(520px,36vw,720px);padding:18px 22px;border-top:5px solid #ffbf00;}
@@ -23,18 +23,17 @@ def apply_owner_layout() -> None:
 .st-key-owner-report-panel h3 {font-size:22px;margin:0;}
 .st-key-owner-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#ffbf00;color:#101624;}
 .st-key-owner-report-panel [data-testid="stMetric"] {border-color:#e4e5e7;}
-.st-key-owner-left-toggle,.st-key-owner-right-toggle {position:absolute;z-index:7;top:20px;}
+.st-key-owner-left-toggle,.st-key-owner-right-toggle {position:absolute;top:20px;z-index:10001;transform:none;width:42px!important;max-width:42px;pointer-events:none;}
 .st-key-owner-left-toggle {left:clamp(380px,23vw,440px);}
 .st-key-owner-right-toggle {right:clamp(520px,36vw,720px);}
 .st-key-owner-canvas:has(.kb-owner-left-collapsed) .st-key-owner-filter-panel {transform:translateX(-100%);}
 .st-key-owner-canvas:has(.kb-owner-right-collapsed) .st-key-owner-report-panel {transform:translateX(100%);}
 .st-key-owner-canvas:has(.kb-owner-left-collapsed) .st-key-owner-left-toggle {left:0;}
 .st-key-owner-canvas:has(.kb-owner-right-collapsed) .st-key-owner-right-toggle {right:0;}
-.st-key-owner-left-toggle button,.st-key-owner-right-toggle button {height:42px;min-width:34px;border:1px solid #e2d6aa;background:#fff;color:#8a6400;box-shadow:0 2px 8px #0002;}
+.st-key-owner-left-toggle button,.st-key-owner-right-toggle button {pointer-events:auto;min-width:42px;height:42px;padding:0;border:1px solid #e2d6aa;background:#fff;color:#8a6400;font-size:24px;border-radius:0 6px 6px 0;box-shadow:0 2px 8px #0002;}
+.st-key-owner-right-toggle button {border-radius:6px 0 0 6px;}
 .st-key-owner-filter-panel,.st-key-owner-report-panel {transition:transform .25s ease;}
-.st-key-owner-canvas:not(:has(.kb-owner-right-collapsed)) .st-key-owner-right-toggle {display:none;}
-.st-key-owner-report-panel .st-key-owner-collapse-report button {white-space:nowrap;font-size:12px;padding:5px 8px;}
-@media(max-width:1100px) {
+@media(max-width:1350px) {
   .st-key-owner-canvas {position:relative;inset:auto;width:auto;height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column;}
   .st-key-owner-map-canvas,.st-key-owner-filter-panel,.st-key-owner-report-panel {position:relative;inset:auto;width:auto;max-width:none;}
   .st-key-owner-map-canvas {order:1;min-height:650px;}
@@ -68,6 +67,6 @@ def apply_owner_layout() -> None:
 .st-key-owner-report-panel [data-testid="stMetricValue"] {font-size:18px;line-height:1.2;}
 .st-key-owner-report-panel [data-testid="stMetricDelta"] {font-size:11px;}
 .st-key-owner-report-panel [data-testid="stSegmentedControl"] {width:100%;overflow-x:auto;}
-.st-key-owner-report-panel [data-testid="stSegmentedControl"] button {min-width:0;min-height:46px;padding:4px 2px;font-size:11px;white-space:normal;}
-.st-key-owner-report-panel [data-testid="stSegmentedControl"] button p {font-size:11px;line-height:1.2;white-space:normal;}
-.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}</style>""")
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;min-height:48px;padding:5px 3px;margin:0!important;border:0!important;border-radius:12px!important;background:#f1f2f5!important;color:#101624!important;font-size:12px;font-weight:800!important;line-height:1.2;white-space:normal;box-shadow:none!important;}
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button p {font-size:12px;font-weight:800!important;color:#101624!important;line-height:1.2;white-space:normal!important;}
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"],.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}</style>""")
