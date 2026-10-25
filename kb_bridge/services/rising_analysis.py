@@ -11,6 +11,8 @@ def human_value(metric: str, value: float | None) -> str:
         return "자료 없음"
     if metric == "sales" and abs(value) >= 100_000_000:
         return f"{value / 100_000_000:,.1f}억 원"
+    if metric == "footfall" and abs(value) >= 1_000_000:
+        return f"{value / 1_000_000:,.1f}백만 명"
     return f"{value:,.0f}{UNITS[metric]}"
 
 
