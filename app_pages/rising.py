@@ -22,13 +22,14 @@ from kb_bridge.ui import kakao_rank_map, rising_layout, rising_report
 if getattr(rising_analysis, "OVERVIEW_CARDS_VERSION", 0) != 2:
     importlib.reload(rising_analysis)
     importlib.reload(rising_report)
-elif getattr(rising_report, "RISING_REPORT_VERSION", 0) != 2:
+elif getattr(rising_report, "RISING_REPORT_VERSION", 0) != 3:
     importlib.reload(rising_report)
 if getattr(rising_snapshot, "REPORT_RANKS_VERSION", 0) != 2:
     importlib.reload(rising_snapshot)
 
 from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, percent, ranking_change_label, sales_per_store_month
-from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, highlight_trends, industry_chart, overview_card_grid
+from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, highlight_trends, industry_chart, overview_card_grid, industry_insights
+from kb_bridge.ui import static_chart
 
 importlib.reload(rising_layout)
 rising_layout.apply_rising_layout()
@@ -416,9 +417,8 @@ with st.container(key="rising-canvas"):
                     history_table(report)
                 elif tab == "업종분석":
                     history_chart(report, "stores")
+                    industry_insights(report)
                     industry_chart(report)
-                    breakdown_chart(report, category="stores", title="일반점포와 프랜차이즈",
-                                    keys=["regular", "franchise"], names=["일반점포", "프랜차이즈"], unit="개")
                     if report["industries"]:
                         st.dataframe([{"업종": item["name"], "점포수": item["stores"], "개업": item["opened"], "폐업": item["closed"]} for item in report["industries"][:30]], hide_index=True, alt="업종별 점포·개폐업 분석")
                     else:
@@ -427,10 +427,22 @@ with st.container(key="rising-canvas"):
                     value, label = sales_per_store_month(report)
                     st.metric("점포당 월평균 매출", f"{value:,.0f}만 원" if value is not None else "자료 없음", border=True)
                     st.caption(label + " · 분기 추정매출 합계와 다른 지표입니다.")
+                    if value is not None:
+                        st.write(f"선택 지역의 점포당 월평균 추정매출은 {value:,.0f}만 원입니다. 지역 평균이므로 개별 점포의 실매출을 뜻하지 않습니다.")
                     sales = report["metrics"].get("sales")
                     if sales:
                         st.metric("분기 추정매출 합계", human_value("sales", sales["value"]), percent(sales["change"]), border=True)
                     history_chart(report, "sales")
+                    sales_history = {row["quarter"]: row["value"] for row in report["history"] if row["metric"] == "sales"}
+                    store_history = {row["quarter"]: row["value"] for row in report["history"] if row["metric"] == "stores"}
+                    sales_quarters = sorted(set(sales_history) & set(store_history))
+                    if sales_quarters:
+                        static_chart.lines("점포당 월평균 추정매출 추이",
+                                           [f"{q[:4]}년 {q[-1]}분기" for q in sales_quarters],
+                                           {"공개 원본 계산값": [sales_history[q] / store_history[q] / 3 / 10_000
+                                               if sales_history[q] is not None and store_history[q] not in (None, 0) else None
+                                               for q in sales_quarters]}, "만 원")
+                        st.caption("분기 추정매출 합계 ÷ 점포수 ÷ 3개월로 계산한 값입니다. 공식 보고서 확인값과 집계 범위가 다를 수 있습니다.")
                     breakdown_chart(report, category="sales", title="요일별 추정매출",
                                     keys=[f"day_{index}" for index in range(7)],
                                     names=["월", "화", "수", "목", "금", "토", "일"], unit="원")
@@ -441,12 +453,21 @@ with st.container(key="rising-canvas"):
                     density, label = footfall_per_ha(report)
                     st.metric("3개월간 1ha당 유동인구", f"{density:,.0f}명/ha" if density is not None else "면적 정보 없음", border=True)
                     st.caption(label)
+                    if density is not None:
+                        st.write(f"선택 지역의 3개월간 유동인구 밀도는 1ha당 {density:,.0f}명입니다. 통행 집계이며 고유 방문자 수와 다릅니다.")
                     population_order = ["residents", "footfall"] if applied["metric"] == "residents" else ["footfall", "residents"]
                     for metric in population_order:
                         item = report["metrics"].get(metric)
                         if item:
                             st.metric(LABELS[metric], human_value(metric, item["value"]), percent(item["change"]), border=True)
                         history_chart(report, metric)
+                    area = report.get("area_m2")
+                    if area:
+                        footfall_rows = sorted((row for row in report["history"] if row["metric"] == "footfall"), key=lambda row: row["quarter"])
+                        static_chart.lines("3개월간 면적당 유동인구 추이",
+                                           [f"{row['quarter'][:4]}년 {row['quarter'][-1]}분기" for row in footfall_rows],
+                                           {report["name"]: [row["value"] / (area / 10_000) if row["value"] is not None else None for row in footfall_rows]}, "명/ha")
+                        st.caption("동일한 선택 지역 면적을 각 분기에 적용한 계산값입니다. 과거 면적 변동 자료는 반영되지 않았습니다.")
                     breakdown_chart(report, category="footfall", title="연령대별 유동인구",
                                     keys=[f"age_{age}" for age in (10, 20, 30, 40, 50, 60)],
                                     names=["10대", "20대", "30대", "40대", "50대", "60대 이상"], unit="명")
