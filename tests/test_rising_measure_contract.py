@@ -2,6 +2,7 @@
 import unittest
 
 from kb_bridge.repositories import rising_snapshot
+from kb_bridge.ui.rising_report import highlight_trends
 from kb_bridge.services.rising_analysis import (
     monthly_sales_from_totals, overview_cards, overview_lines, ranking_change_label, sales_per_store_month,
 )
@@ -94,3 +95,12 @@ class SnapshotMeasureTests(unittest.TestCase):
             report["metrics"]["sales"]["value"], report["metrics"]["stores"]["value"]
         )
         self.assertEqual(sales_per_store_month(report), (raw, "공개 원본 계산값"))
+
+
+class OpinionHighlightTests(unittest.TestCase):
+    def test_trend_highlight_escapes_generated_html(self):
+        html = highlight_trends("매출이 <script>증가</script>하고 인구는 감소했습니다.")
+        self.assertNotIn("<script>", html)
+        self.assertIn("&lt;script&gt;", html)
+        self.assertIn('class="kb-ai-trend up">증가</strong>', html)
+        self.assertIn('class="kb-ai-trend down">감소</strong>', html)

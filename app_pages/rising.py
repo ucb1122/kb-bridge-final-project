@@ -13,10 +13,10 @@ import streamlit as st
 from kb_bridge.config import load_settings
 from kb_bridge.integrations import ollama_opinion
 from kb_bridge.repositories import rising_snapshot
-from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, overview_lines, percent, ranking_change_label, sales_per_store_month
+from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
 from kb_bridge.ui import kakao_rank_map, rising_layout
-from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, industry_chart, overview_card_grid
+from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, highlight_trends, industry_chart, overview_card_grid
 
 importlib.reload(rising_layout)
 rising_layout.apply_rising_layout()
@@ -46,6 +46,13 @@ def load_rankings(**kwargs) -> dict:
 @st.cache_data(max_entries=80)
 def load_report(kind: str, code: str, quarter: str, industry: str) -> dict | None:
     return rising_snapshot.report(kind=kind, code=code, quarter=quarter, industry=industry)
+
+@st.cache_data(max_entries=200)
+def load_overview_ranks(kind: str, code: str, quarter: str, district: str,
+                        industry: str) -> dict[str, tuple[int, int]]:
+    return rising_snapshot.overview_ranks(kind=kind, code=code, quarter=quarter,
+                                          district=district, industry=industry)
+
 
 @st.cache_data(max_entries=16)
 def load_locations(kind: str, quarter: str) -> list[dict]:
@@ -137,7 +144,6 @@ if "rising_map_district" not in st.session_state:
     st.session_state.rising_map_district = applied["district"]
 if "rising_map_region" not in st.session_state or st.session_state.rising_map_region not in location_by_code:
     st.session_state.rising_map_region = ""
-source = "보관된 공식 순위 스냅샷" if result["ranking_source"] == "official" else "테스트 DB 원본 계산값"
 metric_labels = {"stores": "점포수", "sales": "매출", "footfall": "유동인구", "residents": "주거인구"}
 
 
@@ -297,7 +303,6 @@ with st.container(key="rising-canvas"):
                 st.rerun()
         with st.container(key="rising-rank-card"):
             st.subheader("순위 TOP 10")
-            st.caption(metric_labels[applied["metric"]] + " · " + source)
             if not rows:
                 st.info("선택한 조건에 해당하는 순위 자료가 없습니다.")
             for index, row in enumerate(rows, 1):
@@ -347,7 +352,7 @@ with st.container(key="rising-canvas"):
                         with st.spinner("선택 지역의 보고서 수치를 Ollama로 분석하는 중입니다."):
                             st.session_state[opinion_key] = generate_opinion(report, focus_metric=applied["metric"])
                     generated = st.session_state[opinion_key]
-                    summary_items = "".join(f"<li>{escape(line)}</li>" for line in generated["lines"][:4])
+                    summary_items = "".join(f"<li>{highlight_trends(line)}</li>" for line in generated["lines"][:4])
                     st.html(f'<ul class="kb-ai-summary-points">{summary_items}</ul>')
                     st.caption("로컬 Ollama 생성 의견" if generated["mode"] == "ai" else "Ollama 연결 실패 · 검증된 수치 기반 요약")
                 if applied["industry"] != "all":
@@ -359,10 +364,9 @@ with st.container(key="rising-canvas"):
                                            key=f"rising-report-tab-{applied['metric']}",
                                            width="stretch", wrap=False)
                 if tab == "종합의견":
-                    for line in overview_lines(report):
-                        st.markdown("- " + line)
-                    selected_rank = next((index for index, row in enumerate(rows, 1) if row["code"] == report["code"]), None)
-                    overview_card_grid(report, selected_rank=selected_rank, selected_metric=applied["metric"])
+                    card_ranks = load_overview_ranks(report["kind"], report["code"], report["quarter"],
+                                                    report["district"], report["industry"])
+                    overview_card_grid(report, ranks=card_ranks)
                     st.divider()
                     for metric in ("stores", "sales", "footfall"):
                         history_chart(report, metric)

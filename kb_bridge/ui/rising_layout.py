@@ -110,6 +110,9 @@ def apply_rising_layout() -> None:
 .kb-ai-summary-title {font-size:16px;font-weight:700;color:#101624;}
 .kb-ai-summary-points {margin:5px 0 3px;padding-left:18px;color:#172033;font-size:13px;line-height:1.42;}
 .kb-ai-summary-points li {margin:0 0 5px;}
+.kb-ai-trend {font-weight:800;}
+.kb-ai-trend.up {color:#c92b58;}
+.kb-ai-trend.down {color:#176bb9;}
 .st-key-rising-ai-summary [data-testid="stButton"] button {min-height:30px;padding:3px 8px;font-size:11px;justify-content:center;}
 .st-key-rising-ai-summary [data-testid="stCaptionContainer"] p {font-size:10px;color:#667085;}
 .st-key-rising-report-panel [data-testid="stHorizontalBlock"]:first-child { align-items: center; }
