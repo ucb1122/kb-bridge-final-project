@@ -25,6 +25,7 @@ apply_rising_layout()
 if "show_all_boundaries" not in inspect.signature(kakao_rank_map.show_map).parameters:
     importlib.reload(kakao_rank_map)
 show_map = kakao_rank_map.show_map
+map_helper_parameters = inspect.signature(show_map).parameters
 
 if not rising_snapshot.available():
     st.warning("상권 데이터가 아직 준비되지 않았습니다. README의 테스트 데이터 준비 명령을 실행해 주세요.")
@@ -124,12 +125,16 @@ def select_map_region() -> None:
 
 with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
+        map_extras = {}
+        if "show_all_boundaries" in map_helper_parameters:
+            map_extras["show_all_boundaries"] = st.session_state.get("rising_show_all_boundaries", False)
+        if "all_locations" in map_helper_parameters:
+            map_extras["all_locations"] = [item for item in locations if not applied["district"] or item["district"] == applied["district"]] if st.session_state.get("rising_show_all_boundaries", False) else []
         selected = show_map(key=load_settings().kakao_map_javascript_key,
                             rows=[{**r, "display": human_value(applied["metric"], r["value"])} for r in rows],
                             boundaries=boundaries(applied["kind"], applied["district"], tuple(r["code"] for r in rows)),
                             fallback_districts=seoul_district_boundaries(),
-                            show_all_boundaries=st.session_state.get("rising_show_all_boundaries", False),
-                            all_locations=[item for item in locations if not applied["district"] or item["district"] == applied["district"]] if st.session_state.get("rising_show_all_boundaries", False) else [],
+                            **map_extras,
                             selected=st.session_state.rising_selected,
                             selected_location=location_by_code.get(st.session_state.rising_selected),
                             source=result["ranking_source"], district=applied["district"], height=820)
