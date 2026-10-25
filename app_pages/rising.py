@@ -201,6 +201,35 @@ with st.container(key="rising-canvas"):
             st.rerun()
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도는 표시되지 않습니다. 왼쪽 순위 목록으로 보고서를 열 수 있습니다.")
+    with st.container(key="rising-map-selector"):
+        if st.session_state.rising_selector_open:
+            city_col, district_col, region_col, close_col = st.columns([1, 1.1, 1.1, 0.7], gap="small", vertical_alignment="center")
+            with city_col:
+                st.button("◉ 서울특별시", key="rising-city-reset", on_click=reset_map_to_seoul,
+                          help="서울시 전체로 돌아가기", width="stretch")
+            with district_col:
+                map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
+                                            key="rising_map_district", format_func=lambda value: value or "전체",
+                                            label_visibility="collapsed", on_change=select_map_district)
+            visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
+            visible_codes = {item["code"] for item in visible_locations}
+            if st.session_state.rising_map_region not in visible_codes:
+                st.session_state.rising_map_region = ""
+            with region_col:
+                st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
+                             key="rising_map_region", label_visibility="collapsed",
+                             format_func=lambda value: location_by_code[value]["name"] if value else "전체",
+                             on_change=select_map_region)
+            with close_col:
+                if st.button("접기", key="rising-selector-toggle", help="지역 선택창 접기", width="stretch"):
+                    st.session_state.rising_selector_open = False
+                    st.rerun()
+        else:
+            st.html('<span class="kb-rising-selector-collapsed" hidden></span>')
+            if st.button("지역 선택", key="rising-selector-toggle", help="지역 선택창 펼치기", width="stretch"):
+                st.session_state.rising_selector_open = True
+                st.rerun()
+
     with st.container(key="rising-filter-panel"):
         with st.container(key="rising-controls-card"):
             st.markdown("## 뜨는 상권")
@@ -402,32 +431,4 @@ with st.container(key="rising-canvas"):
             if st.button("›" if st.session_state.rising_right_open else "‹",
                          key="rising-right-collapse", help="오른쪽 분석 리포트 접기 또는 펼치기"):
                 st.session_state.rising_right_open = not st.session_state.rising_right_open
-                st.rerun()
-    with st.container(key="rising-map-selector"):
-        if st.session_state.rising_selector_open:
-            city_col, district_col, region_col, close_col = st.columns([1, 1.1, 1.1, 0.7], gap="small", vertical_alignment="center")
-            with city_col:
-                st.button("◉ 서울특별시", key="rising-city-reset", on_click=reset_map_to_seoul,
-                          help="서울시 전체로 돌아가기", width="stretch")
-            with district_col:
-                map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
-                                            key="rising_map_district", format_func=lambda value: value or "전체",
-                                            label_visibility="collapsed", on_change=select_map_district)
-            visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
-            visible_codes = {item["code"] for item in visible_locations}
-            if st.session_state.rising_map_region not in visible_codes:
-                st.session_state.rising_map_region = ""
-            with region_col:
-                st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
-                             key="rising_map_region", label_visibility="collapsed",
-                             format_func=lambda value: location_by_code[value]["name"] if value else "전체",
-                             on_change=select_map_region)
-            with close_col:
-                if st.button("접기", key="rising-selector-toggle", help="지역 선택창 접기", width="stretch"):
-                    st.session_state.rising_selector_open = False
-                    st.rerun()
-        else:
-            st.html('<span class="kb-rising-selector-collapsed" hidden></span>')
-            if st.button("지역 선택", key="rising-selector-toggle", help="지역 선택창 펼치기", width="stretch"):
-                st.session_state.rising_selector_open = True
                 st.rerun()
