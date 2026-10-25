@@ -147,8 +147,8 @@ def rankings(*, kind: str = "dong", metric: str = "stores", quarter: str | None 
         return {"quarter": metadata_quarter, "period": period, "rows": rows[:10], "ranking_source": source}
 
 
-def report(*, kind: str, code: str, quarter: str) -> dict | None:
-    if kind not in KINDS or not code or not code.isdigit() or len(quarter) != 5 or not quarter.isdigit():
+def report(*, kind: str, code: str, quarter: str, industry: str = "all") -> dict | None:
+    if kind not in KINDS or industry not in INDUSTRIES or not code or not code.isdigit() or len(quarter) != 5 or not quarter.isdigit():
         raise ValueError("잘못된 지역 또는 분기입니다.")
     with _connect() as db:
         observations = db.execute("SELECT metric,value,region_name,district FROM observations WHERE quarter=? AND kind=? AND region_code=?", (quarter, kind, code)).fetchall()
@@ -161,6 +161,13 @@ def report(*, kind: str, code: str, quarter: str) -> dict | None:
             details.setdefault(q, {}).setdefault(category, {})[key] = value
         industries = [dict(row) for row in db.execute("SELECT industry_code AS code,name,stores,regular,franchise,opened,closed,sales,transactions FROM report_industries WHERE kind=? AND region_code=? AND quarter=? ORDER BY stores DESC", (kind, code, quarter))]
         benchmarks = {r["metric"]: {"district": r["district_value"], "city": r["city_value"]} for r in db.execute("SELECT metric, SUM(CASE WHEN district=? THEN value ELSE 0 END) AS district_value, SUM(value) AS city_value FROM observations WHERE quarter=? AND kind=? GROUP BY metric", (observations[0]["district"], quarter, kind))}
+        industry_history = {}
+        if industry != "all":
+            industry_history = {q: {"stores": stores, "sales": sales} for q, stores, sales in db.execute(
+                "SELECT quarter, SUM(stores), SUM(sales) FROM report_industries "
+                "WHERE kind=? AND region_code=? AND substr(industry_code,1,3)=? "
+                "AND quarter<=? AND quarter>=? GROUP BY quarter",
+                (kind, code, industry, quarter, f"{int(quarter[:4])-1}{quarter[4]}"))}
         prior = _previous_quarter(quarter)
         previous = {m: v for m, v in db.execute("SELECT metric,value FROM observations WHERE quarter=? AND kind=? AND region_code=?", (prior, kind, code))}
     snapshot = _snapshot(quarter, "official-rankings")
@@ -173,9 +180,21 @@ def report(*, kind: str, code: str, quarter: str) -> dict | None:
         raise ValueError("공식 보고서 확인값이 서로 다릅니다.")
     report_sales = existing_values | verified_values
     metrics = {row["metric"]: {"value": row["value"], "change": (row["value"] - previous[row["metric"]]) / previous[row["metric"]] if previous.get(row["metric"], 0) > 0 else None} for row in observations}
+    if industry != "all":
+        history = [row for row in history if row["metric"] not in {"stores", "sales"}]
+        for q, values in industry_history.items():
+            for metric in ("stores", "sales"):
+                if values[metric] is not None:
+                    history.append({"quarter": q, "metric": metric, "value": values[metric]})
+        for metric in ("stores", "sales"):
+            current_value = industry_history.get(quarter, {}).get(metric)
+            previous_value = industry_history.get(prior, {}).get(metric)
+            metrics[metric] = {"value": current_value,
+                               "change": (current_value - previous_value) / previous_value
+                               if current_value is not None and previous_value is not None and previous_value > 0 else None}
     return {"code": code, "kind": kind, "quarter": quarter, "name": observations[0]["region_name"].replace("?", "·"),
-            "district": observations[0]["district"], "metrics": metrics, "history": history,
+            "district": observations[0]["district"], "industry": industry, "metrics": metrics, "history": history,
             "details": details, "industries": industries, "benchmarks": benchmarks,
             "area_m2": snapshot.get("areas", {}).get(f"{kind}:{code}"),
             "official_sales_eok": snapshot.get("values", {}).get(f"{kind}:sales:{code}"),
-            "official_report_sales": report_sales.get(f"{kind}:{code}")}
+            "official_report_sales": report_sales.get(f"{kind}:{code}") if industry == "all" else None}

@@ -75,6 +75,18 @@ class SnapshotMeasureTests(unittest.TestCase):
         self.assertIsNone(cards["footfall"]["previous_delta"])
         self.assertIsNone(cards["footfall"]["year_delta"])
 
+    def test_industry_report_matches_ranking_scope_without_official_override(self):
+        rows = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262",
+                                       district="강남구", industry="CS1")["rows"]
+        ranked = next(row for row in rows if row["code"] == "11680720")
+        report = rising_snapshot.report(kind="dong", code="11680720", quarter="20262", industry="CS1")
+        self.assertEqual(report["industry"], "CS1")
+        self.assertEqual(report["metrics"]["stores"]["value"], ranked["value"])
+        self.assertIsNone(report["official_report_sales"])
+        self.assertEqual(sales_per_store_month(report)[1], "공개 원본 계산값")
+        all_report = rising_snapshot.report(kind="dong", code="11680720", quarter="20262")
+        self.assertNotEqual(report["metrics"]["sales"]["value"], all_report["metrics"]["sales"]["value"])
+
     def test_official_rank_sales_does_not_replace_unverified_report_monthly(self):
         report = rising_snapshot.report(kind="dong", code="11740600", quarter="20262")
         self.assertIsNone(report["official_report_sales"])

@@ -67,6 +67,8 @@ def build_pdf(report: dict, section: str) -> bytes:
     story = [Paragraph("상권브릿지 | " + section, styles["title"]),
              Paragraph(f"{report['district']} {report['name']} · {report['quarter'][:4]}년 {report['quarter'][-1]}분기", styles["body"]),
              Paragraph("지역 단위 공개 통계와 확인된 공식 화면 표시값을 구분해 사용합니다.", styles["small"]), Spacer(1, 8*mm)]
+    scope = {"all": "전체 업종", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}.get(report.get("industry", "all"), "전체 업종")
+    story.append(Paragraph(f"점포수·매출 범위: {scope} · 유동인구·상주인구: 지역 전체", styles["small"]))
     selected_ranking = report.get("selected_ranking")
     if selected_ranking:
         metric = selected_ranking["metric"]
