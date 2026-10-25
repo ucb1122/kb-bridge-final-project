@@ -92,7 +92,13 @@ with st.container(key="owner-canvas"):
                 candidates = [item for item in candidates
                               if query.casefold() in (item["name"] + " " + item["district"]).casefold()]
         codes = [item["code"] for item in candidates]
-        if st.session_state.get("owner_market_choice", "") not in codes:
+        if "owner_market_choice" not in st.session_state and codes:
+            # Open a real team-data report on first visit; keep later user selections intact.
+            featured = owner_snapshot.founder_rankings(industry_code, district=district) if industry_code else []
+            st.session_state.owner_market_choice = next(
+                (item["code"] for item in featured if item["code"] in codes), codes[0]
+            )
+        elif st.session_state.get("owner_market_choice", "") not in codes:
             st.session_state.owner_market_choice = ""
         chosen_code = st.selectbox("분석 상권", ["", *codes], key="owner_market_choice",
                                    format_func=lambda code: next(

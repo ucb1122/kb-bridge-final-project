@@ -31,6 +31,8 @@ def apply_rising_layout() -> None:
 .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-map-selector {left:calc(50% - clamp(260px,18vw,360px));width:min(400px,calc(100% - clamp(520px,36vw,720px) - 76px));}
 .st-key-rising-canvas:has(.kb-left-collapsed-flag):has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:50%;width:min(400px,calc(100% - 76px));}
 .st-key-rising-map-selector:has(.kb-rising-selector-collapsed) {width:88px!important;min-width:0!important;max-width:88px!important;padding:2px 4px;}
+.st-key-rising-map-selector:has(.kb-rising-selector-collapsed) [data-testid="stElementContainer"]:has(.kb-rising-selector-collapsed) {display:none;}
+.st-key-rising-map-selector:has(.kb-rising-selector-collapsed) > [data-testid="stVerticalBlock"] {gap:0;padding:0;margin:0;}
 .st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:3px!important;}
 .st-key-rising-map-selector [data-testid="stColumn"] {min-width:0!important;flex-shrink:1!important;}
 .st-key-rising-map-selector [data-testid="stVerticalBlock"] {gap:0;}
