@@ -97,4 +97,20 @@ def apply_owner_layout() -> None:
   .st-key-owner-filter-panel {top:auto;bottom:auto;left:auto;border-radius:18px;}
   .st-key-owner-left-toggle {left:auto;top:auto;}
 }
+
+[class*="st-key-owner-rank-row-"] {border-bottom:1px solid #dedede;min-height:39px;}
+[class*="st-key-owner-rank-row-"] [data-testid="stHorizontalBlock"] {align-items:center;gap:4px;}
+[class*="st-key-owner-rank-row-"] [data-testid="stVerticalBlock"] {gap:0;}
+.st-key-owner-rank-card [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button {
+  display:block;width:100%;min-height:38px;padding:0 2px;border:0;border-radius:0;
+  background:transparent;color:#172033;text-align:left;font-size:12px;font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.kb-owner-rank-number {display:block;text-align:left;font-size:12px;color:#172033;}
+.st-key-owner-rank-row-1 .kb-owner-rank-number,.st-key-owner-rank-row-2 .kb-owner-rank-number,.st-key-owner-rank-row-3 .kb-owner-rank-number {color:#c79c00;font-weight:800;}
+.kb-owner-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;font-weight:700;color:#101624;}
+.kb-owner-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;}
+.kb-owner-rank-change.up {color:#e23570;}
+.kb-owner-rank-change.down {color:#278ce0;}
+.kb-owner-rank-change.flat {color:#667085;}
 </style>""")

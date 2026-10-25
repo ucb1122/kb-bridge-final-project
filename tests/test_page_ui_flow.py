@@ -190,6 +190,22 @@ class OwnerPageInteractionTests(unittest.TestCase):
         self.assertTrue(any(widget.label == "지역 찾는 방법" for widget in app.get("segmented_control")))
         self.assertTrue(any(widget.label == "기준 분기" for widget in app.selectbox))
 
+    def test_map_marker_selects_market_before_selectbox_is_created(self):
+        selected = owner_snapshot.growth_rankings(industry_scope=None, metric="stores")[0]["code"]
+        self.map_component.return_value = SimpleNamespace(selected=selected)
+        app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        self.assertFalse(app.exception)
+        self.assertEqual(app.session_state["owner_market_choice"], selected)
+        self.assertTrue(app.session_state["owner_right_open"])
+
+    def test_resident_values_use_current_value_sort_when_all_changes_are_zero(self):
+        app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        app.button(key="owner-metric-resident").click().run()
+        self.assertFalse(app.exception)
+        sort = next(widget for widget in app.selectbox if widget.label == "정렬 기준")
+        self.assertEqual(sort.options, ["현재 값순"])
+        self.assertEqual(sort.value, "현재 값순")
+
     def test_stale_owner_repository_is_reloaded_before_search(self):
         with patch.object(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0), \
              patch.object(owner_snapshot, "search_businesses", None):

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib
 import json
+from html import escape
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -113,6 +114,7 @@ def metric_display(metric: str, value: float | None) -> str:
 
 def change_owner_mode() -> None:
     st.session_state.pop("owner_market_choice", None)
+    st.session_state.pop("owner_pending_map_choice", None)
 
 
 def choose_owner_metric(value: str) -> None:
@@ -121,8 +123,9 @@ def choose_owner_metric(value: str) -> None:
 
 def reset_owner_filters() -> None:
     for key in ("owner-mode", "owner-find-mode", "owner-category", "owner-district",
-                "owner-market-query", "owner_market_choice", "owner-rank-sort",
-                "owner-business-query", "owner_business_anchor"):
+                "owner-market-query", "owner_market_choice",
+                *(f"owner-rank-sort-{key}" for key in metric_labels),
+                "owner-business-query", "owner_business_anchor", "owner_pending_map_choice"):
         st.session_state.pop(key, None)
     st.session_state.owner_metric_choice = "stores"
     st.session_state.owner_right_open = False
@@ -130,6 +133,13 @@ def reset_owner_filters() -> None:
 
 if "owner_metric_choice" not in st.session_state:
     st.session_state.owner_metric_choice = "stores"
+
+# Component events arrive after the selectbox has been rendered. Apply the choice
+# at the start of the next run, before that widget is instantiated again.
+pending_map_choice = st.session_state.pop("owner_pending_map_choice", None)
+if pending_map_choice:
+    st.session_state.owner_market_choice = pending_map_choice
+    st.session_state.owner_right_open = True
 
 
 with st.container(key="owner-canvas"):
@@ -140,8 +150,7 @@ with st.container(key="owner-canvas"):
             with title_column:
                 st.markdown("## 내 상권 분석")
             with reset_column:
-                st.button("↻", key="owner-reset", help="분석 조건 초기화",
-                          on_click=reset_owner_filters, width="stretch")
+                st.button("↻", key="owner-reset", on_click=reset_owner_filters, width="stretch")
             with st.container(key="owner-persona-control"):
                 mode = st.segmented_control("분석 대상", ["나는 사장", "나도 곧 사장"],
                                             key="owner-mode", default="나는 사장",
@@ -248,19 +257,36 @@ with st.container(key="owner-canvas"):
             rank_title, sort_column = st.columns([3, 2], vertical_alignment="bottom")
             with rank_title:
                 st.subheader(f"{metric_labels[metric]} 비교")
+            has_change = any(item["change"] != 0 for item in ranked)
             with sort_column:
-                sort_order = st.selectbox("정렬 기준", ["전분기 증가율순", "현재 값순", "전분기 감소율순"],
-                                          key="owner-rank-sort", label_visibility="collapsed")
+                sort_options = (["전분기 증가율순", "현재 값순", "전분기 감소율순"]
+                                if has_change else ["현재 값순"])
+                sort_order = st.selectbox("정렬 기준", sort_options,
+                                          key=f"owner-rank-sort-{metric}", label_visibility="collapsed")
             if sort_order == "현재 값순":
                 ranked = sorted(ranked, key=lambda item: (-item["value"], item["code"]))
             elif sort_order == "전분기 감소율순":
                 ranked = sorted(ranked, key=lambda item: (item["change"], item["code"]))
             if not ranked:
                 st.info("전분기와 비교할 수 있는 상권 자료가 없습니다.")
+            elif not has_change:
+                st.caption("전분기 변화가 없어 현재 값이 큰 순서로 표시합니다.")
             for place, item in enumerate(ranked[:10], 1):
-                st.button(f"{place}  {item['district']} {item['name']} · {metric_display(metric, item['value'])} · {item['change']:+.1f}%",
-                          key=f"owner-rank-{item['code']}", width="stretch",
-                          on_click=select_owner_market, args=(item["code"],))
+                with st.container(key=f"owner-rank-row-{place}"):
+                    number, name, value, change = st.columns([0.4, 2.5, 1.1, 0.9],
+                                                              gap="small", vertical_alignment="center")
+                    with number:
+                        st.html(f'<span class="kb-owner-rank-number">{place}</span>')
+                    with name:
+                        st.button(f"{item['district']} {item['name']}",
+                                  key=f"owner-rank-{item['code']}", width="stretch",
+                                  on_click=select_owner_market, args=(item["code"],))
+                    with value:
+                        st.html(f'<span class="kb-owner-rank-value">{escape(metric_display(metric, item["value"]))}</span>')
+                    with change:
+                        label = f"{item['change']:+.1f}%" if item["change"] else "변화 없음"
+                        trend = "up" if item["change"] > 0 else "down" if item["change"] < 0 else "flat"
+                        st.html(f'<span class="kb-owner-rank-change {trend}">{label}</span>')
             st.caption("출처: 서울시 공개 상권 원본 · 전분기 비교 가능 지역")
             with st.expander("상권 직접 선택"):
                 chosen_code = st.selectbox("분석 상권", ["", *codes], key="owner_market_choice",
@@ -309,7 +335,7 @@ with st.container(key="owner-canvas"):
                  radius=radius if mode == "나는 사장" and selected_business else None, height=820)
         clicked_code = getattr(map_result, "selected", map_result)
         if clicked_code and clicked_code in codes and clicked_code != chosen_code:
-            select_owner_market(clicked_code)
+            st.session_state.owner_pending_map_choice = clicked_code
             st.rerun()
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도를 표시할 수 없습니다. 왼쪽 조건과 보고서는 이용할 수 있습니다.")
