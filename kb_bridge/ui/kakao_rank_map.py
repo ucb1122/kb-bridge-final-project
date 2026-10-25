@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-COMPONENT_VERSION = 8
+COMPONENT_VERSION = 9
 
 _MAP = st.components.v2.component(
-    "kb_bridge_rising_map_v8",
+    "kb_bridge_rising_map_v9",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
@@ -30,6 +30,12 @@ _MAP = st.components.v2.component(
 .kb-rank-marker.active span {background:#b98200}
 .kb-rank-marker:hover::after,.kb-rank-marker:focus-visible::after {animation-duration:2.6s;border-color:#d69c00}
 .kb-rank-marker.top-rank strong {background:#ffe500!important;color:#1c2140;border-color:#d9b800;}
+.kb-rank-marker.owner-card {width:122px;height:98px;}
+.kb-rank-marker.owner-card::before,.kb-rank-marker.owner-card::after {left:24px;top:17px;}
+.kb-rank-marker.owner-card .kb-marker-card {position:relative;display:flex;flex-direction:column;width:120px;max-width:none;margin-top:-1px;padding:0;white-space:normal;border-radius:7px;overflow:hidden;background:#fff;box-shadow:0 2px 5px #3c331b33;}
+.kb-rank-marker.owner-card .kb-marker-card span {box-sizing:border-box;display:block;width:100%;max-width:none;margin:0;padding:7px 5px;border-radius:0;background:#ffca32;color:#282112;font-size:11px;font-weight:800;}
+.kb-rank-marker.owner-card .kb-marker-card small {box-sizing:border-box;display:block;width:100%;max-width:none;margin:0;padding:6px 4px;border-radius:0;background:#fff;color:#344054;font-size:10px;font-weight:700;}
+.kb-rank-marker.owner-card.active .kb-marker-card span {background:#ffbf00;}
 .kb-rank-marker:focus-visible {outline:2px solid #101624;outline-offset:5px}
 @keyframes kb-rank-pulse {0%{transform:scale(1);opacity:.75}75%,100%{transform:scale(1.9);opacity:0}}
 @media(prefers-reduced-motion:reduce){.kb-rank-marker::after{animation:none;transform:scale(1.15);opacity:.45}}
@@ -142,6 +148,20 @@ function scheduleKakaoDecorations() {
   });
 }
 
+function makeRankMarker(row,index,data,setTriggerValue) {
+  const marker=document.createElement('button');marker.type='button';
+  marker.className='kb-rank-marker'+(index<3?' top-rank':'')+(row.code===data.selected?' active':'')+(data.marker_style==='card'?' owner-card':'');
+  marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}, ${row.display||''}`);
+  const rank=document.createElement('strong');rank.textContent=String(index+1);
+  const name=document.createElement('span');name.textContent=row.name;
+  const value=document.createElement('small');value.textContent=row.display||'';
+  if(data.marker_style==='card') {
+    const card=document.createElement('span');card.className='kb-marker-card';
+    card.append(name,value);marker.append(rank,card);
+  } else marker.append(rank,name,value);
+  marker.onclick=()=>setTriggerValue('selected',String(row.code));
+  return marker;
+}
 function renderSvgFallback(root, data, setTriggerValue) {
   root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
   const width=1200, height=750;
@@ -194,15 +214,8 @@ function renderSvgFallback(root, data, setTriggerValue) {
   fallback.appendChild(svg);
   (data.rows||[]).forEach((row,index)=>{
     if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
-    const marker=document.createElement('button');marker.type='button';
-    marker.className='kb-rank-marker'+(index<3?' top-rank':'')+(row.code===data.selected?' active':'');
-    const rank=document.createElement('strong');rank.textContent=String(index+1);
-    const name=document.createElement('span');name.textContent=row.name;
-    const value=document.createElement('small');value.textContent=row.display||'';
-    marker.append(rank,name,value);
-    marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
+    const marker=makeRankMarker(row,index,data,setTriggerValue);
     Object.assign(marker.style,{position:'absolute',left:`${x(row.lng)/width*100}%`,top:`${y(row.lat)/height*100}%`,transform:'translate(-50%,-50%)',zIndex:String(30-index)});
-    marker.onclick=()=>setTriggerValue('selected',String(row.code));
     fallback.appendChild(marker);
   });
   Object.assign(fallback.style,{position:'absolute',inset:'0',overflow:'hidden'});
@@ -276,15 +289,8 @@ async function renderTileFallback(root,data,setTriggerValue) {
     });
     (data.rows||[]).forEach((row,index)=>{
       if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
-      const marker=document.createElement('button');marker.type='button';
-      marker.className='kb-rank-marker'+(index<3?' top-rank':'')+(row.code===data.selected?' active':'');
+      const marker=makeRankMarker(row,index,data,setTriggerValue);
       marker.style.zIndex=String(30-index);
-      marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
-      const rank=document.createElement('strong');rank.textContent=String(index+1);
-      const name=document.createElement('span');name.textContent=row.name;
-      const value=document.createElement('small');value.textContent=row.display||'';
-      marker.append(rank,name,value);
-      marker.onclick=()=>setTriggerValue('selected',String(row.code));
       fallbackMarkers.push(new maplibregl.Marker({element:marker,anchor:'center'}).setLngLat([row.lng,row.lat]).addTo(m));
     });
     const selected=(data.rows||[]).find(row=>row.code===data.selected);
@@ -394,15 +400,8 @@ export default async function(component) {
       const lat=Number(row.lat),lng=Number(row.lng);
       if (!Number.isFinite(lat)||!Number.isFinite(lng)) return;
       try {
-        const marker=document.createElement('button');marker.type='button';
-        marker.className='kb-rank-marker'+(index<3?' top-rank':'')+(row.code===data.selected?' active':'');
-        marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}`);
-        const rank=document.createElement('strong');rank.textContent=String(index+1);
-        const name=document.createElement('span');name.textContent=row.name;
-        const value=document.createElement('small');value.textContent=row.display||'';
-        marker.append(rank,name,value);
+        const marker=makeRankMarker(row,index,data,setTriggerValue);
         Object.assign(marker.style,{position:'absolute',transform:'translate(-50%,-50%)',pointerEvents:'auto',zIndex:String(30-index)});
-        marker.onclick=()=>setTriggerValue('selected',String(row.code));
         rankLayer.appendChild(marker);rankMarkers.push({marker,lat,lng});
       } catch(error) {markerErrors++;console.warn('순위 배지 표시 실패',error);}
     });
@@ -452,11 +451,12 @@ export default async function(component) {
 def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
              source: str, district: str, selected_location: dict | None = None, radius: int | None = None, height: int = 590,
              fallback_districts: list[dict] | None = None, show_all_boundaries: bool = False,
-             all_locations: list[dict] | None = None, selector: dict | None = None, stretch: bool = False):
+             all_locations: list[dict] | None = None, selector: dict | None = None, stretch: bool = False,
+             marker_style: str = "split"):
     return _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
                                        "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
                                        "fallback_districts": fallback_districts or [], "show_all_boundaries": show_all_boundaries,
-                                       "all_locations": all_locations or [], "selector": selector, "stretch": stretch},
+                                       "all_locations": all_locations or [], "selector": selector, "stretch": stretch, "marker_style": marker_style},
                 height="content", on_selected_change=lambda: None,
                 on_district_selected_change=lambda: None,
                 on_region_selected_change=lambda: None,
