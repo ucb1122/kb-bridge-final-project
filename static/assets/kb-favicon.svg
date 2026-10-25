@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KB">
-  <rect width="64" height="64" rx="13" fill="#ffbf00"/>
-  <text x="32" y="34" text-anchor="middle" dominant-baseline="central"
-        fill="#101624" font-family="Arial, sans-serif" font-size="31" font-weight="900" letter-spacing="-2">KB</text>
-</svg>
