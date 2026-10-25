@@ -25,7 +25,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-filter-panel > [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-controls-card,.st-key-rising-rank-card {padding:16px 12px;background:#fff;border:0;border-bottom:6px solid #f2f4f5;border-radius:0;box-shadow:none;}
 .st-key-rising-report-panel {right:0;top:0;bottom:0;width:clamp(520px,36vw,720px);padding:18px 22px;background:#fff;border:0;border-top:5px solid #FFBF00;box-shadow:-2px 0 12px #0002;}
-.st-key-rising-map-selector {position:absolute;z-index:30;top:16px;left:61%;transform:translateX(-50%);width:min(680px,calc(100% - 24px));padding:7px 12px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
+.st-key-rising-map-selector {position:absolute;z-index:10000;top:16px;left:61%;transform:translateX(-50%);width:min(680px,calc(100% - 24px));padding:7px 12px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
 .st-key-rising-canvas:has(.st-key-rising-report-panel):not(:has(.kb-right-collapsed-flag)) .st-key-rising-map-selector {left:45%;}
 .st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:8px;}
 .st-key-rising-map-selector [data-testid="stColumn"] {min-width:0;}
@@ -33,7 +33,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-map-selector [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:42px;}
 .st-key-rising-map-selector [data-testid="stButton"] button {width:100%;min-height:42px;border:0;background:#fff;color:#8a6400;font-size:14px;justify-content:center;white-space:nowrap;}
 .st-key-rising-map-selector [data-testid="stButton"] button:hover {background:#fff8df;color:#614900;}
-.kb-rising-city {display:block;color:#b98200;font-size:15px;font-weight:800;white-space:nowrap;line-height:42px;}
+.st-key-rising-map-selector .st-key-rising-city-reset button {font-size:15px;font-weight:800;color:#b98200;justify-content:flex-start;padding-left:4px;}
 .st-key-rising-filter-panel h2 { margin: 0; color: #101624; font-size: 23px; }
 .st-key-rising-filter-panel h3 { font-size: 16px; margin: 0; }
 .st-key-rising-filter-panel [data-testid="stForm"] {
@@ -65,7 +65,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-controls-card [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;white-space:normal;padding:5px 2px;font-size:12px;}
 .st-key-rising-controls-card [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#FFBF00;color:#101624;}
 .st-key-rising-industry-control [data-testid="stSegmentedControl"] {width:100%;min-width:0;}
-.st-key-rising-industry-control [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;width:100%;}
+.st-key-rising-industry-control [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:4px;}
 .kb-metric-label {font-size:13px;font-weight:600;margin:4px 0 6px;color:#172033}
 .st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:6px!important;width:100%}
 .st-key-rising-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
@@ -73,7 +73,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-metric-control [data-testid="stButton"] button p {font-size:17px;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
 .st-key-rising-metric-control [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#101624}
 .st-key-rising-metric-control [data-testid="stButton"] button:hover {background:#ffe182;color:#101624}
-.st-key-rising-industry-control [data-testid="stSegmentedControl"] button {min-height:38px;}
+.st-key-rising-industry-control [data-testid="stSegmentedControl"] button {flex:1 1 calc(50% - 4px)!important;min-width:calc(50% - 4px)!important;min-height:42px;white-space:nowrap!important;}
 .st-key-rising-controls-card [data-testid="stExpander"] {border:0;border-top:1px solid #e4e4e4;border-radius:0;margin-top:8px;}
 .st-key-rising-controls-card [data-testid="stExpander"] summary {font-weight:700;}
 .st-key-rising-controls-card [data-testid="stExpander"] [data-testid="stSegmentedControl"] button {line-height:1.2;min-height:42px;}
@@ -99,15 +99,13 @@ def apply_rising_layout() -> None:
 .st-key-rising-filter-panel,.st-key-rising-report-panel {transition:transform .25s ease;}
 .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-filter-panel {transform:translateX(-100%);}
 .st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-report-panel {transform:translateX(100%);}
-.st-key-rising-left-toggle,.st-key-rising-right-toggle {position:absolute;top:20px;z-index:7;transform:none;width:42px!important;max-width:42px;pointer-events:none;}
+.st-key-rising-left-toggle,.st-key-rising-right-toggle {position:absolute;top:20px;z-index:10001;transform:none;width:42px!important;max-width:42px;pointer-events:none;}
 .st-key-rising-left-toggle {left:clamp(430px,26vw,520px);}
 .st-key-rising-right-toggle {right:clamp(520px,36vw,720px);}
 .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-left-toggle {left:0;}
 .st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-right-toggle {right:0;}
 .st-key-rising-left-toggle button,.st-key-rising-right-toggle button {pointer-events:auto;min-width:42px;height:42px;padding:0;border:1px solid #e2d6aa;background:#fff;color:#8a6400;font-size:24px;border-radius:0 6px 6px 0;box-shadow:0 2px 8px #0002;}
 .st-key-rising-right-toggle button {border-radius:6px 0 0 6px;}
-.st-key-rising-report-collapse-control {position:absolute;top:10px;left:0;z-index:10;width:42px!important;max-width:42px;}
-.st-key-rising-report-collapse-control button {min-width:42px;height:42px;padding:0;border:1px solid #e2d6aa;border-radius:6px 0 0 6px;background:#fff;color:#8a6400;font-size:24px;box-shadow:0 2px 8px #0002;}
 
 .kb-overview-card {border:1px solid #dedede;background:#fff;min-width:0;font-family:'KB Noto Sans KR','Malgun Gothic',sans-serif;}
 .kb-overview-card h4 {min-height:52px;margin:0;padding:11px 8px;font-size:12px;line-height:1.35;text-align:center;border-bottom:1px solid #e5e5e5;}

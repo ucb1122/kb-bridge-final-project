@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
+COMPONENT_VERSION = 4
+
 _MAP = st.components.v2.component(
-    "kb_bridge_rising_map",
+    "kb_bridge_rising_map_v4",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
@@ -21,13 +23,13 @@ _MAP = st.components.v2.component(
 .kb-rank-marker {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:82px;height:86px;padding:0;border:0;background:transparent;color:#101624;font:700 11px 'Malgun Gothic',sans-serif;cursor:pointer;text-align:center;overflow:visible;filter:drop-shadow(0 2px 5px #3c331b55)}
 .kb-rank-marker::before {content:"";position:absolute;z-index:-1;top:12px;left:4px;width:74px;height:74px;border-radius:50%;background:#ffbf0066;pointer-events:none}
 .kb-rank-marker::after {content:"";position:absolute;z-index:-2;top:12px;left:4px;width:74px;height:74px;border:2px solid #d69c00;border-radius:50%;pointer-events:none;animation:kb-rank-pulse 3.6s ease-out infinite}
-.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff;border:1px solid #d69c00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#5c4400;font-size:14px;font-weight:800}
+.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff!important;border:1px solid #d69c00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#5c4400;font-size:14px;font-weight:800}
 .kb-rank-marker span {position:relative;display:block;max-width:78px;width:73px;margin-top:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#d69c00;color:#fff}
 .kb-rank-marker small {position:relative;display:block;width:67px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#fff;color:#5c4400;font-size:10px}
 .kb-rank-marker.active::before {background:#ffbf0099}
 .kb-rank-marker.active span {background:#b98200}
 .kb-rank-marker:hover::after,.kb-rank-marker:focus-visible::after {animation-duration:2.6s;border-color:#d69c00}
-.kb-rank-marker.top-rank strong {background:#ffe500;color:#1c2140;border-color:#d9b800;}
+.kb-rank-marker.top-rank strong {background:#ffe500!important;color:#1c2140;border-color:#d9b800;}
 .kb-rank-marker:focus-visible {outline:2px solid #101624;outline-offset:5px}
 @keyframes kb-rank-pulse {0%{transform:scale(1);opacity:.75}75%,100%{transform:scale(1.9);opacity:0}}
 @media(prefers-reduced-motion:reduce){.kb-rank-marker::after{animation:none;transform:scale(1.15);opacity:.45}}

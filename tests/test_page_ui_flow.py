@@ -58,6 +58,9 @@ class RisingPageInteractionTests(unittest.TestCase):
         region.set_value(region.options[1]).run()
         self.assertTrue(app.session_state["rising_selected"])
         self.assertEqual(app.session_state["rising_selected"], app.session_state["rising_map_region"])
+        app.button(key="rising-city-reset").click().run()
+        self.assertEqual(app.session_state["rising_filters"]["district"], "")
+        self.assertIsNone(app.session_state["rising_selected"])
         app.button(key="rising-selector-toggle").click().run()
         self.assertFalse(app.session_state["rising_selector_open"])
         app.button(key="rising-selector-toggle").click().run()
@@ -145,7 +148,7 @@ class RisingPageInteractionTests(unittest.TestCase):
         app.button(key="rising-right-collapse").click().run()
         self.assertFalse(app.session_state["rising_right_open"])
         self.assertEqual(app.session_state["rising_selected"], selected)
-        app.button(key="rising-right-expand").click().run()
+        app.button(key="rising-right-collapse").click().run()
         self.assertTrue(app.session_state["rising_right_open"])
         self.assertFalse(app.exception)
 
