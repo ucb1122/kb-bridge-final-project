@@ -9,7 +9,7 @@ from kb_bridge.config import load_settings
 from kb_bridge.services.rising_analysis import LABELS, human_value, overview_lines, percent
 
 SYSTEM = (
-    "서울시 상권분석 보고서의 종합의견을 한국어 문장 4개로 작성하세요. "
+    "서울시 상권분석 보고서의 핵심 종합의견을 한국어 문장 4개로 작성하세요. 각 문장은 55자 안팎으로 간결하게 쓰세요. "
     "우선 분석 지표를 중심으로 점포·매출·인구 변화와 신중한 종합 판단을 설명하세요. "
     "주어진 수치, 기간, 단위와 출처만 사용하세요. 없는 임대료·소득·폐업 확률·대출 적격성을 만들지 마세요. "
     "지역 통계를 개인 점포의 재무정보로 해석하지 마세요. 결과는 JSON opinions 문자열 배열로 반환하세요."
@@ -45,6 +45,6 @@ def generate_opinion(report: dict, focus_metric: str | None = None) -> dict:
         if not isinstance(opinions, list) or len(opinions) != 4 or any(not isinstance(x, str) or not x.strip() for x in opinions):
             raise ValueError("의견 4개를 받지 못했습니다.")
         return {"mode": "ai", "lines": [line.strip() for line in opinions],
-                "note": f"로컬 Ollama {settings.ollama_model} 생성 문장 · 수치는 원본 보고서에서 확인하세요."}
+                "note": f"로컬 Ollama {settings.ollama_model} 생성 의견"}
     except (HTTPError, URLError, TimeoutError, OSError, KeyError, ValueError, json.JSONDecodeError) as error:
         return {**fallback, "note": f"{type(error).__name__}: {fallback['note']}"}
