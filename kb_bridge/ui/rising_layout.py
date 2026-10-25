@@ -25,15 +25,17 @@ def apply_rising_layout() -> None:
 .st-key-rising-filter-panel > [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-controls-card,.st-key-rising-rank-card {padding:16px 12px;background:#fff;border:0;border-bottom:6px solid #f2f4f5;border-radius:0;box-shadow:none;}
 .st-key-rising-report-panel {right:0;top:0;bottom:0;width:clamp(520px,36vw,720px);padding:18px 22px;background:#fff;border:0;border-top:5px solid #FFBF00;box-shadow:-2px 0 12px #0002;}
-.st-key-rising-map-selector {position:absolute;z-index:10000;top:16px;left:61%;transform:translateX(-50%);width:min(680px,calc(100% - 24px));padding:7px 12px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
-.st-key-rising-canvas:has(.st-key-rising-report-panel):not(:has(.kb-right-collapsed-flag)) .st-key-rising-map-selector {left:45%;}
-.st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:8px;}
+.st-key-rising-map-selector {position:absolute;z-index:10000;top:12px;left:calc(50% + clamp(215px,13vw,260px) - clamp(260px,18vw,360px));transform:translateX(-50%);box-sizing:border-box;width:min(560px,calc(100% - clamp(430px,26vw,520px) - clamp(520px,36vw,720px) - 76px));padding:5px 9px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
+.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:calc(50% + clamp(215px,13vw,260px));width:min(560px,calc(100% - clamp(430px,26vw,520px) - 76px));}
+.st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-map-selector {left:calc(50% - clamp(260px,18vw,360px));width:min(560px,calc(100% - clamp(520px,36vw,720px) - 76px));}
+.st-key-rising-canvas:has(.kb-left-collapsed-flag):has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:50%;width:min(560px,calc(100% - 76px));}
+.st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:5px;}
 .st-key-rising-map-selector [data-testid="stColumn"] {min-width:0;}
 .st-key-rising-map-selector [data-testid="stVerticalBlock"] {gap:0;}
-.st-key-rising-map-selector [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:42px;}
-.st-key-rising-map-selector [data-testid="stButton"] button {width:100%;min-height:42px;border:0;background:#fff;color:#8a6400;font-size:14px;justify-content:center;white-space:nowrap;}
+.st-key-rising-map-selector [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:36px;}
+.st-key-rising-map-selector [data-testid="stButton"] button {width:100%;min-height:36px;border:0;background:#fff;color:#8a6400;font-size:12px;justify-content:center;white-space:nowrap;}
 .st-key-rising-map-selector [data-testid="stButton"] button:hover {background:#fff8df;color:#614900;}
-.st-key-rising-map-selector .st-key-rising-city-reset button {font-size:15px;font-weight:800;color:#b98200;justify-content:flex-start;padding-left:4px;}
+.st-key-rising-map-selector .st-key-rising-city-reset button {font-size:12px;font-weight:800;color:#b98200;justify-content:flex-start;padding-left:4px;}
 .st-key-rising-filter-panel h2 { margin: 0; color: #101624; font-size: 23px; }
 .st-key-rising-filter-panel h3 { font-size: 16px; margin: 0; }
 .st-key-rising-filter-panel [data-testid="stForm"] {
@@ -119,10 +121,10 @@ def apply_rising_layout() -> None:
 .kb-overview-current strong {color:#111827;font-size:15px;}
 .kb-overview-rank strong {color:#213047;}
 .kb-overview-card p {font-size:10px;color:#6a7280;text-align:center;margin:0;padding:6px 3px;}
-@media (max-width: 1100px) {
+@media (max-width: 1350px) {
   .st-key-rising-canvas { height: auto; min-height: 0; overflow: visible; display: flex; flex-direction: column; }
   .st-key-rising-map-canvas, .st-key-rising-filter-panel, .st-key-rising-report-panel {position:relative;inset:auto;width:auto;max-width:none;}
-  .st-key-rising-map-selector {position:relative;inset:auto;transform:none;left:auto!important;order:2;width:auto;margin:12px;}
+  .st-key-rising-map-selector {position:relative;inset:auto;transform:none;left:auto!important;order:2;width:auto!important;margin:12px;}
   .st-key-rising-map-canvas { order: 1; }
   .st-key-rising-left-toggle,.st-key-rising-right-toggle {position:relative;top:auto;left:auto;right:auto;transform:none;margin:0 12px;order:3;}
   .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-filter-panel,.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-report-panel {display:none;}

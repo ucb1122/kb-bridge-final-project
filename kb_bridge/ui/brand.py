@@ -28,7 +28,6 @@ def navigation(active: str = "") -> None:
         font-size:16px;font-weight:500;text-decoration:none;white-space:nowrap}
       .kb-site-header nav a:hover,.kb-site-header nav a.active {border-bottom-color:#ffbf00;color:#101624}
       .kb-site-header nav a.active {font-weight:700}
-      .kb-site-header .kb-project-badge {margin-left:auto;color:#8b8c91;font-size:11px;white-space:nowrap}
       [data-testid="stHeader"], [data-testid="stDecoration"] {display:none}
       [data-testid="stMainBlockContainer"]:has(.kb-site-header) {max-width:none;padding:10px 0 20px}
       @media(max-width:850px) {
@@ -38,7 +37,6 @@ def navigation(active: str = "") -> None:
         .kb-site-name {font-size:21px}
         .kb-site-header nav {order:3;width:100%;gap:20px}
         .kb-site-header nav a {height:37px;font-size:12px}
-        .kb-site-header .kb-project-badge {font-size:10px}
       }
     </style>
     <header class="kb-site-header">
@@ -47,7 +45,6 @@ def navigation(active: str = "") -> None:
         <span class="kb-site-name">상권브릿지</span>
       </a>
       <nav aria-label="주 메뉴">__KB_NAV_LINKS__</nav>
-      <span class="kb-project-badge">교육용 프로젝트</span>
     </header>""".replace("__KB_NAV_LINKS__", links))
 
 

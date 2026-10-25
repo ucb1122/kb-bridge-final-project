@@ -1,7 +1,9 @@
 """Streamlit entrypoint and shared navigation."""
+import importlib
+
 import streamlit as st
 
-from kb_bridge.ui.brand import navigation
+from kb_bridge.ui import brand
 
 st.set_page_config(page_title="KB 상권브릿지", page_icon="🏦", layout="wide", initial_sidebar_state="collapsed")
 page = st.navigation(
@@ -12,5 +14,6 @@ page = st.navigation(
     ],
     position="hidden",
 )
-navigation(page.title)
+importlib.reload(brand)
+brand.navigation(page.title)
 page.run()
