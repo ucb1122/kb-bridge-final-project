@@ -10,7 +10,7 @@ from pathlib import Path
 import streamlit as st
 
 from kb_bridge.config import load_settings
-from kb_bridge.integrations.ollama_opinion import generate_opinion
+from kb_bridge.integrations import ollama_opinion
 from kb_bridge.repositories import rising_snapshot
 from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, overview_lines, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
@@ -22,10 +22,13 @@ apply_rising_layout()
 
 # Streamlit can rerun this page while retaining a previously imported map helper.
 # Reload it when the running helper predates the current component arguments.
-if "show_all_boundaries" not in inspect.signature(kakao_rank_map.show_map).parameters:
+if "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
     importlib.reload(kakao_rank_map)
 show_map = kakao_rank_map.show_map
 map_helper_parameters = inspect.signature(show_map).parameters
+if inspect.isfunction(ollama_opinion.generate_opinion) and "focus_metric" not in inspect.signature(ollama_opinion.generate_opinion).parameters:
+    importlib.reload(ollama_opinion)
+generate_opinion = ollama_opinion.generate_opinion
 
 if not rising_snapshot.available():
     st.warning("상권 데이터가 아직 준비되지 않았습니다. README의 테스트 데이터 준비 명령을 실행해 주세요.")
@@ -95,7 +98,7 @@ if "rising_map_district" not in st.session_state:
 if "rising_map_region" not in st.session_state or st.session_state.rising_map_region not in location_by_code:
     st.session_state.rising_map_region = ""
 source = "보관된 공식 순위 스냅샷" if result["ranking_source"] == "official" else "테스트 DB 원본 계산값"
-metric_labels = {"stores": "점포수", "sales": "매출", "footfall": "유동인구", "residents": "거주인구"}
+metric_labels = {"stores": "점포수", "sales": "매출", "footfall": "유동인구", "residents": "주거인구"}
 
 
 def update_quick_filter(field: str, widget_key: str) -> None:
@@ -123,6 +126,11 @@ def select_map_district() -> None:
 def select_map_region() -> None:
     st.session_state.rising_selected = st.session_state.rising_map_region or None
 
+
+def choose_metric(metric: str) -> None:
+    st.session_state.rising_quick_metric = metric
+    update_quick_filter("metric", "rising_quick_metric")
+
 with st.container(key="rising-canvas"):
     with st.container(key="rising-map-canvas"):
         map_extras = {}
@@ -130,7 +138,16 @@ with st.container(key="rising-canvas"):
             map_extras["show_all_boundaries"] = st.session_state.get("rising_show_all_boundaries", False)
         if "all_locations" in map_helper_parameters:
             map_extras["all_locations"] = [item for item in locations if not applied["district"] or item["district"] == applied["district"]] if st.session_state.get("rising_show_all_boundaries", False) else []
-        selected = show_map(key=load_settings().kakao_map_javascript_key,
+        if "selector" in map_helper_parameters:
+            map_extras["selector"] = {
+                "open": st.session_state.rising_selector_open,
+                "district": st.session_state.rising_map_district,
+                "region": st.session_state.rising_map_region,
+                "districts": options["districts"],
+                "locations": [{"code": item["code"], "name": item["name"], "district": item["district"]} for item in locations],
+                "report_open": bool(st.session_state.rising_selected and st.session_state.rising_right_open),
+            }
+        map_result = show_map(key=load_settings().kakao_map_javascript_key,
                             rows=[{**r, "display": human_value(applied["metric"], r["value"])} for r in rows],
                             boundaries=boundaries(applied["kind"], applied["district"], tuple(r["code"] for r in rows)),
                             fallback_districts=seoul_district_boundaries(),
@@ -138,39 +155,27 @@ with st.container(key="rising-canvas"):
                             selected=st.session_state.rising_selected,
                             selected_location=location_by_code.get(st.session_state.rising_selected),
                             source=result["ranking_source"], district=applied["district"], height=820)
+        selected = getattr(map_result, "selected", map_result)
+        district_event = getattr(map_result, "district_selected", None)
+        if district_event is not None and district_event != st.session_state.rising_map_district:
+            st.session_state.rising_map_district = district_event
+            select_map_district()
+            st.rerun()
+        region_event = getattr(map_result, "region_selected", None)
+        if region_event is not None and region_event != st.session_state.rising_map_region:
+            st.session_state.rising_map_region = region_event
+            select_map_region()
+            st.rerun()
+        selector_event = getattr(map_result, "selector_open", None)
+        if selector_event is not None and selector_event != st.session_state.rising_selector_open:
+            st.session_state.rising_selector_open = selector_event
+            st.rerun()
         if selected and selected != st.session_state.rising_selected and selected in {r["code"] for r in rows}:
             st.session_state.rising_selected = selected
             st.session_state.rising_map_region = selected
             st.rerun()
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도는 표시되지 않습니다. 왼쪽 순위 목록으로 보고서를 열 수 있습니다.")
-    with st.container(key="rising-map-selector"):
-        if st.session_state.rising_selector_open:
-            city, map_district_col, map_region_col, selector_toggle = st.columns([1.25, 1, 1, 0.65])
-            with city:
-                st.html('<div class="kb-rising-city">◉ &nbsp;서울특별시</div>')
-            with map_district_col:
-                map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
-                                            key="rising_map_district", format_func=lambda value: value or "전체",
-                                            label_visibility="collapsed", on_change=select_map_district)
-            visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
-            visible_codes = {item["code"] for item in visible_locations}
-            if st.session_state.rising_map_region not in visible_codes:
-                st.session_state.rising_map_region = ""
-            with map_region_col:
-                map_region = st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
-                                          key="rising_map_region", label_visibility="collapsed",
-                                          format_func=lambda value: location_by_code[value]["name"] if value else "전체",
-                                          on_change=select_map_region)
-            with selector_toggle:
-                if st.button("접기", key="rising-selector-toggle", help="지도 지역 선택창 접기"):
-                    st.session_state.rising_selector_open = False
-                    st.rerun()
-        else:
-            st.html('<span class="kb-selector-collapsed-flag" hidden></span>')
-            if st.button("지역 선택", key="rising-selector-toggle", help="지도 지역 선택창 펼치기"):
-                st.session_state.rising_selector_open = True
-                st.rerun()
     with st.container(key="rising-filter-panel"):
         with st.container(key="rising-controls-card"):
             st.markdown("## 뜨는 상권")
@@ -184,10 +189,13 @@ with st.container(key="rising-canvas"):
                                  key="rising_quick_kind", on_change=update_quick_filter,
                                  args=("kind", "rising_quick_kind"), width="stretch")
             with st.container(key="rising-metric-control"):
-                st.segmented_control("분석 지표", options=list(LABELS),
-                                     format_func=lambda x: metric_labels[x],
-                                     key="rising_quick_metric", on_change=update_quick_filter,
-                                     args=("metric", "rising_quick_metric"), width="stretch", wrap=False)
+                st.html('<div class="kb-metric-label">분석 지표</div>')
+                metric_columns = st.columns(4, gap="small")
+                for metric, column in zip(LABELS, metric_columns):
+                    with column:
+                        st.button(metric_labels[metric], key=f"rising-metric-{metric}",
+                                  type="primary" if applied["metric"] == metric else "secondary",
+                                  on_click=choose_metric, args=(metric,), width="stretch")
             with st.expander("상세조건", icon=":material/filter_alt:"):
                 with st.form("rising-filters", border=False):
                     criterion = st.segmented_control("기준조건", ["highest", "growth", "absolute"],

@@ -8,6 +8,14 @@ _MAP = st.components.v2.component(
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
+.kb-map-selector {position:absolute;z-index:12;top:16px;left:60%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 28px);padding:7px 12px;border-radius:7px;background:#fff;box-shadow:0 3px 12px #0003;pointer-events:auto;font:700 14px 'Malgun Gothic',sans-serif}
+.kb-map-selector.report-open {left:43%}
+.kb-map-selector .kb-city {color:#b98200;white-space:nowrap;min-width:165px}
+.kb-map-selector select {width:132px;min-width:0;height:40px;padding:0 8px;border:1px solid #e3ded3;border-radius:8px;background:#fff;color:#101624;font:600 14px 'Malgun Gothic',sans-serif;cursor:pointer}
+.kb-map-selector button {height:40px;min-width:54px;padding:0 8px;border:0;background:#fff;color:#8a6400;font:700 14px 'Malgun Gothic',sans-serif;cursor:pointer}
+.kb-map-selector button:hover,.kb-map-selector select:hover {background:#fff8df}
+.kb-map-selector.collapsed {width:auto}
+@media(max-width:700px){.kb-map-selector,.kb-map-selector.report-open{left:50%;gap:4px;padding:5px}.kb-map-selector .kb-city{min-width:0;font-size:11px}.kb-map-selector select{width:90px;font-size:12px}.kb-map-selector button{min-width:40px;font-size:12px}}
 #kb-map-status:empty {display:none}
 #kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
 .kb-rank-marker {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:82px;height:86px;padding:0;border:0;background:transparent;color:#101624;font:700 11px 'Malgun Gothic',sans-serif;cursor:pointer;text-align:center;overflow:visible;filter:drop-shadow(0 2px 5px #3c331b55)}
@@ -250,11 +258,47 @@ async function renderTileFallback(root,data,setTriggerValue) {
     m.remove();fallbackMap=null;inner.remove();throw error;
   }
 }
+function renderSelector(root,selector,setTriggerValue) {
+  root.querySelectorAll('.kb-map-selector').forEach(el=>el.remove());
+  if(!selector)return;
+  const bar=document.createElement('div');
+  bar.className='kb-map-selector'+(selector.report_open?' report-open':'')+(!selector.open?' collapsed':'');
+  bar.setAttribute('role','group');
+  bar.setAttribute('aria-label','지도 지역 선택');
+  for(const event of ['pointerdown','mousedown','touchstart','wheel','click'])
+    bar.addEventListener(event,e=>e.stopPropagation());
+  if(selector.open) {
+    const city=document.createElement('span');
+    city.className='kb-city';city.textContent='◉ 서울특별시';
+    bar.appendChild(city);
+    const district=document.createElement('select');
+    district.setAttribute('aria-label','지도 자치구');
+    for(const name of ['',...(selector.districts||[])])district.add(new Option(name||'전체',name));
+    district.value=selector.district||'';
+    district.addEventListener('change',()=>setTriggerValue('district_selected',district.value));
+    bar.appendChild(district);
+    const region=document.createElement('select');
+    region.setAttribute('aria-label','지도 지역');
+    for(const location of [{code:'',name:'전체'},...(selector.locations||[]).filter(item=>!selector.district||item.district===selector.district)])
+      region.add(new Option(location.name,location.code));
+    region.value=selector.region||'';
+    region.addEventListener('change',()=>setTriggerValue('region_selected',region.value));
+    bar.appendChild(region);
+  }
+  const toggle=document.createElement('button');
+  toggle.type='button';
+  toggle.textContent=selector.open?'접기':'지역 선택';
+  toggle.setAttribute('aria-label',selector.open?'지도 지역 선택창 접기':'지도 지역 선택창 펼치기');
+  toggle.addEventListener('click',()=>setTriggerValue('selector_open',!selector.open));
+  bar.appendChild(toggle);
+  root.appendChild(bar);
+}
 export default async function(component) {
   const {data,parentElement,setTriggerValue}=component;
   const root=parentElement.querySelector('#kb-map');
   const status=parentElement.querySelector('#kb-map-status');
   if (!root) return;
+  renderSelector(root,data.selector,setTriggerValue);
   const host=root.getRootNode().host||root;
   const canvas=host.closest?.('.st-key-rising-canvas, .st-key-owner-canvas');
   root.style.height=`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
@@ -363,10 +407,12 @@ export default async function(component) {
 def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
              source: str, district: str, selected_location: dict | None = None, radius: int | None = None, height: int = 590,
              fallback_districts: list[dict] | None = None, show_all_boundaries: bool = False,
-             all_locations: list[dict] | None = None) -> str | None:
-    result = _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
-                                         "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
-                                         "fallback_districts": fallback_districts or [], "show_all_boundaries": show_all_boundaries,
-                                         "all_locations": all_locations or []},
-                  height="content", on_selected_change=lambda: None)
-    return getattr(result, "selected", None)
+             all_locations: list[dict] | None = None, selector: dict | None = None):
+    return _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
+                                       "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
+                                       "fallback_districts": fallback_districts or [], "show_all_boundaries": show_all_boundaries,
+                                       "all_locations": all_locations or [], "selector": selector},
+                height="content", on_selected_change=lambda: None,
+                on_district_selected_change=lambda: None,
+                on_region_selected_change=lambda: None,
+                on_selector_open_change=lambda: None)
