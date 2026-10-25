@@ -332,33 +332,26 @@ with st.container(key="rising-canvas"):
             if report:
                 st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
                 st.subheader(f"{report['district']} {report['name']} 분석 리포트")
-                scope = {"all": "전체 업종", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[report["industry"]]
-                st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 점포수·매출: {scope} · 인구: 지역 전체 · 출처별 값을 구분합니다.")
                 ranked_row = next((row for row in rows if row["code"] == report["code"]), None)
-                if ranked_row:
-                    rank_number = next(index for index, row in enumerate(rows, 1) if row["code"] == report["code"])
-                    value_source = "공식 순위 확인값" if ranked_row["value_source"] == "official_rank" else "공개 원본 계산값"
-                    st.caption(f"{metric_labels[applied['metric']]} {rank_number}위 · {human_value(applied['metric'], ranked_row['value'])} · {value_source}")
-                else:
-                    st.caption("선택 지역은 현재 TOP 10 순위 밖입니다. 임의 순위를 붙이지 않습니다.")
+                rank_number = next((index for index, row in enumerate(rows, 1)
+                                    if row["code"] == report["code"]), None)
+                opinion_key = f"opinion-{report['kind']}-{report['code']}-{report['quarter']}-{report['industry']}-{applied['metric']}-compact-v1"
+                with st.container(key="rising-ai-summary"):
+                    ai_head, ai_refresh = st.columns([5, 1], vertical_alignment="center")
+                    with ai_head:
+                        st.html('<strong class="kb-ai-summary-title">AI 종합의견</strong>')
+                    with ai_refresh:
+                        if st.button("재분석", key=f"refresh-{opinion_key}", help="현재 지역의 수치로 AI 종합의견 다시 생성"):
+                            st.session_state.pop(opinion_key, None)
+                    if opinion_key not in st.session_state:
+                        with st.spinner("선택 지역의 보고서 수치를 Ollama로 분석하는 중입니다."):
+                            st.session_state[opinion_key] = generate_opinion(report, focus_metric=applied["metric"])
+                    generated = st.session_state[opinion_key]
+                    summary_items = "".join(f"<li>{escape(line)}</li>" for line in generated["lines"][:4])
+                    st.html(f'<ul class="kb-ai-summary-points">{summary_items}</ul>')
+                    st.caption("로컬 Ollama 생성 의견" if generated["mode"] == "ai" else "Ollama 연결 실패 · 검증된 수치 기반 요약")
                 if applied["industry"] != "all":
                     st.caption("업종별 세부 구성·요일·연령 자료는 확인되지 않아 해당 그래프에는 전체 업종 원본만 사용합니다.")
-                st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
-                opinion_key = f"opinion-{report['kind']}-{report['code']}-{report['quarter']}-{report['industry']}-{applied['metric']}"
-                ai_head, ai_refresh = st.columns([5, 1], vertical_alignment="center")
-                with ai_head:
-                    st.subheader("Ollama 지역 분석")
-                with ai_refresh:
-                    if st.button("재분석", key=f"refresh-{opinion_key}", help="현재 지역의 수치로 Ollama 분석 다시 생성"):
-                        st.session_state.pop(opinion_key, None)
-                if opinion_key not in st.session_state:
-                    with st.spinner("선택 지역의 보고서 수치를 Ollama로 분석하는 중입니다."):
-                        st.session_state[opinion_key] = generate_opinion(report, focus_metric=applied["metric"])
-                generated = st.session_state[opinion_key]
-                st.caption("Ollama 생성 의견" if generated["mode"] == "ai" else "Ollama 연결 실패 · 데이터 기반 대체 요약")
-                for line in generated["lines"]:
-                    st.markdown("- " + line)
-                st.caption(generated["note"])
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
                 first_tab = {"stores": "업종분석", "sales": "매출분석",
                              "footfall": "인구분석", "residents": "인구분석"}[applied["metric"]]
