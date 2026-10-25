@@ -14,7 +14,8 @@ def apply_rising_layout() -> None:
   gap: 0.3rem;
 }
 .st-key-rising-canvas {
-  position: relative; height: calc(100dvh - 30px); min-height: 650px;
+  position: fixed; top: calc(8px + 76px + 0.3rem); bottom: 0; left: 10px; right: 10px;
+  width: auto; height: auto; min-height: 0;
   overflow: hidden; background: #edece7; isolation: isolate;
 }
 .st-key-rising-map-canvas { position: absolute; inset: 0; z-index: 0; height: 100%; }
@@ -74,7 +75,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
 .st-key-rising-industry-control [data-testid="stButtonGroup"] {width:100%;min-width:0;}
 .st-key-rising-industry-control [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:6px!important;}
-.kb-metric-label {font-size:13px;font-weight:400;margin:4px 0 6px;color:#172033}
+.kb-metric-label {font-size:13px;font-weight:400!important;margin:4px 0 6px;color:#172033}
 .st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%}
 .st-key-rising-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
 .st-key-rising-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#101624;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;overflow:visible;text-overflow:clip}
@@ -128,7 +129,7 @@ def apply_rising_layout() -> None:
 .kb-overview-rank strong {color:#213047;}
 .kb-overview-card p {font-size:10px;color:#6a7280;text-align:center;margin:0;padding:6px 3px;}
 @media (max-width: 1350px) {
-  .st-key-rising-canvas { height: auto; min-height: 0; overflow: visible; display: flex; flex-direction: column; }
+  .st-key-rising-canvas { position:relative;top:auto;bottom:auto;left:auto;right:auto;height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column; }
   .st-key-rising-map-canvas, .st-key-rising-filter-panel, .st-key-rising-report-panel {position:relative;inset:auto;width:auto;max-width:none;}
   .st-key-rising-map-selector {position:relative;inset:auto;transform:none;left:auto!important;order:2;width:auto!important;margin:12px;}
   .st-key-rising-map-canvas { order: 1; height: auto; }
