@@ -39,8 +39,7 @@ class RisingPageInteractionTests(unittest.TestCase):
             app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
             stores = next(button.label for button in app.button if button.key and button.key.startswith("rank-"))
             store_badges = [row["display"] for row in map_component.call_args.kwargs["data"]["rows"]]
-            next(widget for widget in app.get("segmented_control")
-                 if widget.label == "분석 지표").set_value("sales").run()
+            app.button(key="rising-metric-sales").click().run()
             self.assertEqual(app.session_state["rising_filters"]["metric"], "sales")
             sales = next(button.label for button in app.button if button.key and button.key.startswith("rank-"))
             sales_badges = [row["display"] for row in map_component.call_args.kwargs["data"]["rows"]]
@@ -49,18 +48,52 @@ class RisingPageInteractionTests(unittest.TestCase):
             self.assertEqual(len(map_component.call_args.kwargs["data"]["fallback_districts"]), 25)
             self.assertFalse(app.exception)
 
-    def test_center_selector_syncs_district_region_and_collapse(self):
-        app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
-        next(widget for widget in app.selectbox if widget.label == "지도 자치구").set_value("강남구").run()
-        self.assertEqual(app.session_state["rising_filters"]["district"], "강남구")
-        self.assertEqual(next(widget for widget in app.selectbox if widget.label == "자치구").value, "강남구")
-        region = next(widget for widget in app.selectbox if widget.label == "지도 지역")
-        region.set_value(region.options[1]).run()
-        self.assertEqual(app.session_state["rising_selected"], next(widget for widget in app.selectbox if widget.label == "지도 지역").value)
-        app.button(key="rising-selector-toggle").click().run()
-        self.assertFalse(app.session_state["rising_selector_open"])
-        app.button(key="rising-selector-toggle").click().run()
-        self.assertTrue(app.session_state["rising_selector_open"])
+    def test_center_selector_events_sync_district_region_and_collapse(self):
+        from kb_bridge.ui import kakao_rank_map
+
+        event = SimpleNamespace(selected=None)
+        with patch.object(kakao_rank_map, "_MAP", side_effect=lambda **kwargs: event) as map_component:
+            app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
+            selector = map_component.call_args.kwargs["data"]["selector"]
+            self.assertEqual(selector["district"], "")
+            self.assertEqual(len(selector["districts"]), 25)
+
+            event.district_selected = "강남구"
+            app.run()
+            self.assertEqual(app.session_state["rising_filters"]["district"], "강남구")
+            self.assertEqual(next(widget for widget in app.selectbox if widget.label == "자치구").value, "강남구")
+
+            region = next(item for item in selector["locations"] if item["district"] == "강남구")
+            event.region_selected = region["code"]
+            app.run()
+            self.assertEqual(app.session_state["rising_selected"], region["code"])
+
+            event.selector_open = False
+            app.run()
+            self.assertFalse(app.session_state["rising_selector_open"])
+            event.selector_open = True
+            app.run()
+            self.assertTrue(app.session_state["rising_selector_open"])
+            self.assertFalse(app.exception)
+
+    def test_stale_ollama_function_is_reloaded_before_report(self):
+        from kb_bridge.integrations import ollama_opinion
+
+        def old_generate_opinion(report):
+            return {"mode": "fallback", "lines": [], "note": "old"}
+
+        def reload_opinion(module):
+            if module is ollama_opinion:
+                module.generate_opinion = lambda report, focus_metric=None: {
+                    "mode": "ai", "lines": ["확인된 분석"] * 4, "note": "테스트 응답"
+                }
+            return module
+
+        with patch.object(ollama_opinion, "generate_opinion", old_generate_opinion), \
+             patch("importlib.reload", side_effect=reload_opinion) as reloaded:
+            app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
+            next(button for button in app.button if button.key and button.key.startswith("rank-")).click().run()
+        self.assertTrue(reloaded.called)
         self.assertFalse(app.exception)
 
     def test_detail_filters_and_boundary_toggle(self):
@@ -90,8 +123,8 @@ class RisingPageInteractionTests(unittest.TestCase):
                                 ("footfall", "인구분석"), ("residents", "인구분석")):
             with self.subTest(metric=metric):
                 app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
-                next(widget for widget in app.get("segmented_control")
-                     if widget.label == "분석 지표").set_value(metric).run()
+                if metric != "stores":
+                    app.button(key=f"rising-metric-{metric}").click().run()
                 first_rank = next(button for button in app.button
                                   if button.key and button.key.startswith("rank-"))
                 first_rank.click().run()
