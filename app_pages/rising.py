@@ -405,7 +405,7 @@ with st.container(key="rising-canvas"):
                 st.rerun()
     with st.container(key="rising-map-selector"):
         if st.session_state.rising_selector_open:
-            city_col, district_col, region_col, close_col = st.columns([1, 1.1, 1.1, 0.6], gap="small", vertical_alignment="center")
+            city_col, district_col, region_col, close_col = st.columns([1, 1.1, 1.1, 0.7], gap="small", vertical_alignment="center")
             with city_col:
                 st.button("◉ 서울특별시", key="rising-city-reset", on_click=reset_map_to_seoul,
                           help="서울시 전체로 돌아가기", width="stretch")

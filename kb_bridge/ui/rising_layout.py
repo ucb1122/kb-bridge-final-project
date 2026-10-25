@@ -25,20 +25,21 @@ def apply_rising_layout() -> None:
 .st-key-rising-filter-panel > [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-controls-card,.st-key-rising-rank-card {padding:16px 12px;background:#fff;border:0;border-bottom:6px solid #f2f4f5;border-radius:0;box-shadow:none;}
 .st-key-rising-report-panel {right:0;top:0;bottom:0;width:clamp(520px,36vw,720px);padding:18px 22px;background:#fff;border:0;border-top:5px solid #FFBF00;box-shadow:-2px 0 12px #0002;}
-.st-key-rising-map-selector {position:absolute;z-index:10000;top:12px;left:calc(50% + clamp(215px,13vw,260px) - clamp(260px,18vw,360px));transform:translateX(-50%);box-sizing:border-box;width:min(500px,calc(100% - clamp(430px,26vw,520px) - clamp(520px,36vw,720px) - 76px));padding:4px 8px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
-.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:calc(50% + clamp(215px,13vw,260px));width:min(500px,calc(100% - clamp(430px,26vw,520px) - 76px));}
-.st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-map-selector {left:calc(50% - clamp(260px,18vw,360px));width:min(500px,calc(100% - clamp(520px,36vw,720px) - 76px));}
-.st-key-rising-canvas:has(.kb-left-collapsed-flag):has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:50%;width:min(500px,calc(100% - 76px));}
-.st-key-rising-map-selector:has(.kb-rising-selector-collapsed) {width:120px!important;padding:4px 8px;}
-.st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:5px;}
-.st-key-rising-map-selector [data-testid="stColumn"] {min-width:0;}
+.st-key-rising-map-selector {position:absolute;z-index:10000;top:12px;left:calc(50% + clamp(215px,13vw,260px) - clamp(260px,18vw,360px));transform:translateX(-50%);box-sizing:border-box;width:min(400px,calc(100% - clamp(430px,26vw,520px) - clamp(520px,36vw,720px) - 76px));padding:2px 5px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
+.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:calc(50% + clamp(215px,13vw,260px));width:min(400px,calc(100% - clamp(430px,26vw,520px) - 76px));}
+.st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-map-selector {left:calc(50% - clamp(260px,18vw,360px));width:min(400px,calc(100% - clamp(520px,36vw,720px) - 76px));}
+.st-key-rising-canvas:has(.kb-left-collapsed-flag):has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:50%;width:min(400px,calc(100% - 76px));}
+.st-key-rising-map-selector:has(.kb-rising-selector-collapsed) {width:88px!important;min-width:0!important;max-width:88px!important;padding:2px 4px;}
+.st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:3px!important;}
+.st-key-rising-map-selector [data-testid="stColumn"] {min-width:0!important;flex-shrink:1!important;}
 .st-key-rising-map-selector [data-testid="stVerticalBlock"] {gap:0;}
-.st-key-rising-map-selector [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:36px;}
-.st-key-rising-map-selector [data-testid="stButton"] {width:100%;}
-.st-key-rising-map-selector [data-testid="stButton"] button {width:100%;min-width:0;min-height:36px;padding:0 2px;border:0;background:#fff;color:#8a6400;font-size:12px;justify-content:center;white-space:nowrap;}
+.st-key-rising-map-selector [data-testid="stSelectbox"],.st-key-rising-map-selector [data-baseweb="select"] {min-width:0!important;width:100%;}
+.st-key-rising-map-selector [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:32px;}
+.st-key-rising-map-selector [data-testid="stButton"] {width:100%;min-width:0;}
+.st-key-rising-map-selector [data-testid="stButton"] button {width:100%;min-width:0;min-height:32px;padding:0 1px;border:0;background:#fff;color:#8a6400;font-size:11px;justify-content:center;white-space:nowrap;}
 .st-key-rising-map-selector:has(.kb-rising-selector-collapsed) [data-testid="stButton"] button {justify-content:center;text-align:center;font-weight:700;}
 .st-key-rising-map-selector [data-testid="stButton"] button:hover {background:#fff8df;color:#614900;}
-.st-key-rising-map-selector .st-key-rising-city-reset button {font-size:12px;font-weight:800;color:#b98200;justify-content:flex-start;padding-left:4px;}
+.st-key-rising-map-selector .st-key-rising-city-reset button {font-size:11px;font-weight:800;color:#b98200;justify-content:flex-start;padding-left:4px;}
 .st-key-rising-filter-panel h2 { margin: 0; color: #101624; font-size: 23px; }
 .st-key-rising-filter-panel h3 { font-size: 16px; margin: 0; }
 .st-key-rising-filter-panel [data-testid="stForm"] {
