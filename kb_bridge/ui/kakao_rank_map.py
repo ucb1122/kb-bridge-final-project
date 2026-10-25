@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-COMPONENT_VERSION = 6
+COMPONENT_VERSION = 7
 
 _MAP = st.components.v2.component(
-    "kb_bridge_rising_map_v6",
+    "kb_bridge_rising_map_v7",
     html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
     css="""
 #kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
@@ -110,13 +110,27 @@ function drawKakaoBoundaries(root,map,features,districts,showAll,allLocations,se
     dot.setAttribute('cx',String(point.x));dot.setAttribute('cy',String(point.y));
   }
 }
+function sizeMapSurface(root,host,canvas) {
+  if (!mapStretch || window.innerWidth<=1350 || !canvas || !canvas.contains(host)) return false;
+  const height=Math.ceil(canvas.getBoundingClientRect().height);
+  if (!height) return false;
+  for (let node=host;node && node!==canvas;node=node.parentElement) {
+    node.style.height=`${height}px`;
+    node.style.minHeight='0';
+  }
+  root.parentElement.style.height=`${height}px`;
+  root.style.height=`${height}px`;
+  return true;
+}
 function resizeMapViewport() {
   if(!mapRoot)return;
   const host=mapRoot.getRootNode().host||mapRoot;
-  const canvas=host.closest?.('.st-key-rising-canvas, .st-key-owner-canvas');
-  const compact=window.innerWidth<=1100;
-  const size=compact?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-mapRoot.getBoundingClientRect().top));
-  mapRoot.style.height=mapStretch&&window.innerWidth>1350?'100%':`${size}px`;
+  const canvas=mapStretch?document.querySelector('.st-key-rising-canvas'):host.closest?.('.st-key-owner-canvas');
+  if (!sizeMapSurface(mapRoot,host,canvas)) {
+    const compact=window.innerWidth<=1100;
+    const size=compact?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-mapRoot.getBoundingClientRect().top));
+    mapRoot.style.height=`${size}px`;
+  }
   map?.relayout();fallbackMap?.resize();scheduleKakaoDecorations();
 }
 function scheduleKakaoDecorations() {
@@ -322,9 +336,10 @@ export default async function(component) {
   if (!root) return;
   renderSelector(root,data.selector,setTriggerValue);
   const host=root.getRootNode().host||root;
-  const canvas=host.closest?.('.st-key-rising-canvas, .st-key-owner-canvas');
+  const canvas=data.stretch?document.querySelector('.st-key-rising-canvas'):host.closest?.('.st-key-owner-canvas');
   mapStretch=Boolean(data.stretch);
-  root.style.height=mapStretch&&window.innerWidth>1350?'100%':`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
+  if (!sizeMapSurface(root,host,canvas))
+    root.style.height=`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
   if (canvas && observedCanvas!==canvas) {
     canvasResizeObserver?.disconnect();
     observedCanvas=canvas;
@@ -441,7 +456,7 @@ def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selec
                                        "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
                                        "fallback_districts": fallback_districts or [], "show_all_boundaries": show_all_boundaries,
                                        "all_locations": all_locations or [], "selector": selector, "stretch": stretch},
-                height="stretch" if stretch else "content", on_selected_change=lambda: None,
+                height="content", on_selected_change=lambda: None,
                 on_district_selected_change=lambda: None,
                 on_region_selected_change=lambda: None,
                 on_selector_open_change=lambda: None)
