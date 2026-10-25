@@ -101,19 +101,23 @@ def overview_cards(report: dict) -> list[dict]:
     density = footfall / area_ha if footfall is not None and area_ha else None
     previous_footfall = _history_value(report, "footfall", previous)
     year_footfall = _history_value(report, "footfall", year_ago)
-    # Historical population observations use the same verified analysis area as the
-    # current quarter, so each comparison has the same 명/ha denominator.
-    divisor = area_ha or 1
+    # Match the values visible in the card: subtract each quarter's rounded
+    # people-per-hectare value using the same analysis area.
+    def footfall_delta(previous_value: float | None) -> float | None:
+        if footfall is None or previous_value is None:
+            return None
+        if area_ha:
+            return round(footfall / area_ha) - round(previous_value / area_ha)
+        return footfall - previous_value
+
     cards.append({
         "key": "footfall",
         "title": "유동인구 밀도" if density is not None else "유동인구 (분기 총량)",
         "unit": "명/ha" if density is not None else "명",
         "current": density if density is not None else footfall,
-        "previous_delta": (footfall - previous_footfall) / divisor
-            if footfall is not None and previous_footfall is not None else None,
-        "year_delta": (footfall - year_footfall) / divisor
-            if footfall is not None and year_footfall is not None else None,
-        "source": f"3개월·1ha당 · 공개 원본 / {quarter[:4]}년 {quarter[-1]}분기 분석 면적 · 증감은 반올림 전 원본값 기준" if density is not None else "공개 원본",
+        "previous_delta": footfall_delta(previous_footfall),
+        "year_delta": footfall_delta(year_footfall),
+        "source": f"3개월·1ha당 · 공개 원본 / {quarter[:4]}년 {quarter[-1]}분기 분석 면적 · 분기별 반올림값 차이" if density is not None else "공개 원본",
         "rank": None,
     })
     return cards

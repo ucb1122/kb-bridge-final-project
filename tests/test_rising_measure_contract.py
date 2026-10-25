@@ -63,12 +63,11 @@ class SnapshotMeasureTests(unittest.TestCase):
         self.assertEqual(cards["sales"]["previous_delta"], -60)
         self.assertEqual(cards["sales"]["year_delta"], -184)
         self.assertEqual(cards["sales"]["source"], "공식 보고서 확인값")
-        # Subtract source populations before rounding: displayed rounded densities
-        # (38,085 - 34,318) would misleadingly suggest a one-person larger delta.
+        # Subtract the displayed rounded quarterly densities.
         self.assertEqual(round(cards["footfall"]["current"]), 38_085)
-        self.assertEqual(round(cards["footfall"]["previous_delta"]), 3_766)
+        self.assertEqual(cards["footfall"]["previous_delta"], 3_767)
         self.assertEqual(round(cards["footfall"]["year_delta"]), 9_953)
-        self.assertIn("반올림 전 원본값", cards["footfall"]["source"])
+        self.assertIn("분기별 반올림값 차이", cards["footfall"]["source"])
 
     def test_ilwon_verified_monthly_and_density_keep_raw_total_separate(self):
         report = rising_snapshot.report(kind="dong", code="11680720", quarter="20262")
@@ -86,8 +85,8 @@ class SnapshotMeasureTests(unittest.TestCase):
         year_ago = next(row["value"] for row in report["history"]
                         if row["quarter"] == "20252" and row["metric"] == "footfall")
         self.assertEqual(cards["footfall"]["title"], "유동인구 밀도")
-        self.assertAlmostEqual(cards["footfall"]["previous_delta"], (current - previous) / area_ha)
-        self.assertAlmostEqual(cards["footfall"]["year_delta"], (current - year_ago) / area_ha)
+        self.assertEqual(cards["footfall"]["previous_delta"], round(current / area_ha) - round(previous / area_ha))
+        self.assertEqual(cards["footfall"]["year_delta"], round(current / area_ha) - round(year_ago / area_ha))
 
     def test_industry_report_matches_ranking_scope_without_official_override(self):
         rows = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262",
