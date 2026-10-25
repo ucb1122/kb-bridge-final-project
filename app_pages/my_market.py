@@ -11,14 +11,14 @@ import streamlit as st
 
 from kb_bridge.config import load_settings
 from kb_bridge.domain.finance import amortizing_payment
-from kb_bridge.repositories import owner_snapshot
+from kb_bridge.repositories import owner_dong, owner_snapshot
 from kb_bridge.ui import kakao_rank_map, owner_layout, owner_report
 
 # Streamlit reruns page code without re-importing modules already in the server process.
 if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
         not callable(getattr(owner_snapshot, "search_businesses", None))):
     importlib.reload(owner_snapshot)
-if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 1:
+if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 2:
     importlib.reload(owner_report)
 importlib.reload(owner_layout)
 if getattr(kakao_rank_map, "COMPONENT_VERSION", 0) != 9:
@@ -46,13 +46,15 @@ def load_licences(lat: float, lng: float, radius: int, group_id: str) -> dict:
 
 
 @st.cache_data(max_entries=64)
-def load_market_report(code: str, industry_code: str | None, snapshot_version: int) -> dict:
-    return owner_snapshot.market_report(code, industry_code)
+def load_market_report(kind: str, code: str, industry_code: str | None,
+                       quarter: str, snapshot_version: int) -> dict:
+    return (owner_dong.report(code, industry_code, quarter) if kind == "dong"
+            else owner_snapshot.market_report(code, industry_code))
 
 
 @st.cache_data(max_entries=16)
-def market_boundary(code: str) -> list[dict]:
-    path = owner_snapshot.LOCAL / "commerce.geojson"
+def market_boundary(kind: str, code: str) -> list[dict]:
+    path = owner_snapshot.LOCAL / ("commerce-dong.geojson" if kind == "dong" else "commerce.geojson")
     if not path.is_file():
         return []
     return [feature for feature in json.loads(path.read_text(encoding="utf-8"))["features"]
@@ -124,7 +126,7 @@ def choose_owner_metric(value: str) -> None:
 
 
 def reset_owner_filters() -> None:
-    for key in ("owner-mode", "owner-find-mode", "owner-category", "owner-district",
+    for key in ("owner-mode", "owner-find-mode", "owner-region-kind-v2", "owner-category", "owner-district",
                 "owner-market-query", "owner_market_choice",
                 *(f"owner-rank-sort-{key}" for key in metric_labels),
                 "owner-business-query", "owner_business_anchor", "owner_pending_map_choice"):
@@ -174,16 +176,19 @@ with st.container(key="owner-canvas"):
                                   type="primary" if st.session_state.owner_metric_choice == metric_key else "secondary",
                                   on_click=choose_owner_metric, args=(metric_key,), width="stretch")
             metric = st.session_state.owner_metric_choice
-            quarter = owner_snapshot.regional()["quarter"]
             unit_column, quarter_column = st.columns(2)
             with unit_column:
-                st.selectbox("분석 단위", ["공식 상권 전체"], key="owner-region-kind", disabled=True)
+                region_kind = st.selectbox("분석 단위", ["행정동 전체", "공식 상권 전체"]
+                    if owner_dong.available() else ["공식 상권 전체"], key="owner-region-kind-v2")
+            kind = "dong" if region_kind == "행정동 전체" else "area"
+            quarter = owner_dong.quarter() if kind == "dong" else owner_snapshot.regional()["quarter"]
             with quarter_column:
                 st.selectbox("기준 분기", [quarter], key="owner-quarter", disabled=True,
                              format_func=lambda q: f"{q[:4]}년 {q[-1]}분기")
             district_column, industry_column = st.columns(2)
             with district_column:
-                districts = sorted({item["district"] for item in owner_snapshot.markets()})
+                districts = sorted({item["district"] for item in (
+                    owner_dong.regions(quarter=quarter) if kind == "dong" else owner_snapshot.markets())})
                 district = st.selectbox("자치구", ["", *districts],
                                         format_func=lambda value: value or "서울시 전체", key="owner-district")
             with industry_column:
@@ -239,10 +244,12 @@ with st.container(key="owner-canvas"):
                         key=f"owner-founder-industry-{category}")
                     group = {"label": category if industry_code == scope
                              else owner_snapshot.regional()["industries"][industry_code]}
-            candidates = owner_snapshot.markets(district=district, query=query)
-            ranked = owner_snapshot.growth_rankings(
-                industry_scope=None if industry_code == "unmapped" else industry_code,
-                metric=metric, district=district)
+            candidates = (owner_dong.regions(quarter=quarter, district=district, query=query)
+                          if kind == "dong" else owner_snapshot.markets(district=district, query=query))
+            ranked = (owner_dong.rankings(quarter=quarter, metric=metric,
+                         industry_code=industry_code, district=district)
+                      if kind == "dong" else owner_snapshot.growth_rankings(
+                         industry_scope=industry_code, metric=metric, district=district))
             if query:
                 candidate_codes = {item["code"] for item in candidates}
                 ranked = [item for item in ranked if item["code"] in candidate_codes]
@@ -303,7 +310,8 @@ with st.container(key="owner-canvas"):
             st.rerun()
 
     market = next((item for item in candidates if item["code"] == chosen_code), None)
-    report = load_market_report(chosen_code, industry_code, owner_snapshot.OWNER_SNAPSHOT_VERSION) if market else None
+    report = load_market_report(kind, chosen_code, industry_code, quarter,
+                                owner_snapshot.OWNER_SNAPSHOT_VERSION) if market else None
     with st.container(key="owner-map-canvas"):
         if mode == "나도 곧 사장":
             visible_ranked = ranked[:10]
@@ -329,7 +337,7 @@ with st.container(key="owner-canvas"):
                                  "display": metric_display(metric, metric_value(report, metric))})
             map_selected = chosen_code or None
         map_result = show_map(key=load_settings().kakao_map_javascript_key, rows=map_rows,
-                 boundaries=market_boundary(market["code"]) if market else [],
+                 boundaries=market_boundary(kind, market["code"]) if market else [],
                  selected=map_selected, source="official",
                  district=market["district"] if market else "",
                  fallback_districts=seoul_outline(),
