@@ -8,7 +8,7 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-from kb_bridge.repositories import owner_snapshot, rising_snapshot
+from kb_bridge.repositories import owner_dong, owner_snapshot, rising_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -191,7 +191,8 @@ class OwnerPageInteractionTests(unittest.TestCase):
         self.assertTrue(any(widget.label == "기준 분기" for widget in app.selectbox))
 
     def test_map_marker_selects_market_before_selectbox_is_created(self):
-        selected = owner_snapshot.growth_rankings(industry_scope=None, metric="stores")[0]["code"]
+        selected = owner_dong.rankings(quarter=owner_dong.quarter(), metric="stores",
+                                       industry_code=None)[0]["code"]
         self.map_component.return_value = SimpleNamespace(selected=selected)
         app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
         self.assertFalse(app.exception)
@@ -214,10 +215,33 @@ class OwnerPageInteractionTests(unittest.TestCase):
         self.assertTrue(callable(owner_snapshot.search_businesses))
     def test_market_selectbox_opens_side_report(self):
         app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
-        first_code = owner_snapshot.markets()[0]["code"]
+        first_code = "11230740"
         next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value(first_code).run()
         self.assertEqual(next(widget for widget in app.selectbox if widget.label == "분석 상권").value, first_code)
         self.assertTrue(any(button.key == "owner-right-collapse" for button in app.button))
+        self.assertFalse(app.exception)
+
+    def test_dong_report_matches_original_imun1_values_and_boundary(self):
+        app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        unit = next(widget for widget in app.selectbox if widget.label == "분석 단위")
+        self.assertEqual(unit.value, "행정동 전체")
+        next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value("11230740").run()
+        cards = {card.label: (card.value, card.delta) for card in app.metric}
+        self.assertEqual(cards["점포수"], ("1,116개", "+1.7%"))
+        self.assertEqual(cards["분기 추정매출"], ("310.1억 원", "+6.1%"))
+        self.assertEqual(cards["유동인구 집계"], ("14,072,454명", "+12.6%"))
+        boundary = self.map_component.call_args.kwargs["boundaries"]
+        self.assertEqual(len(boundary), 1)
+        self.assertEqual(boundary[0]["properties"]["code"], "11230740")
+        self.assertFalse(app.exception)
+
+    def test_switching_to_official_market_keeps_its_own_scope(self):
+        app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        next(widget for widget in app.selectbox if widget.label == "분석 단위").set_value("공식 상권 전체").run()
+        code = owner_snapshot.markets()[0]["code"]
+        next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value(code).run()
+        self.assertEqual(app.session_state["owner_market_choice"], code)
+        self.assertEqual(self.map_component.call_args.kwargs["boundaries"][0]["properties"]["code"], code)
         self.assertFalse(app.exception)
 
     def test_selection_report_collapse_and_finance_calculation(self):
