@@ -50,13 +50,8 @@ KB 상권브릿지는 서울시 공개 상권 자료로 지역 변화를 살펴�
 
 ## 2. 팀 소개
 
-| 이름 |
-| --- |
-| 정지수 |
-| 이준용 |
-| 배정환 |
-| 김채연 |
-| 진희헌 |
+| 정지수 | 이준용 | 배정환 | 김채연 | 진희헌 |
+| :---: | :---: | :---: | :---: | :---: |
 
 ## 3. 문제 정의와 기획 방향
 
@@ -196,6 +191,10 @@ flowchart LR
 원본 자료의 출처, 수집 시점, 인코딩과 기간을 보존하고, 팀원에게 공유할 때는 재현 명령을 함께 전달합니다. 원본 폴더별 설명은 [데이터 안내](data/README.md)에 있습니다.
 
 ## 7. 기술 구성과 아키텍처
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) ![Kakao Maps](https://img.shields.io/badge/Kakao%20Maps-FFCD00?style=for-the-badge&logo=kakao&logoColor=black) ![Ollama](https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white)
+
+핵심 실행 환경과 선택형 연동 기술입니다. PDF 출력에는 ReportLab, 자동 검증에는 `unittest`와 Streamlit AppTest를 사용합니다.
 
 | 구분 | 기술 | 현재 역할 |
 | --- | --- | --- |
