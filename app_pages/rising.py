@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib
 import inspect
 import json
+from collections import Counter, defaultdict
 from html import escape
 from pathlib import Path
 
@@ -54,6 +55,45 @@ def load_locations(kind: str, quarter: str) -> list[dict]:
 def seoul_district_boundaries() -> list[dict]:
     path = Path(__file__).resolve().parents[1] / "assets" / "seoul-district-boundaries.geojson"
     return json.loads(path.read_text(encoding="utf-8"))["features"]
+
+
+@st.cache_data(max_entries=26)
+def visible_district_outline(district: str) -> list[dict]:
+    features = seoul_district_boundaries()
+    if district:
+        return [feature for feature in features if feature["properties"]["district"] == district]
+
+    # Adjacent district lines share exact endpoints. Keep edges occurring once to
+    # draw only the outer Seoul border, not all 25 internal district lines.
+    edge_counts = Counter()
+    for feature in features:
+        for line in feature["geometry"]["coordinates"]:
+            edge_counts.update(tuple(sorted((tuple(a), tuple(b)))) for a, b in zip(line, line[1:]))
+    neighbors = defaultdict(list)
+    for (a, b), count in edge_counts.items():
+        if count == 1:
+            neighbors[a].append(b)
+            neighbors[b].append(a)
+    loops = []
+    remaining = set(neighbors)
+    while remaining:
+        start = next(iter(remaining))
+        loop = [start]
+        previous, current = None, start
+        while True:
+            candidates = [point for point in neighbors[current] if point != previous]
+            if not candidates:
+                break
+            following = candidates[0]
+            loop.append(following)
+            remaining.discard(current)
+            if following == start:
+                break
+            previous, current = current, following
+        if len(loop) > 2:
+            loops.append([list(point) for point in loop])
+    return [{"type": "Feature", "properties": {"district": "서울특별시"},
+             "geometry": {"type": "MultiLineString", "coordinates": loops}}]
 
 
 @st.cache_data(max_entries=16)
@@ -150,7 +190,7 @@ with st.container(key="rising-canvas"):
         map_result = show_map(key=load_settings().kakao_map_javascript_key,
                             rows=[{**r, "display": human_value(applied["metric"], r["value"])} for r in rows],
                             boundaries=boundaries(applied["kind"], applied["district"], tuple(r["code"] for r in rows)),
-                            fallback_districts=seoul_district_boundaries(),
+                            fallback_districts=visible_district_outline(applied["district"]),
                             **map_extras,
                             selected=st.session_state.rising_selected,
                             selected_location=location_by_code.get(st.session_state.rising_selected),
@@ -277,13 +317,7 @@ with st.container(key="rising-canvas"):
             report = load_report(applied["kind"], selected_row["code"], result["quarter"], applied["industry"])
             if report:
                 st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
-                head, collapse = st.columns([5, 1])
-                with head:
-                    st.subheader(f"{report['district']} {report['name']} 분석 리포트")
-                with collapse:
-                    if st.button("접기 ›", key="rising-collapse-report", help="분석 리포트 접기"):
-                        st.session_state.rising_right_open = False
-                        st.rerun()
+                st.subheader(f"{report['district']} {report['name']} 분석 리포트")
                 scope = {"all": "전체 업종", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[report["industry"]]
                 st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 점포수·매출: {scope} · 인구: 지역 전체 · 출처별 값을 구분합니다.")
                 ranked_row = next((row for row in rows if row["code"] == report["code"]), None)

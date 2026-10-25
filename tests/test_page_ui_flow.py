@@ -45,7 +45,7 @@ class RisingPageInteractionTests(unittest.TestCase):
             sales_badges = [row["display"] for row in map_component.call_args.kwargs["data"]["rows"]]
             self.assertNotEqual(stores, sales)
             self.assertNotEqual(store_badges, sales_badges)
-            self.assertEqual(len(map_component.call_args.kwargs["data"]["fallback_districts"]), 25)
+            self.assertEqual(len(map_component.call_args.kwargs["data"]["fallback_districts"]), 1)
             self.assertFalse(app.exception)
 
     def test_center_selector_events_sync_district_region_and_collapse(self):
@@ -133,11 +133,28 @@ class RisingPageInteractionTests(unittest.TestCase):
                 self.assertEqual(selected_tabs, [section])
                 self.assertFalse(app.exception)
 
+    def test_left_panel_collapse_and_selected_district_outline(self):
+        with patch("kb_bridge.ui.kakao_rank_map._MAP", return_value=SimpleNamespace(selected=None)) as map_component:
+            app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
+            city_line = map_component.call_args.kwargs["data"]["fallback_districts"]
+            self.assertEqual(len(city_line), 1)
+            self.assertEqual(city_line[0]["geometry"]["type"], "MultiLineString")
+            self.assertTrue(city_line[0]["geometry"]["coordinates"])
+            app.button(key="rising-left-collapse").click().run()
+            self.assertFalse(app.session_state["rising_left_open"])
+            app.button(key="rising-left-collapse").click().run()
+            self.assertTrue(app.session_state["rising_left_open"])
+            next(widget for widget in app.selectbox if widget.label == "자치구").set_value("강북구").run()
+            district_line = map_component.call_args.kwargs["data"]["fallback_districts"]
+            self.assertEqual(len(district_line), 1)
+            self.assertEqual(district_line[0]["properties"]["district"], "강북구")
+            self.assertFalse(app.exception)
+
     def test_report_collapses_without_clearing_selection(self):
         app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
         next(button for button in app.button if button.key and button.key.startswith("rank-")).click().run()
         selected = app.session_state["rising_selected"]
-        app.button(key="rising-collapse-report").click().run()
+        app.button(key="rising-right-collapse").click().run()
         self.assertFalse(app.session_state["rising_right_open"])
         self.assertEqual(app.session_state["rising_selected"], selected)
         self.assertFalse(app.exception)
