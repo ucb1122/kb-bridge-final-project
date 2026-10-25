@@ -11,7 +11,8 @@ page = st.navigation(
     [
         st.Page("app_pages/rising.py", title="뜨는 상권", icon=":material/trending_up:", default=True),
         st.Page("app_pages/my_market.py", title="내상권 분석", icon=":material/storefront:"),
-        st.Page("app_pages/warning.py", title="젠트리피케이션 경고", icon=":material/warning:"),
+        st.Page("app_pages/warning.py", title="위험상권 분석", icon=":material/warning:"),
+        st.Page("app_pages/products.py", title="금융 상품 추천", icon=":material/account_balance:"),
     ],
     position="hidden",
 )

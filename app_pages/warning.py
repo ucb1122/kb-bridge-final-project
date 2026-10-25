@@ -1,6 +1,3 @@
-import streamlit as st
+from kb_bridge.ui.coming_soon import render_coming_soon
 
-
-st.title("젠트리피케이션 경고")
-st.warning("검증된 지역별 미래 위험 결과가 연결되기 전에는 경고를 산출하지 않습니다.")
-st.caption("연구 노트북의 과거 재현 결과는 현재 사업자의 월세 인상이나 폐업을 뜻하지 않습니다. 위험 신호가 검증되면 내상권 경영·금융진단의 입력으로 연결합니다.")
+render_coming_soon("위험상권 분석", "상권의 위험 신호를 살펴볼 수 있도록 준비하고 있습니다.")

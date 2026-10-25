@@ -8,7 +8,7 @@ def navigation(active: str = "") -> None:
     links = "".join(
         f'<a href="{path}" class="{"active" if active == label else ""}">{label}</a>'
         for path, label in (("/", "뜨는 상권"), ("/my_market", "내상권 분석"),
-                            ("/warning", "젠트리피케이션 경고"))
+                            ("/warning", "위험상권 분석"), ("/products", "금융 상품 추천"))
     )
     st.html("""
     <style>
@@ -22,12 +22,18 @@ def navigation(active: str = "") -> None:
       .kb-site-symbol img {position:absolute;display:block;max-width:none;width:248px;
         height:auto;left:-33.7px;top:-65.6px}
       .kb-site-name {font-size:24px;font-weight:700;letter-spacing:-1.1px;white-space:nowrap}
-      .kb-site-header nav {display:flex;align-items:center;gap:23px;min-width:0;overflow-x:auto}
+      .kb-site-header nav {display:flex;align-items:center;gap:23px;min-width:0;flex:1;overflow-x:auto}
       .kb-site-header nav a {display:inline-flex;align-items:center;height:76px;flex:none;
         border-bottom:3px solid transparent;padding-top:3px;color:#172032;
         font-size:16px;font-weight:500;text-decoration:none;white-space:nowrap}
       .kb-site-header nav a:hover,.kb-site-header nav a.active {border-bottom-color:#ffbf00;color:#101624}
       .kb-site-header nav a.active {font-weight:700}
+      .kb-login-preview {display:inline-flex;align-items:center;gap:7px;flex:none;
+        margin-left:auto;padding:9px 15px;border:1px solid #dcd7ca;border-radius:9px;
+        background:#fff;color:#172032;font:500 14px 'KB Noto Sans KR','Malgun Gothic',sans-serif;
+        white-space:nowrap;cursor:default;opacity:1}
+      .kb-login-preview svg {width:18px;height:18px;stroke:currentColor;fill:none;
+        stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
       [data-testid="stHeader"], [data-testid="stDecoration"] {display:none}
       [data-testid="stMainBlockContainer"]:has(.kb-site-header) {max-width:none;padding:10px 0 20px}
       @media(max-width:850px) {
@@ -35,8 +41,9 @@ def navigation(active: str = "") -> None:
         .kb-site-symbol {width:42px;height:32px}
         .kb-site-symbol img {width:226px;left:-31px;top:-60px}
         .kb-site-name {font-size:21px}
-        .kb-site-header nav {order:3;width:100%;gap:20px}
+        .kb-site-header nav {order:3;width:100%;flex-basis:100%;gap:20px}
         .kb-site-header nav a {height:37px;font-size:12px}
+        .kb-login-preview {padding:7px 10px;font-size:12px}
       }
     </style>
     <header class="kb-site-header">
@@ -45,6 +52,10 @@ def navigation(active: str = "") -> None:
         <span class="kb-site-name">상권브릿지</span>
       </a>
       <nav aria-label="주 메뉴">__KB_NAV_LINKS__</nav>
+      <button class="kb-login-preview" type="button" disabled title="로그인 기능 개발 예정" aria-label="로그인 (개발 예정)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.7 3-5.5 7-5.5s6.4 1.8 7 5.5"/></svg>
+        로그인
+      </button>
     </header>""".replace("__KB_NAV_LINKS__", links))
 
 
