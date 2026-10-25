@@ -18,6 +18,8 @@ from kb_bridge.ui import kakao_rank_map, owner_layout, owner_report
 if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
         not callable(getattr(owner_snapshot, "search_businesses", None))):
     importlib.reload(owner_snapshot)
+if getattr(owner_dong, "OWNER_REGION_VERSION", 0) != 2:
+    importlib.reload(owner_dong)
 if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 3:
     importlib.reload(owner_report)
 importlib.reload(owner_layout)
@@ -48,8 +50,7 @@ def load_licences(lat: float, lng: float, radius: int, group_id: str) -> dict:
 @st.cache_data(max_entries=64)
 def load_market_report(kind: str, code: str, industry_code: str | None,
                        quarter: str, snapshot_version: int) -> dict:
-    return (owner_dong.report(code, industry_code, quarter) if kind == "dong"
-            else owner_snapshot.market_report(code, industry_code))
+    return owner_dong.report(code, industry_code, quarter, kind=kind)
 
 
 @st.cache_data(max_entries=16)
@@ -129,7 +130,8 @@ def reset_owner_filters() -> None:
     for key in ("owner-mode", "owner-find-mode", "owner-region-kind-v2", "owner-category", "owner-district",
                 "owner-market-query", "owner_market_choice",
                 *(f"owner-rank-sort-{key}" for key in metric_labels),
-                "owner-business-query", "owner_business_anchor", "owner_pending_map_choice"):
+                "owner-business-query", "owner_business_anchor", "owner_pending_map_choice",
+                "owner-quarter-dong", "owner-quarter-area"):
         st.session_state.pop(key, None)
     st.session_state.owner_metric_choice = "stores"
     st.session_state.owner_right_open = False
@@ -181,14 +183,14 @@ with st.container(key="owner-canvas"):
                 region_kind = st.selectbox("분석 단위", ["행정동 전체", "공식 상권 전체"]
                     if owner_dong.available() else ["공식 상권 전체"], key="owner-region-kind-v2")
             kind = "dong" if region_kind == "행정동 전체" else "area"
-            quarter = owner_dong.quarter() if kind == "dong" else owner_snapshot.regional()["quarter"]
             with quarter_column:
-                st.selectbox("기준 분기", [quarter], key="owner-quarter", disabled=True,
-                             format_func=lambda q: f"{q[:4]}년 {q[-1]}분기")
+                quarter = st.selectbox("기준 분기", owner_dong.quarters(),
+                                       key=f"owner-quarter-{kind}",
+                                       format_func=lambda q: f"{q[:4]}년 {q[-1]}분기")
             district_column, industry_column = st.columns(2)
             with district_column:
-                districts = sorted({item["district"] for item in (
-                    owner_dong.regions(quarter=quarter) if kind == "dong" else owner_snapshot.markets())})
+                districts = sorted({item["district"] for item in
+                                    owner_dong.regions(quarter=quarter, kind=kind)})
                 district = st.selectbox("자치구", ["", *districts],
                                         format_func=lambda value: value or "서울시 전체", key="owner-district")
             with industry_column:
@@ -244,12 +246,11 @@ with st.container(key="owner-canvas"):
                         key=f"owner-founder-industry-{category}")
                     group = {"label": category if industry_code == scope
                              else owner_snapshot.regional()["industries"][industry_code]}
-            candidates = (owner_dong.regions(quarter=quarter, district=district, query=query)
-                          if kind == "dong" else owner_snapshot.markets(district=district, query=query))
-            ranked = (owner_dong.rankings(quarter=quarter, metric=metric,
-                         industry_code=industry_code, district=district)
-                      if kind == "dong" else owner_snapshot.growth_rankings(
-                         industry_scope=industry_code, metric=metric, district=district))
+            candidates = owner_dong.regions(quarter=quarter, district=district,
+                                            query=query, kind=kind)
+            ranked = owner_dong.rankings(quarter=quarter, metric=metric,
+                                         industry_code=industry_code,
+                                         district=district, kind=kind)
             if query:
                 candidate_codes = {item["code"] for item in candidates}
                 ranked = [item for item in ranked if item["code"] in candidate_codes]
