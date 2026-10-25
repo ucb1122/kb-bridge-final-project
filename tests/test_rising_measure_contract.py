@@ -73,8 +73,15 @@ class SnapshotMeasureTests(unittest.TestCase):
         self.assertEqual(cards["sales"]["current"], 868)
         self.assertEqual(cards["sales"]["source"], "공식 보고서 확인값")
         self.assertEqual(round(cards["footfall"]["current"]), 10434)
-        self.assertIsNone(cards["footfall"]["previous_delta"])
-        self.assertIsNone(cards["footfall"]["year_delta"])
+        area_ha = report["area_m2"] / 10_000
+        current = report["metrics"]["footfall"]["value"]
+        previous = next(row["value"] for row in report["history"]
+                        if row["quarter"] == "20261" and row["metric"] == "footfall")
+        year_ago = next(row["value"] for row in report["history"]
+                        if row["quarter"] == "20252" and row["metric"] == "footfall")
+        self.assertEqual(cards["footfall"]["title"], "유동인구 밀도")
+        self.assertAlmostEqual(cards["footfall"]["previous_delta"], (current - previous) / area_ha)
+        self.assertAlmostEqual(cards["footfall"]["year_delta"], (current - year_ago) / area_ha)
 
     def test_industry_report_matches_ranking_scope_without_official_override(self):
         rows = rising_snapshot.rankings(kind="dong", metric="stores", quarter="20262",

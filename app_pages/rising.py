@@ -5,6 +5,7 @@ import importlib
 import inspect
 import json
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from html import escape
 from pathlib import Path
 
@@ -13,16 +14,20 @@ import streamlit as st
 from kb_bridge.config import load_settings
 from kb_bridge.integrations import ollama_opinion
 from kb_bridge.repositories import rising_snapshot
-from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, percent, ranking_change_label, sales_per_store_month
+from kb_bridge.services import rising_analysis
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
 from kb_bridge.ui import kakao_rank_map, rising_layout, rising_report
 
-# An already running Streamlit process can retain these modules across page reruns.
-if not hasattr(rising_report, "highlight_trends"):
+# Running Streamlit sessions retain imported modules across page reruns.
+if getattr(rising_analysis, "OVERVIEW_CARDS_VERSION", 0) != 2:
+    importlib.reload(rising_analysis)
+    importlib.reload(rising_report)
+elif not hasattr(rising_report, "highlight_trends"):
     importlib.reload(rising_report)
 if not hasattr(rising_snapshot, "overview_ranks"):
     importlib.reload(rising_snapshot)
 
+from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, highlight_trends, industry_chart, overview_card_grid
 
 importlib.reload(rising_layout)
@@ -41,6 +46,52 @@ generate_opinion = ollama_opinion.generate_opinion
 if not rising_snapshot.available():
     st.warning("상권 데이터가 아직 준비되지 않았습니다. README의 테스트 데이터 준비 명령을 실행해 주세요.")
     st.stop()
+
+@st.cache_resource
+def opinion_executor() -> ThreadPoolExecutor:
+    return ThreadPoolExecutor(max_workers=4, thread_name_prefix="rising-opinion")
+
+
+def render_ai_opinion(report: dict, focus_metric: str, opinion_key: str) -> None:
+    future_key = f"{opinion_key}-future"
+    pending = opinion_key not in st.session_state
+
+    @st.fragment(run_every="2s" if pending else None)
+    def opinion_fragment() -> None:
+        with st.container(key="rising-ai-summary"):
+            if opinion_key not in st.session_state:
+                future = st.session_state.get(future_key)
+                if future is None:
+                    future = opinion_executor().submit(generate_opinion, report, focus_metric)
+                    st.session_state[future_key] = future
+                if future.done():
+                    try:
+                        st.session_state[opinion_key] = future.result()
+                    except Exception:
+                        st.session_state[opinion_key] = {
+                            "mode": "data", "lines": rising_analysis.overview_lines(report)[:4],
+                        }
+                    st.session_state.pop(future_key, None)
+            ai_head, ai_refresh = st.columns([5, 1], vertical_alignment="center")
+            with ai_head:
+                st.html('<strong class="kb-ai-summary-title">AI 종합의견</strong>')
+            with ai_refresh:
+                if st.button("재분석", key=f"refresh-{opinion_key}",
+                             help="현재 지역의 수치로 AI 종합의견 다시 생성",
+                             disabled=opinion_key not in st.session_state):
+                    st.session_state.pop(opinion_key, None)
+                    st.session_state.pop(future_key, None)
+                    st.rerun()
+            if opinion_key not in st.session_state:
+                st.caption("AI 종합의견을 생성하는 중입니다. 아래 보고서 항목은 바로 이용할 수 있습니다.")
+                return
+            generated = st.session_state[opinion_key]
+            summary_items = "".join(f"<li>{highlight_trends(line)}</li>" for line in generated["lines"][:4])
+            st.html(f'<ul class="kb-ai-summary-points">{summary_items}</ul>')
+            st.caption("로컬 Ollama 생성 의견" if generated["mode"] == "ai" else "Ollama 연결 실패 · 검증된 수치 기반 요약")
+
+    opinion_fragment()
+
 
 @st.cache_data(max_entries=2)
 def filter_options() -> dict:
@@ -348,20 +399,7 @@ with st.container(key="rising-canvas"):
                 rank_number = next((index for index, row in enumerate(rows, 1)
                                     if row["code"] == report["code"]), None)
                 opinion_key = f"opinion-{report['kind']}-{report['code']}-{report['quarter']}-{report['industry']}-{applied['metric']}-compact-v1"
-                with st.container(key="rising-ai-summary"):
-                    ai_head, ai_refresh = st.columns([5, 1], vertical_alignment="center")
-                    with ai_head:
-                        st.html('<strong class="kb-ai-summary-title">AI 종합의견</strong>')
-                    with ai_refresh:
-                        if st.button("재분석", key=f"refresh-{opinion_key}", help="현재 지역의 수치로 AI 종합의견 다시 생성"):
-                            st.session_state.pop(opinion_key, None)
-                    if opinion_key not in st.session_state:
-                        with st.spinner("선택 지역의 보고서 수치를 Ollama로 분석하는 중입니다."):
-                            st.session_state[opinion_key] = generate_opinion(report, focus_metric=applied["metric"])
-                    generated = st.session_state[opinion_key]
-                    summary_items = "".join(f"<li>{highlight_trends(line)}</li>" for line in generated["lines"][:4])
-                    st.html(f'<ul class="kb-ai-summary-points">{summary_items}</ul>')
-                    st.caption("로컬 Ollama 생성 의견" if generated["mode"] == "ai" else "Ollama 연결 실패 · 검증된 수치 기반 요약")
+                render_ai_opinion(report, applied["metric"], opinion_key)
                 if applied["industry"] != "all":
                     st.caption("업종별 세부 구성·요일·연령 자료는 확인되지 않아 해당 그래프에는 전체 업종 원본만 사용합니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
@@ -426,11 +464,19 @@ with st.container(key="rising-canvas"):
                     "value_source": ranked_row["value_source"], "change_source": ranked_row["change_source"],
                     "industry": applied["industry"], "criterion": applied["criterion"],
                 } if ranked_row else None}
+                def current_pdf() -> bytes:
+                    return build_pdf(export_report, tab)
+
+                def report_zip() -> bytes:
+                    return build_zip(export_report)
+
                 exports = st.columns(2)
                 with exports[0]:
-                    st.download_button("현재 항목 PDF", data=build_pdf(export_report, tab), file_name=f"{report['code']}_{tab}.pdf", mime="application/pdf", width="stretch")
+                    st.download_button("현재 항목 PDF", data=current_pdf, file_name=f"{report['code']}_{tab}.pdf",
+                                       mime="application/pdf", width="stretch", on_click="ignore")
                 with exports[1]:
-                    st.download_button("PDF 5종 ZIP", data=build_zip(export_report), file_name=f"{report['code']}_reports.zip", mime="application/zip", width="stretch")
+                    st.download_button("PDF 5종 ZIP", data=report_zip, file_name=f"{report['code']}_reports.zip",
+                                       mime="application/zip", width="stretch", on_click="ignore")
                 if st.button("내 상권 경영·금융진단으로 이어가기", type="primary"):
                     st.session_state["consultation_region"] = {"code": report["code"], "kind": report["kind"], "name": report["name"], "district": report["district"], "quarter": report["quarter"]}
                     st.switch_page("app_pages/my_market.py")

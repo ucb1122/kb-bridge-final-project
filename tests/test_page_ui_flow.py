@@ -105,7 +105,15 @@ class RisingPageInteractionTests(unittest.TestCase):
         next(button for button in app.button if button.key and button.key.startswith("rank-")).click().run()
         self.assertEqual(self.ai_mock.call_count, 1)
         self.assertEqual(self.ai_mock.call_args.args[0]["code"], app.session_state["rising_selected"])
-        next(button for button in app.button if button.key and button.key.startswith("refresh-opinion-")).click().run()
+        self.assertTrue(any(widget.label == "보고서 항목" for widget in app.get("segmented_control")))
+        refresh_key = next(button.key for button in app.button
+                           if button.key and button.key.startswith("refresh-opinion-"))
+        opinion_key = refresh_key.removeprefix("refresh-")
+        future_key = f"{opinion_key}-future"
+        if future_key in app.session_state:
+            app.session_state[future_key].result(timeout=5)
+        app.run()
+        app.button(key=refresh_key).click().run()
         self.assertEqual(self.ai_mock.call_count, 2)
         self.assertFalse(app.exception)
 
