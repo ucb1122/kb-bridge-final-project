@@ -5,6 +5,8 @@ import streamlit as st
 
 from kb_bridge.repositories.owner_snapshot import distance_m
 
+OWNER_REPORT_VERSION = 1
+
 
 def _number(value: float | None, unit: str = "") -> str:
     return "자료 없음" if value is None else f"{value:,.0f}{unit}"

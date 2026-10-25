@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 LOCAL = ROOT / "data" / "local"
 CATALOG = ROOT / "assets" / "industry-catalog.json"
+OWNER_SNAPSHOT_VERSION = 2
 
 
 def available() -> bool:
