@@ -48,33 +48,21 @@ class RisingPageInteractionTests(unittest.TestCase):
             self.assertEqual(len(map_component.call_args.kwargs["data"]["fallback_districts"]), 1)
             self.assertFalse(app.exception)
 
-    def test_center_selector_events_sync_district_region_and_collapse(self):
-        from kb_bridge.ui import kakao_rank_map
-
-        event = SimpleNamespace(selected=None)
-        with patch.object(kakao_rank_map, "_MAP", side_effect=lambda **kwargs: event) as map_component:
-            app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
-            selector = map_component.call_args.kwargs["data"]["selector"]
-            self.assertEqual(selector["district"], "")
-            self.assertEqual(len(selector["districts"]), 25)
-
-            event.district_selected = "강남구"
-            app.run()
-            self.assertEqual(app.session_state["rising_filters"]["district"], "강남구")
-            self.assertEqual(next(widget for widget in app.selectbox if widget.label == "자치구").value, "강남구")
-
-            region = next(item for item in selector["locations"] if item["district"] == "강남구")
-            event.region_selected = region["code"]
-            app.run()
-            self.assertEqual(app.session_state["rising_selected"], region["code"])
-
-            event.selector_open = False
-            app.run()
-            self.assertFalse(app.session_state["rising_selector_open"])
-            event.selector_open = True
-            app.run()
-            self.assertTrue(app.session_state["rising_selector_open"])
-            self.assertFalse(app.exception)
+    def test_center_selector_syncs_district_region_and_collapse(self):
+        app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=30).run()
+        district = next(widget for widget in app.selectbox if widget.label == "지도 자치구")
+        district.set_value("강남구").run()
+        self.assertEqual(app.session_state["rising_filters"]["district"], "강남구")
+        self.assertEqual(next(widget for widget in app.selectbox if widget.label == "자치구").value, "강남구")
+        region = next(widget for widget in app.selectbox if widget.label == "지도 지역")
+        region.set_value(region.options[1]).run()
+        self.assertTrue(app.session_state["rising_selected"])
+        self.assertEqual(app.session_state["rising_selected"], app.session_state["rising_map_region"])
+        app.button(key="rising-selector-toggle").click().run()
+        self.assertFalse(app.session_state["rising_selector_open"])
+        app.button(key="rising-selector-toggle").click().run()
+        self.assertTrue(app.session_state["rising_selector_open"])
+        self.assertFalse(app.exception)
 
     def test_stale_ollama_function_is_reloaded_before_report(self):
         from kb_bridge.integrations import ollama_opinion
@@ -157,6 +145,8 @@ class RisingPageInteractionTests(unittest.TestCase):
         app.button(key="rising-right-collapse").click().run()
         self.assertFalse(app.session_state["rising_right_open"])
         self.assertEqual(app.session_state["rising_selected"], selected)
+        app.button(key="rising-right-expand").click().run()
+        self.assertTrue(app.session_state["rising_right_open"])
         self.assertFalse(app.exception)
 
 
