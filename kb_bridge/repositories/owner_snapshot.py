@@ -62,9 +62,11 @@ def _period_stats(period: dict, industry_scope: str | None) -> dict:
     else:
         entries = list(industries.values())
     result = {}
-    for metric in ("stores", "opened", "closed", "sales"):
+    for metric in ("stores", "opened", "closed", "sales", "transactions", "weekday", "weekend"):
         values = [entry[metric] for entry in entries if entry.get(metric) is not None]
         result[metric] = sum(values) if values else None
+    result["store_codes"] = sum(entry.get("stores") is not None for entry in entries)
+    result["sales_codes"] = sum(entry.get("sales") is not None for entry in entries)
     return result
 
 
@@ -78,6 +80,10 @@ def market_report(code: str, industry_code: str | None = None) -> dict:
             "quarter": quarter, "previous": previous,
             "current": _period_stats(current, industry_code), "prior": _period_stats(prior, industry_code),
             "floating": current.get("floating"), "resident": current.get("resident"), "worker": current.get("worker"),
+            "population_prior": {key: prior.get(key) for key in ("floating", "resident", "worker")},
+            "industry_breakdown": [{"code": key, "name": regional()["industries"].get(key, key),
+                                    **{field: value.get(field) for field in ("stores", "opened", "closed", "sales")}}
+                                   for key, value in current.get("industries", {}).items()],
             "industry_code": industry_code,
             "industry_name": regional()["industries"].get(industry_code, industry_code or "전체 업종")}
 
