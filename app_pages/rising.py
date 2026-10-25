@@ -31,8 +31,8 @@ def load_rankings(**kwargs) -> dict:
     return rising_snapshot.rankings(**kwargs)
 
 @st.cache_data(max_entries=80)
-def load_report(kind: str, code: str, quarter: str) -> dict | None:
-    return rising_snapshot.report(kind=kind, code=code, quarter=quarter)
+def load_report(kind: str, code: str, quarter: str, industry: str) -> dict | None:
+    return rising_snapshot.report(kind=kind, code=code, quarter=quarter, industry=industry)
 
 @st.cache_data(max_entries=16)
 def load_locations(kind: str, quarter: str) -> list[dict]:
@@ -221,7 +221,7 @@ with st.container(key="rising-canvas"):
                 st.session_state.rising_right_open = not st.session_state.rising_right_open
                 st.rerun()
         with st.container(key="rising-report-panel"):
-            report = load_report(applied["kind"], selected_row["code"], result["quarter"])
+            report = load_report(applied["kind"], selected_row["code"], result["quarter"], applied["industry"])
             if report:
                 st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
                 head, close = st.columns([5, 1])
@@ -232,7 +232,8 @@ with st.container(key="rising-canvas"):
                         st.session_state.rising_selected = None
                         st.session_state.rising_map_pending_region = ""
                         st.rerun()
-                st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 공개 원본과 확인된 공식 표시값을 구분합니다.")
+                scope = {"all": "전체 업종", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[report["industry"]]
+                st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 점포수·매출: {scope} · 인구: 지역 전체 · 출처별 값을 구분합니다.")
                 ranked_row = next((row for row in rows if row["code"] == report["code"]), None)
                 if ranked_row:
                     rank_number = next(index for index, row in enumerate(rows, 1) if row["code"] == report["code"])
@@ -240,6 +241,8 @@ with st.container(key="rising-canvas"):
                     st.caption(f"{metric_labels[applied['metric']]} {rank_number}위 · {human_value(applied['metric'], ranked_row['value'])} · {value_source}")
                 else:
                     st.caption("선택 지역은 현재 TOP 10 순위 밖입니다. 임의 순위를 붙이지 않습니다.")
+                if applied["industry"] != "all":
+                    st.caption("업종별 세부 구성·요일·연령 자료는 확인되지 않아 해당 그래프에는 전체 업종 원본만 사용합니다.")
                 st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
                 tab = st.segmented_control("보고서 항목", tabs, default="종합의견", width="stretch", wrap=False)
@@ -250,8 +253,8 @@ with st.container(key="rising-canvas"):
                     overview_card_grid(report, selected_rank=selected_rank, selected_metric=applied["metric"])
                     if st.button("로컬 AI 종합의견 생성"):
                         with st.spinner("검증된 보고서 수치로 의견을 생성하는 중입니다."):
-                            st.session_state[f"opinion-{report['code']}-{report['quarter']}"] = generate_opinion(report)
-                    generated = st.session_state.get(f"opinion-{report['code']}-{report['quarter']}")
+                            st.session_state[f"opinion-{report['code']}-{report['quarter']}-{report['industry']}"] = generate_opinion(report)
+                    generated = st.session_state.get(f"opinion-{report['code']}-{report['quarter']}-{report['industry']}")
                     if generated:
                         st.subheader("AI 종합의견" if generated["mode"] == "ai" else "데이터 기반 요약")
                         for line in generated["lines"]: st.markdown("- " + line)
