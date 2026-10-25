@@ -221,6 +221,24 @@ class OwnerPageInteractionTests(unittest.TestCase):
         self.assertTrue(any(button.key == "owner-right-collapse" for button in app.button))
         self.assertFalse(app.exception)
 
+    def test_quarter_selection_updates_dong_and_official_market_data(self):
+        app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        quarter = next(widget for widget in app.selectbox if widget.label == "기준 분기")
+        self.assertIn("2026년 1분기", quarter.options)
+        quarter.set_value("20261").run()
+        next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value("11230740").run()
+        self.assertEqual(next(card.value for card in app.metric if card.label == "점포수"), "1,097개")
+        self.assertEqual(self.map_component.call_args.kwargs["boundaries"][0]["properties"]["code"], "11230740")
+        next(widget for widget in app.selectbox if widget.label == "분석 단위").set_value("공식 상권 전체").run()
+        quarter = next(widget for widget in app.selectbox if widget.label == "기준 분기")
+        self.assertIn("2026년 1분기", quarter.options)
+        quarter.set_value("20261").run()
+        code = owner_snapshot.markets()[0]["code"]
+        next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value(code).run()
+        expected = owner_dong.report(code, None, "20261", kind="area")["current"]["stores"]
+        self.assertEqual(next(card.value for card in app.metric if card.label == "공식 점포수"), f"{expected:,.0f}개")
+        self.assertFalse(app.exception)
+
     def test_dong_report_matches_original_imun1_values_and_boundary(self):
         app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
         unit = next(widget for widget in app.selectbox if widget.label == "분석 단위")

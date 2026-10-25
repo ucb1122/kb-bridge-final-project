@@ -7,8 +7,8 @@ import streamlit as st
 def navigation(active: str = "") -> None:
     links = "".join(
         f'<a href="{path}" class="{"active" if active == label else ""}">{label}</a>'
-        for path, label in (("/", "뜨는 상권"), ("/my_market", "내상권 분석"),
-                            ("/warning", "위험상권 분석"), ("/products", "금융 상품 추천"))
+        for path, label in (("/", "뜨는 상권"), ("/my_market", "내 상권 분석"),
+                            ("/warning", "위험상권"), ("/products", "금융 상품 추천"))
     )
     st.html("""
     <style>

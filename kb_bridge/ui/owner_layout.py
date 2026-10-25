@@ -56,6 +56,7 @@ def apply_owner_layout() -> None:
 .st-key-owner-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%;}
 .st-key-owner-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
 .st-key-owner-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#101624;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;}
+.st-key-owner-metric-control [data-testid="stButton"] button p {font-size:14px;font-weight:800!important;color:inherit!important;white-space:nowrap;}
 .st-key-owner-metric-control [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#101624;}
 .st-key-owner-metric-control [data-testid="stButton"] button:hover {background:#ffe182;color:#101624;}
 .st-key-owner-rank-card h3 {font-size:16px;margin:0 0 8px;}
