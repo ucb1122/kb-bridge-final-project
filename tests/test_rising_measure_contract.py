@@ -69,6 +69,20 @@ class SnapshotMeasureTests(unittest.TestCase):
         self.assertEqual(round(cards["footfall"]["year_delta"]), 9_953)
         self.assertIn("분기별 반올림값 차이", cards["footfall"]["source"])
 
+    def test_namgajwa_uses_verified_report_sales_not_raw_quarter_estimate(self):
+        report = rising_snapshot.report(kind="dong", code="11410690", quarter="20262")
+        cards = {card["key"]: card for card in overview_cards(report)}
+        raw = monthly_sales_from_totals(
+            report["metrics"]["sales"]["value"], report["metrics"]["stores"]["value"]
+        )
+        self.assertEqual(round(raw), 1180)
+        self.assertEqual(round(report["official_sales_eok"] * 100_000_000 / 3 / 639 / 10_000), 1183)
+        self.assertEqual(sales_per_store_month(report), (1183, "공식 보고서 확인값"))
+        self.assertEqual(cards["sales"]["current"], 1183)
+        self.assertEqual(cards["sales"]["previous_delta"], 14)
+        self.assertEqual(cards["sales"]["year_delta"], -116)
+        self.assertEqual(cards["sales"]["source"], "공식 보고서 확인값")
+
     def test_ilwon_verified_monthly_and_density_keep_raw_total_separate(self):
         report = rising_snapshot.report(kind="dong", code="11680720", quarter="20262")
         cards = {card["key"]: card for card in overview_cards(report)}
