@@ -25,8 +25,9 @@ def apply_rising_layout() -> None:
 .st-key-rising-filter-panel > [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-controls-card,.st-key-rising-rank-card {padding:16px 20px;background:#fff;border:0;border-bottom:6px solid #f2f4f5;border-radius:0;box-shadow:none;}
 .st-key-rising-report-panel {right:0;top:0;bottom:0;width:clamp(520px,36vw,720px);padding:18px 22px;background:#fff;border:0;border-top:5px solid #FFBF00;box-shadow:-2px 0 12px #0002;}
-.st-key-rising-map-selector {position:absolute;top:16px;left:60%;transform:translateX(-50%);z-index:5;width:470px;padding:6px 12px;background:#fff;box-shadow:0 2px 8px #0002;border-radius:3px;}
+.st-key-rising-map-selector {position:absolute;top:16px;left:60%;transform:translateX(-50%);z-index:20;pointer-events:auto;width:470px;padding:6px 12px;background:#fff;box-shadow:0 2px 8px #0002;border-radius:3px;}
 .st-key-rising-map-selector [data-testid="stHorizontalBlock"] {align-items:center;gap:6px;}
+.st-key-rising-map-selector [data-testid="stSelectbox"],.st-key-rising-map-selector [data-testid="stButton"] {position:relative;z-index:21;pointer-events:auto;}
 .st-key-rising-map-selector [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-map-selector [data-testid="stSelectbox"] {min-width:0;}
 .st-key-rising-map-selector [data-testid="stSelectbox"] [data-baseweb="select"] > div {border:0;min-height:34px;}
@@ -61,14 +62,18 @@ def apply_rising_layout() -> None:
 .kb-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;color:#101624;}
 .kb-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;color:#e23570;}
 .st-key-rising-controls-card [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;width:100%;}
-.st-key-rising-controls-card [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;white-space:nowrap;padding:5px 2px;font-size:11px;}
-.st-key-rising-controls-card [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#087dd1;color:#fff;}
+.st-key-rising-controls-card [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;white-space:normal;padding:5px 2px;font-size:12px;}
+.st-key-rising-controls-card [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#FFBF00;color:#101624;}
 .st-key-rising-metric-control [data-testid="stSegmentedControl"],.st-key-rising-industry-control [data-testid="stSegmentedControl"] {width:100%;min-width:0;}
 .st-key-rising-metric-control [data-testid="stSegmentedControl"] [role="radiogroup"],.st-key-rising-industry-control [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;width:100%;}
-.st-key-rising-metric-control [data-testid="stSegmentedControl"] button,.st-key-rising-industry-control [data-testid="stSegmentedControl"] button {
-  flex:1 1 0;min-width:0;min-height:66px;white-space:nowrap;
-  display:flex;flex-direction:column;gap:2px;justify-content:center;font-size:11px;padding:3px 0;
+.st-key-rising-metric-control [data-testid="stSegmentedControl"] button {
+  flex:1 1 0;min-width:0;min-height:78px;white-space:nowrap;
+  display:flex;flex-direction:column;gap:4px;justify-content:center;font-size:12px;padding:5px 0;
 }
+.st-key-rising-industry-control [data-testid="stSegmentedControl"] button {min-height:38px;}
+.st-key-rising-controls-card [data-testid="stExpander"] {border:0;border-top:1px solid #e4e4e4;border-radius:0;margin-top:8px;}
+.st-key-rising-controls-card [data-testid="stExpander"] summary {font-weight:700;}
+.st-key-rising-controls-card [data-testid="stExpander"] [data-testid="stSegmentedControl"] button {line-height:1.2;min-height:42px;}
 .st-key-rising-metric-control [data-testid="stSegmentedControl"] button:nth-child(1)::before {content:"▣";}
 .st-key-rising-metric-control [data-testid="stSegmentedControl"] button:nth-child(2)::before {content:"▤";}
 .st-key-rising-metric-control [data-testid="stSegmentedControl"] button:nth-child(3)::before {content:"♧";}
@@ -84,7 +89,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] { border-bottom-color:#E5A900; color:#101624; font-weight:700; }
 .st-key-rising-report-panel [data-testid="stMetric"] { border:1px solid #e9e5d9; border-radius:4px; }
 .st-key-rising-report-panel [data-testid="stAlert"] { border-color:#f0dc9a; background:#fffaf0; }
-.st-key-rising-filter-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#087dd1;color:#fff;}
+.st-key-rising-filter-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#FFBF00;color:#101624;}
 .st-key-rising-filter-panel [data-testid="stFormSubmitButton"] button[kind="primaryFormSubmit"] { background:#FFBF00; border-color:#FFBF00; color:#101624; justify-content:center; }
 .st-key-rising-filter-panel [data-testid="stRadio"] label,
 .st-key-rising-filter-panel [data-testid="stSelectbox"] label { margin-bottom: 0; }
