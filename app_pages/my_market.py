@@ -1,6 +1,7 @@
 """Owner and future-owner analysis in the shared map-first layout."""
 from __future__ import annotations
 
+import importlib
 import json
 
 import streamlit as st
@@ -9,10 +10,17 @@ from kb_bridge.config import load_settings
 from kb_bridge.domain.finance import amortizing_payment
 from kb_bridge.repositories import owner_snapshot
 from kb_bridge.ui.kakao_rank_map import show_map
-from kb_bridge.ui.owner_layout import apply_owner_layout
-from kb_bridge.ui.owner_report import render_section
+from kb_bridge.ui import owner_layout, owner_report
 
-apply_owner_layout()
+# Streamlit reruns page code without re-importing modules already in the server process.
+if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
+        not callable(getattr(owner_snapshot, "search_businesses", None))):
+    importlib.reload(owner_snapshot)
+if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 1:
+    importlib.reload(owner_report)
+importlib.reload(owner_layout)
+render_section = owner_report.render_section
+owner_layout.apply_owner_layout()
 
 if not owner_snapshot.available():
     st.warning("팀원 테스트 데이터가 준비되지 않았습니다. README의 데이터 준비 명령을 실행해 주세요.")
@@ -33,7 +41,7 @@ def load_licences(lat: float, lng: float, radius: int, group_id: str) -> dict:
 
 
 @st.cache_data(max_entries=64)
-def load_market_report(code: str, industry_code: str | None) -> dict:
+def load_market_report(code: str, industry_code: str | None, snapshot_version: int) -> dict:
     return owner_snapshot.market_report(code, industry_code)
 
 
@@ -195,7 +203,7 @@ with st.container(key="owner-canvas"):
             st.rerun()
 
     market = next((item for item in candidates if item["code"] == chosen_code), None)
-    report = load_market_report(chosen_code, industry_code) if market else None
+    report = load_market_report(chosen_code, industry_code, owner_snapshot.OWNER_SNAPSHOT_VERSION) if market else None
     with st.container(key="owner-map-canvas"):
         if mode == "나도 곧 사장":
             visible_ranked = ranked[:10]

@@ -178,6 +178,12 @@ class OwnerPageInteractionTests(unittest.TestCase):
         map_patch = patch("kb_bridge.ui.kakao_rank_map.show_map")
         map_patch.start()
         self.addCleanup(map_patch.stop)
+    def test_stale_owner_repository_is_reloaded_before_search(self):
+        with patch.object(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0), \
+             patch.object(owner_snapshot, "search_businesses", None):
+            app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        self.assertFalse(app.exception)
+        self.assertTrue(callable(owner_snapshot.search_businesses))
     def test_market_selectbox_opens_side_report(self):
         app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
         first_code = owner_snapshot.markets()[0]["code"]
