@@ -1,6 +1,8 @@
 """Rising districts and markets, restyled to the team's KB Bridge visual language."""
 from __future__ import annotations
 
+import importlib
+import inspect
 import json
 from html import escape
 from pathlib import Path
@@ -12,11 +14,17 @@ from kb_bridge.integrations.ollama_opinion import generate_opinion
 from kb_bridge.repositories import rising_snapshot
 from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, overview_lines, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
-from kb_bridge.ui.kakao_rank_map import show_map
+from kb_bridge.ui import kakao_rank_map
 from kb_bridge.ui.rising_layout import apply_rising_layout
 from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, industry_chart, overview_card_grid
 
 apply_rising_layout()
+
+# Streamlit can rerun this page while retaining a previously imported map helper.
+# Reload it when the running helper predates the current component arguments.
+if "show_all_boundaries" not in inspect.signature(kakao_rank_map.show_map).parameters:
+    importlib.reload(kakao_rank_map)
+show_map = kakao_rank_map.show_map
 
 if not rising_snapshot.available():
     st.warning("상권 데이터가 아직 준비되지 않았습니다. README의 테스트 데이터 준비 명령을 실행해 주세요.")
