@@ -1,0 +1,39 @@
+[theme]
+base = "light"
+font = "KB Noto Sans KR"
+headingFont = "KB Noto Sans KR"
+primaryColor = "#E5A900"
+backgroundColor = "#FBFAF7"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#101624"
+borderColor = "#E9E6DE"
+linkColor = "#8A6400"
+showWidgetBorder = true
+baseRadius = "0.65rem"
+buttonRadius = "0.55rem"
+paddingTop = "1.2rem"
+
+[theme.sidebar]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#FBFAF7"
+
+[server]
+enableStaticServing = true
+
+[client]
+toolbarMode = "viewer"
+
+[[theme.fontFaces]]
+family = "KB Noto Sans KR"
+url = "app/static/fonts/NotoSansKR-Regular.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "KB Noto Sans KR"
+url = "app/static/fonts/NotoSansKR-Medium.woff2"
+weight = 500
+
+[[theme.fontFaces]]
+family = "KB Noto Sans KR"
+url = "app/static/fonts/NotoSansKR-Bold.woff2"
+weight = 700

@@ -1,0 +1,463 @@
+"""Interactive Kakao rank map for the Streamlit rising-area page."""
+from __future__ import annotations
+
+import streamlit as st
+
+COMPONENT_VERSION = 9
+
+_MAP = st.components.v2.component(
+    "kb_bridge_rising_map_v9",
+    html="<div id='kb-map'><div id='kb-map-status'>지도를 불러오는 중…</div></div>",
+    css="""
+#kb-map {position:relative;width:100%;height:100%;min-height:390px;border:0;border-radius:0;overflow:hidden;background:#f5f3ee}
+.kb-map-selector {position:absolute;z-index:12;top:16px;left:60%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 28px);padding:7px 12px;border-radius:7px;background:#fff;box-shadow:0 3px 12px #0003;pointer-events:auto;font:700 14px 'Malgun Gothic',sans-serif}
+.kb-map-selector.report-open {left:43%}
+.kb-map-selector .kb-city {color:#b98200;white-space:nowrap;min-width:165px}
+.kb-map-selector select {width:132px;min-width:0;height:40px;padding:0 8px;border:1px solid #e3ded3;border-radius:8px;background:#fff;color:#101624;font:600 14px 'Malgun Gothic',sans-serif;cursor:pointer}
+.kb-map-selector button {height:40px;min-width:54px;padding:0 8px;border:0;background:#fff;color:#8a6400;font:700 14px 'Malgun Gothic',sans-serif;cursor:pointer}
+.kb-map-selector button:hover,.kb-map-selector select:hover {background:#fff8df}
+.kb-map-selector.collapsed {width:auto}
+@media(max-width:700px){.kb-map-selector,.kb-map-selector.report-open{left:50%;gap:4px;padding:5px}.kb-map-selector .kb-city{min-width:0;font-size:11px}.kb-map-selector select{width:90px;font-size:12px}.kb-map-selector button{min-width:40px;font-size:12px}}
+#kb-map-status:empty {display:none}
+#kb-map-status {position:absolute;z-index:5;top:16px;left:50%;transform:translateX(-50%);max-width:min(520px,90%);line-height:1.45;padding:9px 13px;border-radius:8px;background:white;color:#344054;font:13px sans-serif;box-shadow:0 2px 10px #0002}
+.kb-rank-marker {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:82px;height:86px;padding:0;border:0;background:transparent;color:#101624;font:700 11px 'Malgun Gothic',sans-serif;cursor:pointer;text-align:center;overflow:visible;filter:drop-shadow(0 2px 5px #3c331b55)}
+.kb-rank-marker::before {content:"";position:absolute;z-index:-1;top:12px;left:4px;width:74px;height:74px;border-radius:50%;background:#ffbf0066;pointer-events:none}
+.kb-rank-marker::after {content:"";position:absolute;z-index:-2;top:12px;left:4px;width:74px;height:74px;border:2px solid #d69c00;border-radius:50%;pointer-events:none;animation:kb-rank-pulse 3.6s ease-out infinite}
+.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff!important;border:1px solid #d69c00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#5c4400;font-size:14px;font-weight:800}
+.kb-rank-marker span {position:relative;display:block;max-width:78px;width:73px;margin-top:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#d69c00;color:#fff}
+.kb-rank-marker small {position:relative;display:block;width:67px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#fff;color:#5c4400;font-size:10px}
+.kb-rank-marker.active::before {background:#ffbf0099}
+.kb-rank-marker.active span {background:#b98200}
+.kb-rank-marker:hover::after,.kb-rank-marker:focus-visible::after {animation-duration:2.6s;border-color:#d69c00}
+.kb-rank-marker.top-rank strong {background:#ffe500!important;color:#1c2140;border-color:#d9b800;}
+.kb-rank-marker.owner-card {width:122px;height:98px;}
+.kb-rank-marker.owner-card::before,.kb-rank-marker.owner-card::after {left:24px;top:17px;}
+.kb-rank-marker.owner-card .kb-marker-card {position:relative;display:flex;flex-direction:column;width:120px;max-width:none;margin-top:-1px;padding:0;white-space:normal;border-radius:7px;overflow:hidden;background:#fff;box-shadow:0 2px 5px #3c331b33;}
+.kb-rank-marker.owner-card .kb-marker-card span {box-sizing:border-box;display:block;width:100%;max-width:none;margin:0;padding:7px 5px;border-radius:0;background:#ffca32;color:#282112;font-size:11px;font-weight:800;}
+.kb-rank-marker.owner-card .kb-marker-card small {box-sizing:border-box;display:block;width:100%;max-width:none;margin:0;padding:6px 4px;border-radius:0;background:#fff;color:#344054;font-size:10px;font-weight:700;}
+.kb-rank-marker.owner-card.active .kb-marker-card span {background:#ffbf00;}
+.kb-rank-marker:focus-visible {outline:2px solid #101624;outline-offset:5px}
+@keyframes kb-rank-pulse {0%{transform:scale(1);opacity:.75}75%,100%{transform:scale(1.9);opacity:0}}
+@media(prefers-reduced-motion:reduce){.kb-rank-marker::after{animation:none;transform:scale(1.15);opacity:.45}}
+
+""",
+    js="""
+let map, mapRoot=null, mapStretch=false, overlays=[], polygons=[], loadedKey=null;
+let kakaoResizeObserver=null, canvasResizeObserver=null, observedCanvas=null, boundarySvg=null, boundaryDraw=null, boundaryPaths=[], boundaryDots=[];
+let rankLayer=null, rankMarkers=[], positionKakaoMarkers=null, redrawFrame=null, viewKey=null, viewportResizeBound=false;
+let fallbackMap=null, fallbackMarkers=[], fallbackResizeObserver=null;
+let mapLibreLoading=null;
+function loadKakao(key) {
+  if (window.kakao?.maps) return Promise.resolve();
+  if (!key) return Promise.reject(new Error('카카오 지도 JavaScript 키가 없습니다.'));
+  if (!window.__kbKakaoLoading) window.__kbKakaoLoading = new Promise((resolve,reject) => {
+    const script=document.createElement('script');
+    script.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey='+encodeURIComponent(key);
+    script.onload=()=>window.kakao.maps.load(resolve);
+    script.onerror=()=>reject(new Error('카카오 지도 인증에 실패했습니다. Kakao Developers [앱] > [플랫폼 키] > [JavaScript 키] > [JavaScript SDK 도메인]에 http://localhost:8501 을 등록한 뒤 새로고침하세요.'));
+    document.head.appendChild(script);
+  });
+  return window.__kbKakaoLoading;
+}
+function paths(geometry) {
+  const lines=geometry?.type==='Polygon'?geometry.coordinates:geometry?.type==='MultiPolygon'?geometry.coordinates.flat():geometry?.type==='MultiLineString'?geometry.coordinates:geometry?.type==='LineString'?[geometry.coordinates]:[];
+  return lines.map(line=>line.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
+}
+function drawKakaoBoundaries(root,map,features,districts,showAll,allLocations,setTriggerValue) {
+  if (!boundarySvg) {
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',zIndex:'2',pointerEvents:'none'});
+    for(const feature of districts||[]) {
+      for(const ring of paths(feature.geometry)) {
+        if(ring.length<3)continue;
+        const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
+        shape.setAttribute('fill','none');
+        shape.setAttribute('stroke','#ec4d95');
+        shape.setAttribute('stroke-opacity','.9');
+        shape.setAttribute('stroke-width','3');
+        shape.style.pointerEvents='none';
+        svg.appendChild(shape);boundaryPaths.push({shape,ring});
+      }
+    }
+    for(const location of allLocations||[]) {
+      if(!Number.isFinite(Number(location.lat))||!Number.isFinite(Number(location.lng)))continue;
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('r','3');dot.setAttribute('fill','#b98200');
+      dot.setAttribute('fill-opacity','.8');dot.style.pointerEvents='none';
+      svg.appendChild(dot);boundaryDots.push({dot,lat:Number(location.lat),lng:Number(location.lng)});
+    }
+    for(const feature of features||[]) {
+      for(const ring of paths(feature.geometry)) {
+        if(ring.length<3)continue;
+        const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
+        shape.setAttribute('fill','#f3c53a');shape.setAttribute('fill-opacity','0');
+        shape.setAttribute('stroke','#c59800');shape.setAttribute('stroke-opacity','0');shape.setAttribute('stroke-width','2');
+        shape.style.pointerEvents='visibleFill';shape.style.cursor='pointer';
+        const title=document.createElementNS('http://www.w3.org/2000/svg','title');
+        title.textContent=feature.properties.name||String(feature.properties.code);
+        shape.appendChild(title);
+        shape.addEventListener('mouseenter',()=>{shape.setAttribute('fill-opacity','.20');shape.setAttribute('stroke-opacity','.95');shape.setAttribute('stroke-width','3');});
+        shape.addEventListener('mouseleave',()=>{shape.setAttribute('fill-opacity','0');shape.setAttribute('stroke-width','2');});
+        shape.addEventListener('click',()=>setTriggerValue('selected',String(feature.properties.code)));
+        svg.appendChild(shape);boundaryPaths.push({shape,ring});
+      }
+    }
+    root.appendChild(svg);boundarySvg=svg;
+  }
+  boundarySvg.setAttribute('width',String(root.clientWidth));
+  boundarySvg.setAttribute('height',String(root.clientHeight));
+  const projection=map.getProjection();
+  for(const {shape,ring} of boundaryPaths) {
+    const points=ring.map(coord=>projection.containerPointFromCoords(coord));
+    shape.setAttribute('d',points.map((point,index)=>`${index?'L':'M'}${point.x} ${point.y}`).join(' ')+' Z');
+  }
+  for(const {dot,lat,lng} of boundaryDots) {
+    const point=projection.containerPointFromCoords(new kakao.maps.LatLng(lat,lng));
+    dot.setAttribute('cx',String(point.x));dot.setAttribute('cy',String(point.y));
+  }
+}
+function sizeMapSurface(root,host,canvas) {
+  if (!mapStretch || window.innerWidth<=1350 || !canvas || !canvas.contains(host)) return false;
+  const height=Math.ceil(canvas.getBoundingClientRect().height);
+  if (!height) return false;
+  for (let node=host;node && node!==canvas;node=node.parentElement) {
+    node.style.height=`${height}px`;
+    node.style.minHeight='0';
+  }
+  root.parentElement.style.height=`${height}px`;
+  root.style.height=`${height}px`;
+  return true;
+}
+function resizeMapViewport() {
+  if(!mapRoot)return;
+  const host=mapRoot.getRootNode().host||mapRoot;
+  const canvas=mapStretch?document.querySelector('.st-key-rising-canvas'):host.closest?.('.st-key-owner-canvas');
+  if (!sizeMapSurface(mapRoot,host,canvas)) {
+    const compact=window.innerWidth<=1100;
+    const size=compact?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-mapRoot.getBoundingClientRect().top));
+    mapRoot.style.height=`${size}px`;
+  }
+  map?.relayout();fallbackMap?.resize();scheduleKakaoDecorations();
+}
+function scheduleKakaoDecorations() {
+  if(redrawFrame!==null)return;
+  redrawFrame=requestAnimationFrame(()=>{
+    redrawFrame=null;
+    boundaryDraw?.();
+    positionKakaoMarkers?.();
+  });
+}
+
+function makeRankMarker(row,index,data,setTriggerValue) {
+  const marker=document.createElement('button');marker.type='button';
+  marker.className='kb-rank-marker'+(index<3?' top-rank':'')+(row.code===data.selected?' active':'')+(data.marker_style==='card'?' owner-card':'');
+  marker.setAttribute('aria-label',`${index+1}위 ${row.district} ${row.name}, ${row.display||''}`);
+  const rank=document.createElement('strong');rank.textContent=String(index+1);
+  const name=document.createElement('span');name.textContent=row.name;
+  const value=document.createElement('small');value.textContent=row.display||'';
+  if(data.marker_style==='card') {
+    const card=document.createElement('span');card.className='kb-marker-card';
+    card.append(name,value);marker.append(rank,card);
+  } else marker.append(rank,name,value);
+  marker.onclick=()=>setTriggerValue('selected',String(row.code));
+  return marker;
+}
+function renderSvgFallback(root, data, setTriggerValue) {
+  root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
+  const width=1200, height=750;
+  const districts=data.fallback_districts||[];
+  const coordinateSets=[];
+  const polygons=(feature)=>feature.geometry?.type==='Polygon'?[feature.geometry.coordinates]:feature.geometry?.type==='MultiPolygon'?feature.geometry.coordinates:[];
+  const lines=(feature)=>feature.geometry?.type==='MultiLineString'?feature.geometry.coordinates:feature.geometry?.type==='LineString'?[feature.geometry.coordinates]:[];
+  for(const feature of districts) for(const line of [...lines(feature),...polygons(feature).map(p=>p[0])]) for(const point of line) coordinateSets.push(point);
+  if (!coordinateSets.length) return;
+  const longitudes=coordinateSets.map(p=>p[0]), latitudes=coordinateSets.map(p=>p[1]);
+  const minLng=Math.min(...longitudes), maxLng=Math.max(...longitudes);
+  const minLat=Math.min(...latitudes), maxLat=Math.max(...latitudes);
+  const span=Math.max((maxLng-minLng)*.85,maxLat-minLat);
+  const centerLng=(minLng+maxLng)/2, centerLat=(minLat+maxLat)/2;
+  const x=lng=>width/2+(lng-centerLng)/span*height;
+  const y=lat=>height/2-(lat-centerLat)/span*height;
+  const ns='http://www.w3.org/2000/svg';
+  const fallback=document.createElement('div');fallback.className='kb-fallback';
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  Object.assign(svg.style,{position:'absolute',inset:'0',width:'100%',height:'100%',background:'#eef0ed'});
+  const draw=(feature,top)=>{
+    for(const polygon of polygons(feature)) {
+      const ring=polygon[0];if(!ring?.length)continue;
+      const path=document.createElementNS(ns,'path');
+      path.setAttribute('d',ring.map(([lng,lat],i)=>`${i?'L':'M'}${x(lng).toFixed(1)} ${y(lat).toFixed(1)}`).join(' ')+' Z');
+      path.setAttribute('fill',top?'#ffe4a1':'#f8f8f5');
+      path.setAttribute('stroke',top?'#d49a00':'#ec4d95');
+      path.setAttribute('stroke-width',top?'2.5':'1.3');
+      if(top){path.style.cursor='pointer';path.style.fillOpacity='0';path.style.strokeOpacity='0';path.style.pointerEvents='visibleFill';path.onmouseenter=()=>{path.style.fillOpacity='.25';path.style.strokeOpacity='1';};path.onmouseleave=()=>{path.style.fillOpacity='0';path.style.strokeOpacity='0';};path.onclick=()=>setTriggerValue('selected',String(feature.properties.code));}
+      svg.appendChild(path);
+    }
+  };
+  districts.forEach(feature=>{
+    for(const line of lines(feature)){
+      const path=document.createElementNS(ns,'path');
+      path.setAttribute('d',line.map(([lng,lat],i)=>`${i?'L':'M'}${x(lng).toFixed(1)} ${y(lat).toFixed(1)}`).join(' '));
+      path.setAttribute('fill','none');path.setAttribute('stroke','#ec4d95');path.setAttribute('stroke-width','2.5');
+      svg.appendChild(path);
+    }
+  });
+  (data.all_locations||[]).forEach(location=>{
+    if(!Number.isFinite(Number(location.lat))||!Number.isFinite(Number(location.lng)))return;
+    const dot=document.createElementNS(ns,'circle');
+    dot.setAttribute('cx',String(x(Number(location.lng))));
+    dot.setAttribute('cy',String(y(Number(location.lat))));
+    dot.setAttribute('r','3');dot.setAttribute('fill','#b98200');svg.appendChild(dot);
+  });
+  (data.boundaries||[]).forEach(f=>draw(f,true));
+  fallback.appendChild(svg);
+  (data.rows||[]).forEach((row,index)=>{
+    if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
+    const marker=makeRankMarker(row,index,data,setTriggerValue);
+    Object.assign(marker.style,{position:'absolute',left:`${x(row.lng)/width*100}%`,top:`${y(row.lat)/height*100}%`,transform:'translate(-50%,-50%)',zIndex:String(30-index)});
+    fallback.appendChild(marker);
+  });
+  Object.assign(fallback.style,{position:'absolute',inset:'0',overflow:'hidden'});
+  root.prepend(fallback);
+}
+function loadMapLibre(root) {
+  if (!root.getRootNode().querySelector?.('link[data-kb-maplibre]')) {
+    const link=document.createElement('link');link.rel='stylesheet';
+    link.href='/app/static/vendor/maplibre-gl.css';link.dataset.kbMaplibre='';
+    root.getRootNode().appendChild(link);
+  }
+  if (window.maplibregl) return Promise.resolve();
+  if (!mapLibreLoading) mapLibreLoading=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='/app/static/vendor/maplibre-gl.js';
+    script.onload=()=>window.maplibregl?resolve():reject(new Error('MapLibre 로드 실패'));
+    script.onerror=()=>reject(new Error('MapLibre 로드 실패'));
+    document.head.appendChild(script);
+  });
+  return mapLibreLoading;
+}
+async function renderTileFallback(root,data,setTriggerValue) {
+  await loadMapLibre(root);
+  if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
+  if(fallbackMap){fallbackMap.remove();fallbackMap=null;}
+  fallbackMarkers.forEach(marker=>marker.remove());fallbackMarkers=[];
+  root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
+  const inner=document.createElement('div');inner.className='kb-fallback';
+  Object.assign(inner.style,{position:'absolute',inset:'0'});root.prepend(inner);
+  const m=new maplibregl.Map({container:inner,style:'https://tiles.openfreemap.org/styles/bright',
+    center:[126.978,37.5665],zoom:10,attributionControl:true});
+  fallbackMap=m;
+  try {
+    await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(new Error('지도 타일 로드 시간 초과')),12000);
+      m.once('load',()=>{clearTimeout(timer);resolve();});
+      m.once('error',event=>{if(!m.loaded()){clearTimeout(timer);reject(event.error||new Error('지도 타일 로드 실패'));}});
+    });
+    m.resize();
+    fallbackResizeObserver=new ResizeObserver(()=>m.resize());
+    fallbackResizeObserver.observe(inner);
+    requestAnimationFrame(()=>{
+      m.resize();
+      if(!data.selected&&!data.district)m.fitBounds([[126.76,37.41],[127.22,37.71]],{padding:24,duration:0});
+    });
+    const collection=features=>({type:'FeatureCollection',features:features||[]});
+    m.addSource('kb-districts',{type:'geojson',data:collection(data.fallback_districts)});
+    m.addLayer({id:'kb-district-line',type:'line',source:'kb-districts',paint:{'line-color':'#ec4d95','line-width':data.show_all_boundaries?2:1.4,'line-opacity':data.show_all_boundaries?.85:.55}});
+    if(data.all_locations?.length){
+      m.addSource('kb-all-locations',{type:'geojson',data:{type:'FeatureCollection',features:data.all_locations.map(location=>({type:'Feature',geometry:{type:'Point',coordinates:[Number(location.lng),Number(location.lat)]}}))}});
+      m.addLayer({id:'kb-all-location-dots',type:'circle',source:'kb-all-locations',paint:{'circle-radius':3,'circle-color':'#b98200','circle-opacity':.8}});
+    }
+    m.addSource('kb-rank-areas',{type:'geojson',data:collection(data.boundaries)});
+    m.addLayer({id:'kb-rank-fill',type:'fill',source:'kb-rank-areas',paint:{'fill-color':'#ffbf00','fill-opacity':.001}});
+    m.addLayer({id:'kb-rank-hover-fill',type:'fill',source:'kb-rank-areas',filter:['==',['get','code'],''],paint:{'fill-color':'#ffbf00','fill-opacity':.20}});
+    m.addLayer({id:'kb-rank-hover-line',type:'line',source:'kb-rank-areas',filter:['==',['get','code'],''],paint:{'line-color':'#c59600','line-width':2.5}});
+    m.on('mousemove','kb-rank-fill',event=>{
+      const code=event.features?.[0]?.properties?.code||'';
+      m.setFilter('kb-rank-hover-fill',['==',['get','code'],code]);
+      m.setFilter('kb-rank-hover-line',['==',['get','code'],code]);
+      m.getCanvas().style.cursor='pointer';
+    });
+    m.on('mouseleave','kb-rank-fill',()=>{
+      m.setFilter('kb-rank-hover-fill',['==',['get','code'],'']);
+      m.setFilter('kb-rank-hover-line',['==',['get','code'],'']);
+      m.getCanvas().style.cursor='';
+    });
+    m.on('click','kb-rank-fill',event=>{
+      const code=event.features?.[0]?.properties?.code;
+      if(code!=null)setTriggerValue('selected',String(code));
+    });
+    (data.rows||[]).forEach((row,index)=>{
+      if(!Number.isFinite(row.lat)||!Number.isFinite(row.lng))return;
+      const marker=makeRankMarker(row,index,data,setTriggerValue);
+      marker.style.zIndex=String(30-index);
+      fallbackMarkers.push(new maplibregl.Marker({element:marker,anchor:'center'}).setLngLat([row.lng,row.lat]).addTo(m));
+    });
+    const selected=(data.rows||[]).find(row=>row.code===data.selected);
+    if(selected)m.flyTo({center:[selected.lng,selected.lat],zoom:12});
+    else if(data.district&&data.rows?.length)m.flyTo({center:[data.rows[0].lng,data.rows[0].lat],zoom:11});
+  } catch(error) {
+    if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
+    m.remove();fallbackMap=null;inner.remove();throw error;
+  }
+}
+function renderSelector(root,selector,setTriggerValue) {
+  root.querySelectorAll('.kb-map-selector').forEach(el=>el.remove());
+  if(!selector)return;
+  const bar=document.createElement('div');
+  bar.className='kb-map-selector'+(selector.report_open?' report-open':'')+(!selector.open?' collapsed':'');
+  bar.setAttribute('role','group');
+  bar.setAttribute('aria-label','지도 지역 선택');
+  for(const event of ['pointerdown','mousedown','touchstart','wheel','click'])
+    bar.addEventListener(event,e=>e.stopPropagation());
+  if(selector.open) {
+    const city=document.createElement('span');
+    city.className='kb-city';city.textContent='◉ 서울특별시';
+    bar.appendChild(city);
+    const district=document.createElement('select');
+    district.setAttribute('aria-label','지도 자치구');
+    for(const name of ['',...(selector.districts||[])])district.add(new Option(name||'전체',name));
+    district.value=selector.district||'';
+    district.addEventListener('change',()=>setTriggerValue('district_selected',district.value));
+    bar.appendChild(district);
+    const region=document.createElement('select');
+    region.setAttribute('aria-label','지도 지역');
+    for(const location of [{code:'',name:'전체'},...(selector.locations||[]).filter(item=>!selector.district||item.district===selector.district)])
+      region.add(new Option(location.name,location.code));
+    region.value=selector.region||'';
+    region.addEventListener('change',()=>setTriggerValue('region_selected',region.value));
+    bar.appendChild(region);
+  }
+  const toggle=document.createElement('button');
+  toggle.type='button';
+  toggle.textContent=selector.open?'접기':'지역 선택';
+  toggle.setAttribute('aria-label',selector.open?'지도 지역 선택창 접기':'지도 지역 선택창 펼치기');
+  toggle.addEventListener('click',()=>setTriggerValue('selector_open',!selector.open));
+  bar.appendChild(toggle);
+  root.appendChild(bar);
+}
+export default async function(component) {
+  const {data,parentElement,setTriggerValue}=component;
+  const root=parentElement.querySelector('#kb-map');
+  const status=parentElement.querySelector('#kb-map-status');
+  if (!root) return;
+  renderSelector(root,data.selector,setTriggerValue);
+  const host=root.getRootNode().host||root;
+  const canvas=data.stretch?document.querySelector('.st-key-rising-canvas'):host.closest?.('.st-key-owner-canvas');
+  mapStretch=Boolean(data.stretch);
+  if (!sizeMapSurface(root,host,canvas))
+    root.style.height=`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
+  if (canvas && observedCanvas!==canvas) {
+    canvasResizeObserver?.disconnect();
+    observedCanvas=canvas;
+    canvasResizeObserver=new ResizeObserver(resizeMapViewport);
+    canvasResizeObserver.observe(canvas);
+  }
+  try {
+    await loadKakao(data.key);
+    if(fallbackResizeObserver){fallbackResizeObserver.disconnect();fallbackResizeObserver=null;}
+    if(fallbackMap){fallbackMap.remove();fallbackMap=null;}
+    fallbackMarkers.forEach(marker=>marker.remove());fallbackMarkers=[];
+    root.querySelectorAll('.kb-fallback').forEach(el=>el.remove());
+    if (!map || mapRoot!==root || loadedKey!==data.key) {
+      if(kakaoResizeObserver){kakaoResizeObserver.disconnect();kakaoResizeObserver=null;}
+      root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
+      const inner=document.createElement('div'); inner.className='kb-map-inner';
+      Object.assign(inner.style,{position:'absolute',inset:'0'}); root.prepend(inner);
+      map=new kakao.maps.Map(inner,{center:new kakao.maps.LatLng(37.5665,126.9780),level:9});
+      loadedKey=data.key; mapRoot=root; viewKey=null;
+      resizeMapViewport();
+      requestAnimationFrame(()=>requestAnimationFrame(resizeMapViewport));
+      setTimeout(resizeMapViewport,250);
+      setTimeout(resizeMapViewport,1000);
+      if(!viewportResizeBound){window.addEventListener('resize',resizeMapViewport);viewportResizeBound=true;}
+      kakaoResizeObserver=new ResizeObserver(()=>{map.relayout();scheduleKakaoDecorations();});
+      kakaoResizeObserver.observe(inner);
+      for(const event of ['center_changed','zoom_changed','drag','idle'])
+        kakao.maps.event.addListener(map,event,scheduleKakaoDecorations);
+    }
+    status.textContent='';
+    overlays.forEach(o=>o.setMap(null)); overlays=[];
+    polygons.forEach(p=>p.setMap(null)); polygons=[];
+    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryPaths=[];boundaryDots=[];
+    if(rankLayer){rankLayer.remove();rankLayer=null;}rankMarkers=[];
+    let boundaryError=null, markerErrors=0;
+    boundaryDraw=()=>{
+      try {drawKakaoBoundaries(root,map,data.boundaries,data.fallback_districts,data.show_all_boundaries,data.all_locations,setTriggerValue);}
+      catch(error) {boundaryError=error;console.warn('상권 경계 표시 실패',error);}
+    };
+    if (data.radius && data.rows?.length === 1) {
+      const row=data.rows[0];
+      try {
+        const circle=new kakao.maps.Circle({center:new kakao.maps.LatLng(row.lat,row.lng),radius:data.radius,strokeWeight:2,strokeColor:'#c59800',strokeOpacity:.9,fillColor:'#f3c53a',fillOpacity:.12});
+        circle.setMap(map);polygons.push(circle);
+      } catch(error) {boundaryError=error;console.warn('선택 반경 표시 실패',error);}
+    }
+    rankLayer=document.createElement('div');rankLayer.className='kb-rank-layer';
+    Object.assign(rankLayer.style,{position:'absolute',inset:'0',zIndex:'3',pointerEvents:'none',overflow:'hidden'});
+    root.appendChild(rankLayer);
+    (data.rows||[]).forEach((row,index)=>{
+      const lat=Number(row.lat),lng=Number(row.lng);
+      if (!Number.isFinite(lat)||!Number.isFinite(lng)) return;
+      try {
+        const marker=makeRankMarker(row,index,data,setTriggerValue);
+        Object.assign(marker.style,{position:'absolute',transform:'translate(-50%,-50%)',pointerEvents:'auto',zIndex:String(30-index)});
+        rankLayer.appendChild(marker);rankMarkers.push({marker,lat,lng});
+      } catch(error) {markerErrors++;console.warn('순위 배지 표시 실패',error);}
+    });
+    positionKakaoMarkers=()=>{
+      const projection=map.getProjection(), width=root.clientWidth, height=root.clientHeight;
+      for(const {marker,lat,lng} of rankMarkers) {
+        const point=projection.containerPointFromCoords(new kakao.maps.LatLng(lat,lng));
+        const visible=point.x>=-50&&point.x<=width+50&&point.y>=-50&&point.y<=height+50;
+        marker.style.display=visible?'flex':'none';
+        if(visible){marker.style.left=`${point.x}px`;marker.style.top=`${point.y}px`;}
+      }
+    };
+    const selected=(data.rows||[]).find(r=>r.code===data.selected)||data.selected_location;
+    const nextViewKey=JSON.stringify([data.selected||'',data.district||'']);
+    if(viewKey!==nextViewKey) {
+      if(selected && Number.isFinite(selected.lat) && Number.isFinite(selected.lng)) {map.setCenter(new kakao.maps.LatLng(selected.lat,selected.lng));map.setLevel(5)}
+      else if(data.district && data.rows?.length) {map.setCenter(new kakao.maps.LatLng(data.rows[0].lat,data.rows[0].lng));map.setLevel(7)}
+      else {map.setCenter(new kakao.maps.LatLng(37.5665,126.9780));map.setLevel(9)}
+      viewKey=nextViewKey;
+    }
+    requestAnimationFrame(()=>{resizeMapViewport();scheduleKakaoDecorations();
+      if(boundaryError||markerErrors) status.textContent=`카카오 지도 일부 표시 실패 · 경계: ${boundaryError?.message||'정상'}, 순위 배지 ${markerErrors}건`;
+    });
+  } catch(error) {
+    console.error('카카오 지도 초기화 실패',error);
+    if(map && mapRoot===root){status.textContent='카카오 지도 일부 표시 실패: '+error.message;return;}
+    overlays.forEach(o=>o.setMap(null));overlays=[];
+    polygons.forEach(p=>p.setMap(null));polygons=[];
+    if(kakaoResizeObserver){kakaoResizeObserver.disconnect();kakaoResizeObserver=null;}
+    if(boundarySvg){boundarySvg.remove();boundarySvg=null;}boundaryPaths=[];boundaryDots=[];boundaryDraw=null;
+    if(rankLayer){rankLayer.remove();rankLayer=null;}rankMarkers=[];positionKakaoMarkers=null;viewKey=null;
+    root.querySelectorAll('.kb-map-inner').forEach(el=>el.remove());
+    map=null;mapRoot=null;loadedKey=null;
+    try {
+      await renderTileFallback(root,data,setTriggerValue);
+      status.textContent='카카오 지도 초기화 실패 · 대체 지도 표시: '+error.message;
+    } catch(fallbackError) {
+      renderSvgFallback(root,data,setTriggerValue);
+      status.textContent='카카오 지도 인증 전 · 서울시 경계 임시 보기. '+error.message;
+    }
+  }
+}
+""",
+)
+
+
+def show_map(*, key: str | None, rows: list[dict], boundaries: list[dict], selected: str | None,
+             source: str, district: str, selected_location: dict | None = None, radius: int | None = None, height: int = 590,
+             fallback_districts: list[dict] | None = None, show_all_boundaries: bool = False,
+             all_locations: list[dict] | None = None, selector: dict | None = None, stretch: bool = False,
+             marker_style: str = "split"):
+    return _MAP(key="rising-map", data={"key": key, "rows": rows, "boundaries": boundaries,
+                                       "selected": selected, "selected_location": selected_location, "source": source, "district": district, "radius": radius, "height": height,
+                                       "fallback_districts": fallback_districts or [], "show_all_boundaries": show_all_boundaries,
+                                       "all_locations": all_locations or [], "selector": selector, "stretch": stretch, "marker_style": marker_style},
+                height="content", on_selected_change=lambda: None,
+                on_district_selected_change=lambda: None,
+                on_region_selected_change=lambda: None,
+                on_selector_open_change=lambda: None)
