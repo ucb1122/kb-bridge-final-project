@@ -63,6 +63,12 @@ class SnapshotMeasureTests(unittest.TestCase):
         self.assertEqual(cards["sales"]["previous_delta"], -60)
         self.assertEqual(cards["sales"]["year_delta"], -184)
         self.assertEqual(cards["sales"]["source"], "공식 보고서 확인값")
+        # Subtract source populations before rounding: displayed rounded densities
+        # (38,085 - 34,318) would misleadingly suggest a one-person larger delta.
+        self.assertEqual(round(cards["footfall"]["current"]), 38_085)
+        self.assertEqual(round(cards["footfall"]["previous_delta"]), 3_766)
+        self.assertEqual(round(cards["footfall"]["year_delta"]), 9_953)
+        self.assertIn("반올림 전 원본값", cards["footfall"]["source"])
 
     def test_ilwon_verified_monthly_and_density_keep_raw_total_separate(self):
         report = rising_snapshot.report(kind="dong", code="11680720", quarter="20262")
