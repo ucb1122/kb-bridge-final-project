@@ -118,7 +118,7 @@ def apply_owner_layout() -> None:
 [class*="st-key-owner-rank-row-"]:has([data-testid="stButton"] button:focus-visible) {outline:2px solid #b98200;outline-offset:-2px;}
 
 /* Team report layout: fixed heading and actions with a scrollable analysis body. */
-.st-key-owner-report-panel {width:clamp(620px,54vw,1040px);padding:0;border:0;overflow:hidden;box-shadow:-2px 0 12px #0001;}
+.st-key-owner-report-panel {width:clamp(520px,36vw,720px);padding:0;border:0;overflow:hidden;box-shadow:-2px 0 12px #0001;}
 .st-key-owner-report-panel > [data-testid="stVerticalBlock"] {height:100%;display:flex;flex-direction:column;gap:0;}
 .st-key-owner-report-header {flex:0 0 auto;padding:20px 32px 18px;border-bottom:1px solid #e5e8ef;}
 .st-key-owner-report-header [data-testid="stVerticalBlock"] {gap:.15rem;}

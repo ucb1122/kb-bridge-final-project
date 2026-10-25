@@ -172,4 +172,27 @@ def apply_rising_layout() -> None:
   .st-key-rising-report-panel { order: 4; margin: 0 12px 12px; max-height: none; }
   .kb-overview-card h4 {min-height:0;}
 }
+
+/* Shared floating panel geometry and type scale with the owner analysis screen. */
+.st-key-rising-filter-panel {top:12px;bottom:12px;left:12px;border-radius:18px;width:clamp(380px,23vw,440px);box-shadow:2px 2px 12px #0002;}
+.st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-filter-panel {transform:translateX(calc(-100% - 12px));}
+.st-key-rising-left-toggle {left:calc(12px + clamp(380px,23vw,440px));top:24px;}
+.st-key-rising-filter-panel h2 {font-size:27px;line-height:1.15;font-weight:700;}
+.st-key-rising-filter-panel h3 {font-size:17px;font-weight:700;}
+.st-key-rising-controls-card {padding:20px 16px 18px;}
+.st-key-rising-rank-card {padding:18px 16px;}
+.st-key-rising-filter-panel [data-testid="stCaptionContainer"] {font-size:13px;color:#627188;}
+.st-key-rising-filter-panel [data-testid="stSelectbox"] label,
+.st-key-rising-filter-panel [data-testid="stTextInput"] label {font-size:13px;font-weight:500;color:#243852;}
+.st-key-rising-controls-card [data-testid="stButtonGroup"] button {font-size:12px;font-weight:800!important;}
+.st-key-rising-metric-control [data-testid="stButton"] button,
+.st-key-rising-metric-control [data-testid="stButton"] button p {font-size:14px;font-weight:800!important;}
+.st-key-rising-filter-panel [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:47px;border-color:#d8e0eb;border-radius:10px;background:#fff;}
+.st-key-rising-report-panel h3 {font-size:27px;line-height:1.2;font-weight:700;}
+.st-key-rising-report-panel [data-testid="stSegmentedControl"] button,
+.st-key-rising-report-panel [data-testid="stSegmentedControl"] button p {font-size:16px;font-weight:700!important;}
+@media (max-width:1350px) {
+  .st-key-rising-filter-panel {top:auto;bottom:auto;left:auto;border-radius:18px;}
+  .st-key-rising-left-toggle {left:auto;top:auto;}
+}
 </style>""")
