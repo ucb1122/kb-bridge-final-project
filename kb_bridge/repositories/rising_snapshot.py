@@ -14,6 +14,7 @@ METRICS = {"stores", "sales", "footfall", "residents"}
 KINDS = {"dong", "area"}
 CRITERIA = {"growth", "highest", "absolute"}
 INDUSTRIES = {"all", "CS1", "CS2", "CS3"}
+REPORT_RANKS_VERSION = 2
 
 
 def available() -> bool:
@@ -34,6 +35,14 @@ def _snapshot(quarter: str, prefix: str) -> dict:
         return {}
     data = json.loads(path.read_text(encoding="utf-8"))
     return data if str(data.get("quarter")) == quarter else {}
+
+
+def _verified_report_ranks(quarter: str) -> dict:
+    path = Path(__file__).resolve().parents[2] / "data" / "verified" / f"report-ranks-{quarter}.json"
+    if not path.is_file():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return data.get("values", {}) if data.get("quarter") == quarter else {}
 
 
 def filters() -> dict:
@@ -197,7 +206,8 @@ def report(*, kind: str, code: str, quarter: str, industry: str = "all") -> dict
             "details": details, "industries": industries, "benchmarks": benchmarks,
             "area_m2": snapshot.get("areas", {}).get(f"{kind}:{code}"),
             "official_sales_eok": snapshot.get("values", {}).get(f"{kind}:sales:{code}"),
-            "official_report_sales": report_sales.get(f"{kind}:{code}") if industry == "all" else None}
+            "official_report_sales": report_sales.get(f"{kind}:{code}") if industry == "all" else None,
+            "official_report_ranks": _verified_report_ranks(quarter).get(f"{kind}:{code}") if industry == "all" else None}
 
 
 def overview_ranks(*, kind: str, code: str, quarter: str, district: str,
@@ -246,4 +256,8 @@ def overview_ranks(*, kind: str, code: str, quarter: str, district: str,
         peers = [value for region_code in values if (value := measure(region_code, metric)) is not None]
         if current is not None and peers:
             ranks[metric] = (1 + sum(value > current for value in peers), len(peers))
+    if industry == "all":
+        for metric, pair in _verified_report_ranks(quarter).get(f"{kind}:{code}", {}).items():
+            if metric in {"stores", "sales", "footfall"} and len(pair) == 2 and 1 <= pair[0] <= pair[1]:
+                ranks[metric] = tuple(pair)
     return ranks

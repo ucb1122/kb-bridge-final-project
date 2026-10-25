@@ -45,6 +45,17 @@ class RisingSnapshotParityTests(unittest.TestCase):
         self.assertIsInstance(selected["lat"], float)
         self.assertIsInstance(selected["lng"], float)
 
+    def test_jamsil_report_uses_verified_official_card_ranks(self):
+        report = rising_snapshot.report(kind="dong", code="11710690", quarter="20262")
+        self.assertEqual(report["official_report_ranks"], {
+            "stores": [26, 27], "sales": [18, 27], "footfall": [17, 27],
+        })
+        ranks = rising_snapshot.overview_ranks(kind="dong", code="11710690",
+                                              quarter="20262", district="송파구")
+        self.assertEqual(ranks, {"stores": (26, 27), "sales": (18, 27), "footfall": (17, 27)})
+        self.assertIsNone(rising_snapshot.report(kind="dong", code="11710690",
+                                                  quarter="20262", industry="CS1")["official_report_ranks"])
+
     def test_overview_card_ranks_use_same_district_and_card_units(self):
         ranks = rising_snapshot.overview_ranks(kind="dong", code="11530800",
                                               quarter="20262", district="구로구")
