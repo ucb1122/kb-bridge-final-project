@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 260" role="img" aria-label="공사 중인 서비스 일러스트">
+  <rect width="480" height="260" rx="24" fill="#fff8e4"/>
+  <circle cx="388" cy="56" r="24" fill="#ffdf79"/>
+  <path d="M67 205h350" stroke="#eadfbf" stroke-width="5" stroke-linecap="round"/>
+  <path d="M92 204V77h7v127M96 77h206M267 77v96M301 77l-36 26M97 77l41 28M257 117h20v9h-20z" fill="none" stroke="#3d4861" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M148 203v-80h149v80" fill="#fff" stroke="#3d4861" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M179 153h86M179 178h86" stroke="#ffbf00" stroke-width="12" stroke-linecap="round"/>
+  <rect x="316" y="160" width="85" height="43" rx="5" fill="#fff" stroke="#3d4861" stroke-width="6"/>
+  <path d="M327 202l25-39M350 202l26-39" stroke="#ffbf00" stroke-width="12"/>
+  <path d="M330 203v18m58-18v18" stroke="#3d4861" stroke-width="6" stroke-linecap="round"/>
+  <path d="M75 150h55v53H75z" fill="#ffbf00" stroke="#3d4861" stroke-width="6"/>
+  <path d="M88 165h29M88 179h29" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+</svg>
