@@ -224,13 +224,12 @@ with st.container(key="rising-canvas"):
             report = load_report(applied["kind"], selected_row["code"], result["quarter"], applied["industry"])
             if report:
                 st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
-                head, close = st.columns([5, 1])
+                head, collapse = st.columns([5, 1])
                 with head:
                     st.subheader(f"{report['district']} {report['name']} 분석 리포트")
-                with close:
-                    if st.button("닫기", key="rising-close-report"):
-                        st.session_state.rising_selected = None
-                        st.session_state.rising_map_pending_region = ""
+                with collapse:
+                    if st.button("접기 ›", key="rising-collapse-report", help="분석 리포트 접기"):
+                        st.session_state.rising_right_open = False
                         st.rerun()
                 scope = {"all": "전체 업종", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[report["industry"]]
                 st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 점포수·매출: {scope} · 인구: 지역 전체 · 출처별 값을 구분합니다.")
@@ -245,7 +244,11 @@ with st.container(key="rising-canvas"):
                     st.caption("업종별 세부 구성·요일·연령 자료는 확인되지 않아 해당 그래프에는 전체 업종 원본만 사용합니다.")
                 st.info("상권 지표는 지역의 변화 신호입니다. 우리 가게의 매출·임대료나 대출 심사 결과를 뜻하지 않습니다.")
                 tabs = ["종합의견", "업종분석", "매출분석", "인구분석", "지역(배후지)분석"]
-                tab = st.segmented_control("보고서 항목", tabs, default="종합의견", width="stretch", wrap=False)
+                first_tab = {"stores": "업종분석", "sales": "매출분석",
+                             "footfall": "인구분석", "residents": "인구분석"}[applied["metric"]]
+                tab = st.segmented_control("보고서 항목", tabs, default=first_tab,
+                                           key=f"rising-report-tab-{applied['metric']}",
+                                           width="stretch", wrap=False)
                 if tab == "종합의견":
                     for line in overview_lines(report):
                         st.markdown("- " + line)
@@ -290,7 +293,8 @@ with st.container(key="rising-canvas"):
                     density, label = footfall_per_ha(report)
                     st.metric("3개월간 1ha당 유동인구", f"{density:,.0f}명/ha" if density is not None else "면적 정보 없음", border=True)
                     st.caption(label)
-                    for metric in ["footfall", "residents"]:
+                    population_order = ["residents", "footfall"] if applied["metric"] == "residents" else ["footfall", "residents"]
+                    for metric in population_order:
                         item = report["metrics"].get(metric)
                         if item:
                             st.metric(LABELS[metric], human_value(metric, item["value"]), percent(item["change"]), border=True)

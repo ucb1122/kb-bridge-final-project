@@ -80,7 +80,7 @@ function drawKakaoBoundaries(root,map,features,setTriggerValue) {
 function resizeMapViewport() {
   if(!mapRoot)return;
   const host=mapRoot.getRootNode().host||mapRoot;
-  const canvas=host.closest?.('.st-key-rising-canvas');
+  const canvas=host.closest?.('.st-key-rising-canvas, .st-key-owner-canvas');
   const compact=window.innerWidth<=1100;
   const size=compact?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-mapRoot.getBoundingClientRect().top));
   mapRoot.style.height=`${size}px`;
@@ -222,7 +222,7 @@ export default async function(component) {
   const status=parentElement.querySelector('#kb-map-status');
   if (!root) return;
   const host=root.getRootNode().host||root;
-  const canvas=host.closest?.('.st-key-rising-canvas');
+  const canvas=host.closest?.('.st-key-rising-canvas, .st-key-owner-canvas');
   root.style.height=`${window.innerWidth<=1100?650:Math.max(650,Math.ceil(canvas?.getBoundingClientRect().height||window.innerHeight-root.getBoundingClientRect().top))}px`;
   try {
     await loadKakao(data.key);
