@@ -23,7 +23,7 @@ rising_layout.apply_rising_layout()
 
 # Streamlit can rerun this page while retaining a previously imported map helper.
 # Reload it when the running helper predates the current component arguments.
-if getattr(kakao_rank_map, "COMPONENT_VERSION", None) != 5 or "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
+if getattr(kakao_rank_map, "COMPONENT_VERSION", None) != 6 or "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
     importlib.reload(kakao_rank_map)
 show_map = kakao_rank_map.show_map
 map_helper_parameters = inspect.signature(show_map).parameters
@@ -193,7 +193,7 @@ with st.container(key="rising-canvas"):
                             **map_extras,
                             selected=st.session_state.rising_selected,
                             selected_location=location_by_code.get(st.session_state.rising_selected),
-                            source=result["ranking_source"], district=applied["district"], height=820)
+                            source=result["ranking_source"], district=applied["district"], height=820, stretch=True)
         selected = getattr(map_result, "selected", map_result)
         if selected and selected != st.session_state.rising_selected and selected in {r["code"] for r in rows}:
             st.session_state.rising_selected = selected
