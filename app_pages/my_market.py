@@ -18,7 +18,7 @@ from kb_bridge.ui import kakao_rank_map, owner_layout, owner_report
 if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
         not callable(getattr(owner_snapshot, "search_businesses", None))):
     importlib.reload(owner_snapshot)
-if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 2:
+if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 3:
     importlib.reload(owner_report)
 importlib.reload(owner_layout)
 if getattr(kakao_rank_map, "COMPONENT_VERSION", 0) != 9:
@@ -354,21 +354,23 @@ with st.container(key="owner-canvas"):
         with st.container(key="owner-right-toggle"):
             if not st.session_state.owner_right_open:
                 st.html('<span class="kb-owner-right-collapsed" hidden></span>')
-            if st.button("›" if st.session_state.owner_right_open else "‹", key="owner-right-collapse",
+            if st.button("×" if st.session_state.owner_right_open else "‹", key="owner-right-collapse",
                          help="내 상권 보고서 접기 또는 펼치기"):
                 st.session_state.owner_right_open = not st.session_state.owner_right_open
                 st.rerun()
 
         with st.container(key="owner-report-panel"):
-            st.caption("지역 데이터에 기반한 참고 보고서")
-            st.subheader(f"{market['district']} {market['name']} 분석 리포트")
-            st.caption(f"{mode} · {market.get('type', '상권')} · {report['quarter'][:4]}년 {report['quarter'][-1]}분기 · {group['label']}")
+            with st.container(key="owner-report-header"):
+                st.caption("경영 진단 보고서")
+                st.subheader(market["name"])
+                st.caption(f"{market['district']} · {report.get('scope') or market.get('type', '상권')} · {group['label']} · {report['quarter'][:4]}년 {report['quarter'][-1]}분기")
             if industry_code == "unmapped":
                 st.info("선택한 인허가 업태에 대응하는 공식 서비스업종 코드가 없어 점포수·매출은 표시하지 않습니다.")
-            report_tab = st.segmented_control("분석 항목",
-                ["한눈에 보기", "업종·경쟁", "매출", "고객·인구", "주변 환경", "금융상담 준비"],
-                default="한눈에 보기", key=f"owner-report-tab-{mode}", width="stretch", wrap=False)
-            if report_tab != "금융상담 준비":
+            with st.container(key="owner-report-tabs"):
+                report_tab = st.segmented_control("분석 항목",
+                    ["한눈에 보기", "업종·경쟁", "매출", "고객·인구", "주변 환경"],
+                    default="한눈에 보기", key=f"owner-report-tab-{mode}", width="stretch", wrap=False)
+            with st.container(key="owner-report-body"):
                 observations = (load_licences(selected_business["lat"], selected_business["lng"],
                                               radius, group_id)
                                 if mode == "나는 사장" and selected_business and
@@ -376,49 +378,73 @@ with st.container(key="owner-canvas"):
                 render_section(report_tab, report=report, market=market, mode=mode,
                                selected_business=selected_business, radius=radius,
                                observations=observations, metric=metric, ranking=ranked)
-            else:
-                st.subheader("경영·금융진단")
-                st.caption("직접 입력한 가정만 계산합니다. 은행 대출 심사·사업자 인증·실제 상담 접수는 연결되지 않았습니다.")
-                with st.form("cashflow-form", border=True):
-                    a, b = st.columns(2)
-                    with a:
-                        monthly_sales = st.number_input("월매출 · 만원", min_value=0, value=1800, step=10)
-                        monthly_cost = st.number_input("월 영업비용 · 만원 (월세·대출 상환 제외)", min_value=0, value=1450, step=10)
-                        rent = st.number_input("현재 월세 · 만원", min_value=0, value=180, step=10)
-                    with b:
-                        debt_payment = st.number_input("기존 월 대출 상환액 · 만원", min_value=0, value=60, step=10)
-                        rent_increase = st.slider("월세 인상 가정", min_value=0, max_value=100, value=25, format="%d%%")
-                        purpose = st.selectbox("상담 주제", ["월세 부담", "매출 감소", "운영자금", "창업자금", "채무관리", "경영지원"])
-                    with st.expander("가상 신규대출 부담도 비교"):
-                        loan_principal = st.number_input("가상 대출원금 · 만원", min_value=0, value=2000, step=100)
-                        loan_rate = st.number_input("가정 연이율 · %", min_value=0.0, max_value=100.0, value=6.0, step=0.1)
-                        loan_months = st.number_input("가정 상환 기간 · 개월", min_value=1, max_value=600, value=24)
-                    calculated = st.form_submit_button("시나리오 계산", type="primary")
-                if calculated:
-                    before = monthly_sales - monthly_cost - rent - debt_payment
-                    after = monthly_sales - monthly_cost - rent * (1 + rent_increase / 100) - debt_payment
-                    loan_payment = float(amortizing_payment(principal=loan_principal, annual_rate_percent=loan_rate, months=loan_months))
-                    a, b = st.columns(2)
-                    with a:
-                        st.metric("현재 월 현금흐름 여유액", f"{before:,.0f}만 원", border=True)
-                    with b:
-                        st.metric("월세 인상 가정 후", f"{after:,.0f}만 원", f"{after-before:+,.0f}만 원", border=True)
-                    st.metric("가상 신규대출 월 원리금", f"{loan_payment:,.1f}만 원", border=True)
-                    st.metric("월세 변화와 신규대출 가정 후 여유액", f"{after-loan_payment:,.1f}만 원", border=True)
-                    if after - loan_payment < 0:
-                        st.warning("이 가정에서는 추가 차입 후 월 현금흐름이 음수입니다.")
-                    st.caption("세금, 보증금, 비정기 지출, 계절 변동과 실제 대출 조건은 미반영입니다.")
-                st.subheader("가까운 KB 영업점 · 상담 준비")
-                branches = owner_snapshot.nearest_branches(market["lat"], market["lng"])
-                for branch in branches:
-                    with st.container(border=True):
-                        st.markdown(f"**{branch['name']}** · 직선 약 {branch['meters']/1000:.2f}km")
-                        st.caption(f"{branch['address']} · {branch['phone']} · {branch['hours']}")
-                memo = {"state": "교육용 시연 · 미접수 · 예약 미확정", "market": market["name"],
-                        "district": market["district"], "industry": group["label"], "topic": purpose,
-                        "quarter": report["quarter"],
-                        "branch_candidates": [{"name": item["name"], "address": item["address"]} for item in branches]}
-                st.download_button("상담 준비 메모 저장", data=json.dumps(memo, ensure_ascii=False, indent=2),
-                                   file_name="kb-bridge-consultation-draft.json", mime="application/json",
-                                   width="stretch")
-                st.caption("메모에는 입력한 개인 재무 수치를 넣지 않습니다. 저장 버튼을 눌러도 은행에는 전송되지 않습니다.")
+                if st.session_state.get("owner_consultation") == "finance":
+                    st.subheader("경영·금융진단")
+                    st.caption("직접 입력한 가정만 계산합니다. 은행 대출 심사·사업자 인증·실제 상담 접수는 연결되지 않았습니다.")
+                    with st.form("cashflow-form", border=True):
+                        a, b = st.columns(2)
+                        with a:
+                            monthly_sales = st.number_input("월매출 · 만원", min_value=0, value=1800, step=10)
+                            monthly_cost = st.number_input("월 영업비용 · 만원 (월세·대출 상환 제외)", min_value=0, value=1450, step=10)
+                            rent = st.number_input("현재 월세 · 만원", min_value=0, value=180, step=10)
+                        with b:
+                            debt_payment = st.number_input("기존 월 대출 상환액 · 만원", min_value=0, value=60, step=10)
+                            rent_increase = st.slider("월세 인상 가정", min_value=0, max_value=100, value=25, format="%d%%")
+                            purpose = st.selectbox("상담 주제", ["월세 부담", "매출 감소", "운영자금", "창업자금", "채무관리", "경영지원"])
+                        with st.expander("가상 신규대출 부담도 비교"):
+                            loan_principal = st.number_input("가상 대출원금 · 만원", min_value=0, value=2000, step=100)
+                            loan_rate = st.number_input("가정 연이율 · %", min_value=0.0, max_value=100.0, value=6.0, step=0.1)
+                            loan_months = st.number_input("가정 상환 기간 · 개월", min_value=1, max_value=600, value=24)
+                        calculated = st.form_submit_button("시나리오 계산", type="primary")
+                    if calculated:
+                        before = monthly_sales - monthly_cost - rent - debt_payment
+                        after = monthly_sales - monthly_cost - rent * (1 + rent_increase / 100) - debt_payment
+                        loan_payment = float(amortizing_payment(principal=loan_principal, annual_rate_percent=loan_rate, months=loan_months))
+                        a, b = st.columns(2)
+                        with a:
+                            st.metric("현재 월 현금흐름 여유액", f"{before:,.0f}만 원", border=True)
+                        with b:
+                            st.metric("월세 인상 가정 후", f"{after:,.0f}만 원", f"{after-before:+,.0f}만 원", border=True)
+                        st.metric("가상 신규대출 월 원리금", f"{loan_payment:,.1f}만 원", border=True)
+                        st.metric("월세 변화와 신규대출 가정 후 여유액", f"{after-loan_payment:,.1f}만 원", border=True)
+                        if after - loan_payment < 0:
+                            st.warning("이 가정에서는 추가 차입 후 월 현금흐름이 음수입니다.")
+                        st.caption("세금, 보증금, 비정기 지출, 계절 변동과 실제 대출 조건은 미반영입니다.")
+                    st.subheader("가까운 KB 영업점 · 상담 준비")
+                    branches = owner_snapshot.nearest_branches(market["lat"], market["lng"])
+                    for branch in branches:
+                        with st.container(border=True):
+                            st.markdown(f"**{branch['name']}** · 직선 약 {branch['meters']/1000:.2f}km")
+                            st.caption(f"{branch['address']} · {branch['phone']} · {branch['hours']}")
+                    memo = {"state": "교육용 시연 · 미접수 · 예약 미확정", "market": market["name"],
+                            "district": market["district"], "industry": group["label"], "topic": purpose,
+                            "quarter": report["quarter"],
+                            "branch_candidates": [{"name": item["name"], "address": item["address"]} for item in branches]}
+                    st.download_button("상담 준비 메모 저장", data=json.dumps(memo, ensure_ascii=False, indent=2),
+                                       file_name="kb-bridge-consultation-draft.json", mime="application/json",
+                                       width="stretch")
+                    st.caption("메모에는 입력한 개인 재무 수치를 넣지 않습니다. 저장 버튼을 눌러도 은행에는 전송되지 않습니다.")
+
+                elif st.session_state.get("owner_consultation") == "management":
+                    st.info("소상공인 경영상담 연결은 개발 예정입니다. 현재 보고서의 통계와 실제 운영 자료를 함께 준비해 주세요.")
+            with st.container(key="owner-report-footer"):
+                with st.expander("위치·반경·보행·다각형으로 더 자세히 보기"):
+                    st.caption("아래 범위는 인허가 업소 분포를 별도로 셉니다. 공식 통계의 공간 범위는 바꾸지 않습니다.")
+                    if selected_business:
+                        st.write(f"선택 점포 기준 반경 {radius:,}m · {selected_business.get('name') or '상호 없음'}")
+                    else:
+                        st.write("상호·주소에서 점포 위치를 선택하면 주변 인허가 관측을 확인할 수 있습니다.")
+                consultation_columns = st.columns(2)
+                with consultation_columns[0]:
+                    if st.button("KB 영업점 금융상담 →", key="owner-finance-consult", type="primary", width="stretch"):
+                        st.session_state.owner_consultation = "finance"
+                        st.rerun()
+                with consultation_columns[1]:
+                    if st.button("소상공인 경영상담 →", key="owner-management-consult", width="stretch"):
+                        st.session_state.owner_consultation = "management"
+                        st.rerun()
+                pdf_buttons = st.columns([1, 1, 4])
+                with pdf_buttons[0]:
+                    st.button("이 항목 PDF", key="owner-pdf-one", disabled=True, help="PDF 저장 개발 예정")
+                with pdf_buttons[1]:
+                    st.button("PDF 5종 받기", key="owner-pdf-all", disabled=True, help="PDF 저장 개발 예정")

@@ -1,11 +1,12 @@
 """Right-hand owner report sections built from the team's local snapshot."""
 from __future__ import annotations
 
+import pandas as pd
 import streamlit as st
 
 from kb_bridge.repositories.owner_snapshot import distance_m
 
-OWNER_REPORT_VERSION = 2
+OWNER_REPORT_VERSION = 3
 
 
 def _number(value: float | None, unit: str = "") -> str:
@@ -62,28 +63,62 @@ def render_section(section: str, *, report: dict, market: dict, mode: str,
     scope_label = "행정동" if dong else "공식 상권"
     if section == "한눈에 보기":
         if dong:
-            st.subheader(f"{market['name']} 경영 진단 보고서")
+            store_change = None if previous["stores"] in (None, 0) or current["stores"] is None else current["stores"] - previous["stores"]
+            people_change = None if population_previous["floating"] in (None, 0) or report["floating"] is None else report["floating"] - population_previous["floating"]
+            direction = {(True, True): "점포수와 유동인구 집계가 줄었어요",
+                         (False, False): "점포수와 유동인구 집계가 늘었어요",
+                         (True, False): "점포수는 줄고 유동인구 집계는 늘었어요",
+                         (False, True): "점포수는 늘고 유동인구 집계는 줄었어요"}
+            headline = (direction.get((store_change < 0, people_change < 0))
+                        if store_change not in (None, 0) and people_change not in (None, 0)
+                        else "상권의 점포수와 유동인구를 확인해 보세요")
+            st.subheader(headline)
         else:
             st.subheader("내 점포 주변과 공식 상권" if selected_business else "공식 상권 한눈에 보기" if owner else "창업 후보 상권 한눈에 보기")
+        store_scope_changed = current["store_codes"] != previous["store_codes"]
+        sales_scope_changed = current["sales_codes"] != previous["sales_codes"]
         cards = st.columns(3, gap="small")
         with cards[0]:
             st.metric("점포수" if dong else "공식 점포수", _number(current["stores"], "개"),
-                      _sales_delta(current["stores"], previous["stores"]) if dong
-                      else _delta(current["stores"], previous["stores"], "개"), border=True)
+                      (f"전분기 대비 {_sales_delta(current['stores'], previous['stores'])}"
+                       + (" · 업종 범위 변경" if store_scope_changed else "")) if dong
+                      else _delta(current["stores"], previous["stores"], "개"), border=True,
+                      delta_color="off")
         with cards[1]:
             st.metric("분기 추정매출" if dong else "추정매출 원본 금액", _amount(current["sales"]),
-                      _sales_delta(current["sales"], previous["sales"]), border=True)
+                      (f"전분기 대비 {_sales_delta(current['sales'], previous['sales'])}"
+                       + (" · 업종 범위 변경" if sales_scope_changed else "")
+                       + f" · 매출 제공 {current['sales_codes']} / 점포 제공 {current['store_codes']}개 업종") if dong
+                      else _sales_delta(current["sales"], previous["sales"]), border=True,
+                      delta_color="off")
         with cards[2]:
             st.metric("유동인구 집계" if dong else "상권 유동인구 집계", _number(report["floating"], "명"),
-                      _sales_delta(report["floating"], population_previous["floating"]) if dong
-                      else _delta(report["floating"], population_previous["floating"], "명"), border=True)
-        st.caption(f"{_coverage(current)} · 점포수·매출은 선택 업종/{scope_label}, 인구는 {scope_label} 전체입니다.")
+                      f"전분기 대비 {_sales_delta(report['floating'], population_previous['floating'])}" if dong
+                      else _delta(report["floating"], population_previous["floating"], "명"), border=True,
+                      delta_color="off")
+        coverage_changed = (current["store_codes"] != previous["store_codes"] or
+                            current["sales_codes"] != previous["sales_codes"])
+        st.caption(f"전분기 대비 집계입니다. {'업종 범위 변경 · ' if coverage_changed else ''}{_coverage(current)} · 인구는 {scope_label} 전체입니다.")
+        with st.expander("집계 기준 확인 · 1건"):
+            st.write("점포수와 매출은 서울시 공개 원본의 지역 집계입니다. 유동인구는 업종과 무관한 지역 전체 값입니다.")
         if dong and report.get("history") and report.get("industry_code") is None:
             history = {}
             for row in report["history"]:
                 if row["metric"] in {"stores", "sales", "footfall"}:
                     history.setdefault(row["quarter"], {})[row["metric"]] = row["value"]
-            with st.expander("최근 5분기 원본 수치·계산 근거"):
+            quarters = sorted(history)
+            if quarters:
+                st.markdown("### 점포수 추이")
+                st.line_chart(pd.DataFrame({"점포수": [history[q].get("stores") for q in quarters]},
+                                           index=[f"{q[:4]}년 {q[-1]}분기" for q in quarters]), height=160)
+                st.markdown("### 분기 추정매출 추이")
+                st.line_chart(pd.DataFrame({"억 원": [(history[q].get("sales") or 0) / 100_000_000 for q in quarters]},
+                                           index=[f"{q[:4]}년 {q[-1]}분기" for q in quarters]), height=160)
+            with st.expander("분석 설명·집계 기준"):
+                st.write(f"{market['district']} {market['name']} · {scope_label} 전체 · {report['quarter'][:4]}년 {report['quarter'][-1]}분기. 지역 통계와 우리 가게의 실제 실적을 함께 확인해 보세요.")
+                st.write("추정매출은 지역·업종 집계값이며 개별 점포의 실매출·이익·대출 가능액을 뜻하지 않습니다.")
+                st.write("결측값은 자료 없음으로 표시합니다. 증가율은 (현재−전분기)÷전분기×100이며 전분기 값이 0이면 계산하지 않습니다.")
+            with st.expander("원본 수치·계산 근거"):
                 st.dataframe([{"분기": f"{q[:4]}년 {q[-1]}분기",
                                "점포수": _number(values.get("stores"), "개"),
                                "분기 추정매출": _number(values.get("sales"), "원"),
@@ -97,6 +132,7 @@ def render_section(section: str, *, report: dict, market: dict, mode: str,
             rank = next((index for index, row in enumerate(ranking, 1) if row["code"] == market["code"]), None)
             if rank is not None:
                 st.info(f"{metric_label} 전분기 증가율 순위: {rank}/{len(ranking)}위 · 조건에 맞는 {scope_label} 내 순위")
+        st.caption("출처: 서울특별시 서울 열린데이터광장 / 공공데이터포털(data.go.kr)")
         st.caption(f"{scope_label} 집계는 내 가게의 실매출·이익이나 창업 성공 가능성을 뜻하지 않습니다.")
     elif section == "업종·경쟁":
         st.subheader("업종·경쟁")
