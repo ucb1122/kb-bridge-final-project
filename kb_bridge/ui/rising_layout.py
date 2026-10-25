@@ -67,22 +67,24 @@ def apply_rising_layout() -> None:
 .st-key-rising-rank-row-1 .kb-rank-number,.st-key-rising-rank-row-2 .kb-rank-number,.st-key-rising-rank-row-3 .kb-rank-number {color:#c79c00;font-weight:800;}
 .kb-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;color:#101624;}
 .kb-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;color:#e23570;}
-.st-key-rising-controls-card [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;width:100%;}
-.st-key-rising-controls-card [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;white-space:normal;padding:5px 2px;font-size:12px;}
-.st-key-rising-controls-card [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#FFBF00;color:#101624;}
-.st-key-rising-industry-control [data-testid="stSegmentedControl"] {width:100%;min-width:0;}
-.st-key-rising-industry-control [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:4px;}
+.st-key-rising-controls-card [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;gap:6px!important;width:100%;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;}
+.st-key-rising-controls-card [data-testid="stButtonGroup"] button[data-variant="segmented_control"]:not([data-selected]):hover {background:#ffe182!important;color:#101624!important;}
+.st-key-rising-controls-card [data-testid="stButtonGroup"] button {flex:1 1 0;min-width:0;min-height:48px;padding:5px 3px;margin:0!important;border:0!important;border-radius:12px!important;background:#f1f2f5!important;color:#101624!important;font-size:12px;font-weight:800!important;line-height:1.2;white-space:normal;box-shadow:none!important;}
+.st-key-rising-controls-card [data-testid="stButtonGroup"] button p {color:inherit!important;font-weight:800!important;}
+.st-key-rising-controls-card [data-testid="stButtonGroup"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
+.st-key-rising-industry-control [data-testid="stButtonGroup"] {width:100%;min-width:0;}
+.st-key-rising-industry-control [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:6px!important;}
 .kb-metric-label {font-size:13px;font-weight:600;margin:4px 0 6px;color:#172033}
 .st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%}
 .st-key-rising-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
-.st-key-rising-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#5f6f85;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;overflow:visible;text-overflow:clip}
+.st-key-rising-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#101624;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;overflow:visible;text-overflow:clip}
 .st-key-rising-metric-control [data-testid="stButton"] button p {font-size:14px;font-weight:800!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
 .st-key-rising-metric-control [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#101624}
 .st-key-rising-metric-control [data-testid="stButton"] button:hover {background:#ffe182;color:#101624}
-.st-key-rising-industry-control [data-testid="stSegmentedControl"] button {flex:1 1 calc(50% - 4px)!important;min-width:calc(50% - 4px)!important;min-height:42px;white-space:nowrap!important;}
+.st-key-rising-industry-control [data-testid="stButtonGroup"] button {flex:1 1 calc(50% - 6px)!important;min-width:calc(50% - 6px)!important;min-height:42px;white-space:nowrap!important;}
 .st-key-rising-controls-card [data-testid="stExpander"] {border:0;border-top:1px solid #e4e4e4;border-radius:0;margin-top:8px;}
 .st-key-rising-controls-card [data-testid="stExpander"] summary {font-weight:700;}
-.st-key-rising-controls-card [data-testid="stExpander"] [data-testid="stSegmentedControl"] button {line-height:1.2;min-height:42px;}
+.st-key-rising-controls-card [data-testid="stExpander"] [data-testid="stButtonGroup"] button {line-height:1.2;min-height:42px;}
 .st-key-rising-filter-panel [data-testid="stCaptionContainer"] { font-size: 11px; }
 .st-key-rising-report-panel h3 { margin-top: 0; font-size: 21px; }
 .kb-rising-report-banner {margin:-18px -22px 14px;padding:15px 22px 15px 62px;background:#FFBF00;color:#101624;font-size:19px;font-weight:700;}
@@ -93,7 +95,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] { border-bottom-color:#E5A900; color:#101624; font-weight:700; }
 .st-key-rising-report-panel [data-testid="stMetric"] { border:1px solid #e9e5d9; border-radius:4px; }
 .st-key-rising-report-panel [data-testid="stAlert"] { border-color:#f0dc9a; background:#fffaf0; }
-.st-key-rising-filter-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#FFBF00;color:#101624;}
+
 .st-key-rising-filter-panel [data-testid="stFormSubmitButton"] button[kind="primaryFormSubmit"] { background:#FFBF00; border-color:#FFBF00; color:#101624; justify-content:center; }
 .st-key-rising-filter-panel [data-testid="stRadio"] label,
 .st-key-rising-filter-panel [data-testid="stSelectbox"] label { margin-bottom: 0; }
