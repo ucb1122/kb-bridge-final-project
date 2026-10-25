@@ -405,7 +405,7 @@ with st.container(key="rising-canvas"):
                 st.rerun()
     with st.container(key="rising-map-selector"):
         if st.session_state.rising_selector_open:
-            city_col, district_col, region_col, close_col = st.columns([1.2, 1, 1, 0.42], gap="small", vertical_alignment="center")
+            city_col, district_col, region_col, close_col = st.columns([1, 1.1, 1.1, 0.6], gap="small", vertical_alignment="center")
             with city_col:
                 st.button("◉ 서울특별시", key="rising-city-reset", on_click=reset_map_to_seoul,
                           help="서울시 전체로 돌아가기", width="stretch")
@@ -423,9 +423,11 @@ with st.container(key="rising-canvas"):
                              format_func=lambda value: location_by_code[value]["name"] if value else "전체",
                              on_change=select_map_region)
             with close_col:
-                if st.button("접기", key="rising-selector-toggle", help="지역 선택창 접기"):
+                if st.button("접기", key="rising-selector-toggle", help="지역 선택창 접기", width="stretch"):
                     st.session_state.rising_selector_open = False
                     st.rerun()
-        elif st.button("지역 선택", key="rising-selector-toggle", help="지역 선택창 펼치기"):
-            st.session_state.rising_selector_open = True
-            st.rerun()
+        else:
+            st.html('<span class="kb-rising-selector-collapsed" hidden></span>')
+            if st.button("지역 선택", key="rising-selector-toggle", help="지역 선택창 펼치기", width="stretch"):
+                st.session_state.rising_selector_open = True
+                st.rerun()
