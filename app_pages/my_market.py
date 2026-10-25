@@ -34,7 +34,7 @@ for state_key in ("owner_left_open", "owner_right_open"):
 
 catalog = owner_snapshot.catalog()
 categories = ["외식업", "서비스업", "소매업"]
-metric_labels = {"stores": "점포수", "sales": "매출", "floating": "유동인구", "resident": "거주인구"}
+metric_labels = {"stores": "점포수", "sales": "매출", "floating": "유동인구", "resident": "상주인구"}
 
 
 @st.cache_data(max_entries=64)
@@ -146,6 +146,7 @@ with st.container(key="owner-canvas"):
                 mode = st.segmented_control("분석 대상", ["나는 사장", "나도 곧 사장"],
                                             key="owner-mode", default="나는 사장",
                                             on_change=change_owner_mode, width="stretch", wrap=False,
+                                            format_func=lambda value: "사업 운영 중이에요" if value == "나는 사장" else "창업을 준비중이에요",
                                             label_visibility="collapsed")
             st.caption("주변 상권과 우리 가게의 운영을 함께 점검해 보세요." if mode == "나는 사장"
                        else "창업 후보지의 상권과 업종 변화를 함께 살펴보세요.")
