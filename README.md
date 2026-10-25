@@ -50,15 +50,13 @@ KB 상권브릿지는 서울시 공개 상권 자료로 지역 변화를 살펴�
 
 ## 2. 팀 소개
 
-역할과 사진은 팀에서 확정한 뒤 채울 수 있도록 비워 두었습니다.
-
-| 이름 | 역할 | 사진 |
-| --- | --- | --- |
-| 정지수 |  |  |
-| 이준용 |  |  |
-| 배정환 |  |  |
-| 김채연 |  |  |
-| 진희헌 |  |  |
+| 이름 |
+| --- |
+| 정지수 |
+| 이준용 |
+| 배정환 |
+| 김채연 |
+| 진희헌 |
 
 ## 3. 문제 정의와 기획 방향
 
@@ -212,23 +210,37 @@ Streamlit 서버에서 화면과 Python 업무 코드를 함께 실행합니다.
 
 ## 8. 프로젝트 구조
 
+주요 처리 흐름은 **원본 준비 → 저장소 조회 → 지표 분석 → 화면·보고서 표시**입니다. 위험 진단과 금융 상품 연결은 이 흐름에 이어 붙이는 기능으로 개발 중입니다.
+
 ```text
-app.py                     Streamlit 진입점과 네 메뉴
-app_pages/                 뜨는 상권·내 상권 분석·준비 중 화면
-kb_bridge/
-  ui/                      지도·패널·보고서·정적 그래프 표시
-  services/                지표 해석·PDF 생성
-  domain/                  금융 계산 등 순수 규칙
-  repositories/            SQLite·JSON 스냅샷 접근과 기본 스키마
-  integrations/            로컬 Ollama 등 외부 연동
-  ingestion/               원본 적재 계층의 기본 구조
-scripts/                   스냅샷 준비·원본 재구성 명령
-static/assets/             앱에서 제공하는 로고·아이콘
-assets/                    경계·업종 목록·폰트 등 자산
-data/                      원본·가공본·로컬 자료 위치
-docs/                      설계·데이터·이식·테스트 문서
-tests/                     자동 검증
-output/                    생성 산출물 위치
+kb-bridge-final-project/
+├── app.py                         ① 앱 시작·메뉴 연결
+├── app_pages/                     ② 화면별 진입점
+│   ├── rising.py                     뜨는 상권
+│   ├── my_market.py                  내 상권 분석
+│   ├── warning.py                    위험상권(개발 중)
+│   └── products.py                   금융 상품 추천(개발 중)
+├── scripts/                       ③ 원본 자료·로컬 스냅샷 준비
+│   ├── prepare_test_data.py          검증용 자료 복사
+│   ├── import-raw.py                 공개 원본 재구성
+│   └── import-details.py             상세 자료 재구성
+├── data/                          ④ 자료 저장 위치
+│   ├── raw/                          공개 원본(로컬)
+│   ├── processed/                    가공 자료(로컬)
+│   ├── local/                        앱 조회용 스냅샷(로컬)
+│   └── verified/                     공식 화면 확인값
+├── kb_bridge/                     ⑤ 핵심 처리 코드
+│   ├── repositories/                 SQLite·JSON 조회와 행정동 원본 집계
+│   ├── services/                     지표 분석·PDF 생성
+│   ├── domain/                       금융 가정 계산 규칙
+│   ├── integrations/                 로컬 Ollama 연동
+│   ├── ui/                           지도·패널·보고서·정적 그래프
+│   └── ingestion/                    원본 적재 계층의 기본 구조
+├── assets/                        ⑥ 경계·업종 목록·폰트 등 자료 자산
+├── static/                        ⑦ 화면용 로고·폰트·지도 라이브러리
+├── output/                        ⑧ 생성된 보고서·검증 결과(로컬)
+├── tests/                         ⑨ 지표·자료·화면 흐름 자동 검증
+└── docs/                          ⑩ 설계·데이터 계약·협업 문서와 이미지
 ```
 
 ## 9. 로컬 실행 방법
