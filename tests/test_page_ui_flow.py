@@ -185,7 +185,10 @@ class OwnerPageInteractionTests(unittest.TestCase):
         self.assertEqual(len(kwargs["rows"]), 10)
         self.assertTrue(all(isinstance(row["lat"], (int, float)) and
                             isinstance(row["lng"], (int, float)) for row in kwargs["rows"]))
-        self.assertTrue(kwargs["fallback_districts"])
+        self.assertEqual(len(kwargs["fallback_districts"]), 1)
+        self.assertEqual(kwargs["fallback_districts"][0]["geometry"]["type"], "MultiLineString")
+        self.assertTrue(any(widget.label == "지역 찾는 방법" for widget in app.get("segmented_control")))
+        self.assertTrue(any(widget.label == "기준 분기" for widget in app.selectbox))
 
     def test_stale_owner_repository_is_reloaded_before_search(self):
         with patch.object(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0), \

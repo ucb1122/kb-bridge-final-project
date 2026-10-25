@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib
 import json
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import streamlit as st
@@ -55,14 +56,42 @@ def market_boundary(code: str) -> list[dict]:
             if str(feature["properties"].get("code")) == code]
 
 
-@st.cache_data(max_entries=26)
-def district_outline(district: str) -> list[dict]:
+@st.cache_data(max_entries=1)
+def seoul_outline() -> list[dict]:
+    """Trace only the outer border; shared district edges must stay hidden."""
     path = Path(__file__).resolve().parents[1] / "assets" / "seoul-district-boundaries.geojson"
     if not path.is_file():
         return []
     features = json.loads(path.read_text(encoding="utf-8"))["features"]
-    return [feature for feature in features
-            if not district or feature["properties"].get("district") == district]
+    edge_counts = Counter()
+    for feature in features:
+        for line in feature["geometry"]["coordinates"]:
+            edge_counts.update(tuple(sorted((tuple(a), tuple(b)))) for a, b in zip(line, line[1:]))
+    neighbors = defaultdict(list)
+    for (a, b), count in edge_counts.items():
+        if count == 1:
+            neighbors[a].append(b)
+            neighbors[b].append(a)
+    loops = []
+    remaining = set(neighbors)
+    while remaining:
+        start = next(iter(remaining))
+        loop = [start]
+        previous, current = None, start
+        while True:
+            candidates = [point for point in neighbors[current] if point != previous]
+            if not candidates:
+                break
+            following = candidates[0]
+            loop.append(following)
+            remaining.discard(current)
+            if following == start:
+                break
+            previous, current = current, following
+        if len(loop) > 2:
+            loops.append([list(point) for point in loop])
+    return [{"type": "Feature", "properties": {"district": "서울특별시"},
+             "geometry": {"type": "MultiLineString", "coordinates": loops}}]
 
 
 def metric_value(report: dict, metric: str) -> float | None:
@@ -90,71 +119,42 @@ def choose_owner_metric(value: str) -> None:
     st.session_state.owner_metric_choice = value
 
 
+def reset_owner_filters() -> None:
+    for key in ("owner-mode", "owner-find-mode", "owner-category", "owner-district",
+                "owner-market-query", "owner_market_choice", "owner-rank-sort",
+                "owner-business-query", "owner_business_anchor"):
+        st.session_state.pop(key, None)
+    st.session_state.owner_metric_choice = "stores"
+    st.session_state.owner_right_open = False
+
+
 if "owner_metric_choice" not in st.session_state:
-    st.session_state.owner_metric_choice = "sales"
+    st.session_state.owner_metric_choice = "stores"
 
 
 with st.container(key="owner-canvas"):
     with st.container(key="owner-filter-panel"):
         with st.container(key="owner-controls-card"):
-            st.markdown("## 내 상권 분석")
-            mode = st.segmented_control("분석 대상", ["나는 사장", "나도 곧 사장"],
-                                        key="owner-mode", default="나는 사장",
-                                        on_change=change_owner_mode, width="stretch", wrap=False)
-            st.caption("점포 위치와 주변 인허가 관측을 확인합니다." if mode == "나는 사장"
-                       else "업종별 상권의 전분기 변화율을 살펴봅니다.")
-            selected_business = None
-            radius = 500
-            group_id = None
-            group = {"label": "전체 업종"}
-            if mode == "나는 사장":
-                st.html('<div class="kb-owner-field-heading">점포 위치</div>')
-                business_query = st.text_input("상호·주소 검색", key="owner-business-query",
-                                               placeholder="상호 또는 확보된 주소를 2글자 이상 입력")
-                business_matches = owner_snapshot.search_businesses(business_query)
-                if business_query and not business_matches:
-                    st.caption("확보된 영업 인허가 기록에서 일치하는 위치가 없습니다.")
-                if business_matches:
-                    business_index = st.selectbox("검색 결과", range(len(business_matches)),
-                        format_func=lambda index: f"{business_matches[index].get('name') or '상호 없음'} · {business_matches[index].get('address') or '주소 없음'}",
-                        key="owner-business-choice")
-                    selected_business = business_matches[business_index]
-                    business_id = selected_business.get("id")
-                    if st.session_state.get("owner_business_anchor") != business_id:
-                        st.session_state.owner_business_anchor = business_id
-                        st.session_state["owner-district"] = selected_business.get("district", "")
-                        st.session_state.owner_market_choice = ""
-                category = st.segmented_control("업종 대분류", categories, default="외식업",
-                                                key="owner-licence-category", width="stretch", wrap=False)
-                groups = [item for item in catalog if item["category"] == category and not item.get("unavailable")]
-                labels = {item["id"]: item["label"] for item in groups}
-                group_id = st.selectbox("세부 인허가 업태", list(labels),
-                                        format_func=lambda key: labels[key], key=f"owner-group-{category}")
-                group = next(item for item in groups if item["id"] == group_id)
-                industry_code = owner_snapshot.official_scope_for_group(group)
-                radius = st.segmented_control("주변 인허가 관측 반경", [300, 500, 1000],
-                                              default=500, format_func=lambda value: f"{value:,}m",
-                                              key="owner-radius", width="stretch", wrap=False)
-                st.caption("점포 위치 반경의 인허가 관측과 공식 상권 통계는 별도 범위입니다.")
-            else:
-                category = st.segmented_control("공식 업종", ["전체 업종", "외식업", "서비스업", "소매업"],
-                                                default="전체 업종", key="owner-founder-category",
-                                                width="stretch", wrap=False)
-                scope = {"전체 업종": None, "외식업": "food", "서비스업": "service", "소매업": "retail"}[category]
-                codes_for_category = sorted(
-                    (code for code in owner_snapshot.regional()["industries"]
-                     if scope is None or code.startswith({"food":"CS1","service":"CS2","retail":"CS3"}[scope])),
-                    key=lambda code: owner_snapshot.regional()["industries"][code])
-                industry_code = st.selectbox("세부 업종", [scope or "all", *codes_for_category],
-                    format_func=lambda code: (category if code in {"all", "food", "service", "retail"}
-                                               else owner_snapshot.regional()["industries"][code]),
-                    key=f"owner-founder-industry-{category}")
-                if industry_code == "all":
-                    industry_code = None
-                group = {"label": category if industry_code in {None, "food", "service", "retail"}
-                         else owner_snapshot.regional()["industries"][industry_code]}
+            st.caption("같은 자료, 내 상황에 맞는 해석")
+            title_column, reset_column = st.columns([5, 1], vertical_alignment="center")
+            with title_column:
+                st.markdown("## 내 상권 분석")
+            with reset_column:
+                st.button("↻", key="owner-reset", help="분석 조건 초기화",
+                          on_click=reset_owner_filters, width="stretch")
+            with st.container(key="owner-persona-control"):
+                mode = st.segmented_control("분석 대상", ["나는 사장", "나도 곧 사장"],
+                                            key="owner-mode", default="나는 사장",
+                                            on_change=change_owner_mode, width="stretch", wrap=False,
+                                            label_visibility="collapsed")
+            st.caption("주변 상권과 우리 가게의 운영을 함께 점검해 보세요." if mode == "나는 사장"
+                       else "창업 후보지의 상권과 업종 변화를 함께 살펴보세요.")
+            with st.container(key="owner-find-control"):
+                find_mode = st.segmented_control("지역 찾는 방법",
+                        ["우리 동네 직접 찾기", "매출·상권 둘러보기"],
+                        default="매출·상권 둘러보기", key="owner-find-mode",
+                        width="stretch", wrap=False, label_visibility="collapsed")
             with st.container(key="owner-metric-control"):
-                st.html('<div class="kb-owner-field-heading">비교 지표</div>')
                 metric_columns = st.columns(4, gap="small", wrap=False)
                 for metric_key, column in zip(metric_labels, metric_columns):
                     with column:
@@ -162,50 +162,109 @@ with st.container(key="owner-canvas"):
                                   type="primary" if st.session_state.owner_metric_choice == metric_key else "secondary",
                                   on_click=choose_owner_metric, args=(metric_key,), width="stretch")
             metric = st.session_state.owner_metric_choice
-            districts = sorted({item["district"] for item in owner_snapshot.markets()})
-            district = st.selectbox("자치구", ["", *districts],
-                                    format_func=lambda value: value or "서울시 전체", key="owner-district")
-            if mode == "나는 사장":
-                query = st.text_input("상권·동네 검색", key="owner-market-query",
-                                      placeholder="공식 상권명 또는 동네 검색")
-                dong = ""
-                candidates = owner_snapshot.markets(district=district, query=query)
-                if selected_business and candidates and not st.session_state.get("owner_market_choice"):
-                    nearest = min(candidates, key=lambda item: owner_snapshot.distance_m(
-                        selected_business["lat"], selected_business["lng"], item["lat"], item["lng"]))
-                    st.session_state.owner_market_choice = nearest["code"]
-                ranked = owner_snapshot.growth_rankings(
-                    industry_scope=None if industry_code == "unmapped" else industry_code,
-                    metric=metric, district=district)
-                st.caption("점포와 중심 좌표가 가까운 공식 상권을 먼저 제안합니다. 상권 포함 여부는 확정하지 않으며, 보고서 수치는 선택한 공식 상권 전체 기준입니다." if selected_business else "공식 상권을 고르면 해당 상권 전체의 집계값을 보여줍니다.")
-            else:
-                dong_names = sorted({item["dong"] for item in owner_snapshot.markets(district=district)
-                                     if item.get("dong")})
-                dong = st.selectbox("행정동", ["", *dong_names],
-                                    format_func=lambda value: value or "전체", key="owner-founder-dong")
-                ranked = owner_snapshot.growth_rankings(industry_scope=industry_code,
-                                                         metric=metric, district=district, dong=dong)
-                candidates = [item for item in owner_snapshot.markets(district=district)
-                              if not dong or item.get("dong") == dong]
-                st.caption(f"{owner_snapshot.regional()['quarter'][:4]}년 {owner_snapshot.regional()['quarter'][-1]}분기 · 전분기 대비 증가율 기준")
+            quarter = owner_snapshot.regional()["quarter"]
+            unit_column, quarter_column = st.columns(2)
+            with unit_column:
+                st.selectbox("분석 단위", ["공식 상권 전체"], key="owner-region-kind", disabled=True)
+            with quarter_column:
+                st.selectbox("기준 분기", [quarter], key="owner-quarter", disabled=True,
+                             format_func=lambda q: f"{q[:4]}년 {q[-1]}분기")
+            district_column, industry_column = st.columns(2)
+            with district_column:
+                districts = sorted({item["district"] for item in owner_snapshot.markets()})
+                district = st.selectbox("자치구", ["", *districts],
+                                        format_func=lambda value: value or "서울시 전체", key="owner-district")
+            with industry_column:
+                category = st.selectbox("업종", ["전체 업종", *categories], key="owner-category")
+            scope = {"전체 업종": None, "외식업": "food", "서비스업": "service", "소매업": "retail"}[category]
+            industry_code = scope
+            group_id = None
+            group = {"label": category}
+            selected_business = None
+            radius = 500
+            search_field, search_action = st.columns([8, 1], vertical_alignment="bottom")
+            with search_field:
+                query = st.text_input("동네·상권 검색", key="owner-market-query",
+                                      placeholder="동네 또는 공식 상권명 검색", label_visibility="collapsed")
+            with search_action:
+                st.button("⌕", key="owner-search", help="입력한 동네·상권 검색", width="stretch")
+            if find_mode == "우리 동네 직접 찾기" and mode == "나는 사장":
+                with st.expander("우리 가게 위치와 주변 인허가 조건", expanded=True):
+                    business_query = st.text_input("상호·주소 검색", key="owner-business-query",
+                                                   placeholder="상호 또는 확보된 주소를 2글자 이상 입력")
+                    business_matches = owner_snapshot.search_businesses(business_query)
+                    if business_query and not business_matches:
+                        st.caption("확보된 영업 인허가 기록에서 일치하는 위치가 없습니다.")
+                    if business_matches:
+                        business_index = st.selectbox("검색 결과", range(len(business_matches)),
+                            format_func=lambda index: f"{business_matches[index].get('name') or '상호 없음'} · {business_matches[index].get('address') or '주소 없음'}",
+                            key="owner-business-choice")
+                        selected_business = business_matches[business_index]
+                        business_id = selected_business.get("id")
+                        if st.session_state.get("owner_business_anchor") != business_id:
+                            st.session_state.owner_business_anchor = business_id
+                            st.session_state.owner_market_choice = ""
+                    if category != "전체 업종":
+                        groups = [item for item in catalog if item["category"] == category and not item.get("unavailable")]
+                        labels = {item["id"]: item["label"] for item in groups}
+                        group_id = st.selectbox("세부 인허가 업태", list(labels),
+                                                format_func=lambda key: labels[key],
+                                                key=f"owner-group-{category}")
+                        group = next(item for item in groups if item["id"] == group_id)
+                        industry_code = owner_snapshot.official_scope_for_group(group)
+                    radius = st.segmented_control("주변 인허가 관측 반경", [300, 500, 1000],
+                                                  default=500, format_func=lambda value: f"{value:,}m",
+                                                  key="owner-radius", width="stretch", wrap=False)
+                    st.caption("인허가 관측 반경과 공식 상권 통계는 서로 다른 범위입니다.")
+            elif mode == "나도 곧 사장" and category != "전체 업종":
+                with st.expander("세부 업종 선택"):
+                    codes_for_category = sorted(
+                        (code for code in owner_snapshot.regional()["industries"]
+                         if code.startswith({"food": "CS1", "service": "CS2", "retail": "CS3"}[scope])),
+                        key=lambda code: owner_snapshot.regional()["industries"][code])
+                    industry_code = st.selectbox("세부 업종", [scope, *codes_for_category],
+                        format_func=lambda code: category if code == scope else owner_snapshot.regional()["industries"][code],
+                        key=f"owner-founder-industry-{category}")
+                    group = {"label": category if industry_code == scope
+                             else owner_snapshot.regional()["industries"][industry_code]}
+            candidates = owner_snapshot.markets(district=district, query=query)
+            ranked = owner_snapshot.growth_rankings(
+                industry_scope=None if industry_code == "unmapped" else industry_code,
+                metric=metric, district=district)
+            if query:
+                candidate_codes = {item["code"] for item in candidates}
+                ranked = [item for item in ranked if item["code"] in candidate_codes]
             codes = [item["code"] for item in candidates]
-            if "owner_market_choice" not in st.session_state and codes:
-                st.session_state.owner_market_choice = ranked[0]["code"] if ranked else ""
+            if "owner_market_choice" not in st.session_state:
+                st.session_state.owner_market_choice = ranked[0]["code"] if mode == "나도 곧 사장" and ranked else ""
             elif st.session_state.get("owner_market_choice", "") not in codes:
                 st.session_state.owner_market_choice = ""
-            chosen_code = st.selectbox("분석 상권", ["", *codes], key="owner_market_choice",
-                format_func=lambda code: next((f"{item['district']} · {item['name']}" for item in candidates
-                                               if item["code"] == code), "상권을 선택해 주세요"))
-        if mode == "나도 곧 사장":
-            with st.container(key="owner-rank-card"):
-                st.subheader(f"{metric_labels[metric]} 상승 상권 TOP 10")
-                if not ranked:
-                    st.info("전분기와 비교할 수 있는 상권 자료가 없습니다.")
-                for place, item in enumerate(ranked[:10], 1):
-                    st.button(f"{place}  {item['district']} {item['name']} · {metric_display(metric, item['value'])} · {item['change']:+.1f}%",
-                              key=f"owner-rank-{item['code']}", width="stretch",
-                              on_click=select_owner_market, args=(item["code"],))
-            st.caption("출처: 팀원 테스트 프로젝트의 서울시 공식 상권 원본 스냅샷")
+            if selected_business and candidates and not st.session_state.owner_market_choice:
+                nearest = min(candidates, key=lambda item: owner_snapshot.distance_m(
+                    selected_business["lat"], selected_business["lng"], item["lat"], item["lng"]))
+                st.session_state.owner_market_choice = nearest["code"]
+        with st.container(key="owner-rank-card"):
+            rank_title, sort_column = st.columns([3, 2], vertical_alignment="bottom")
+            with rank_title:
+                st.subheader(f"{metric_labels[metric]} 비교")
+            with sort_column:
+                sort_order = st.selectbox("정렬 기준", ["전분기 증가율순", "현재 값순", "전분기 감소율순"],
+                                          key="owner-rank-sort", label_visibility="collapsed")
+            if sort_order == "현재 값순":
+                ranked = sorted(ranked, key=lambda item: (-item["value"], item["code"]))
+            elif sort_order == "전분기 감소율순":
+                ranked = sorted(ranked, key=lambda item: (item["change"], item["code"]))
+            if not ranked:
+                st.info("전분기와 비교할 수 있는 상권 자료가 없습니다.")
+            for place, item in enumerate(ranked[:10], 1):
+                st.button(f"{place}  {item['district']} {item['name']} · {metric_display(metric, item['value'])} · {item['change']:+.1f}%",
+                          key=f"owner-rank-{item['code']}", width="stretch",
+                          on_click=select_owner_market, args=(item["code"],))
+            st.caption("출처: 서울시 공개 상권 원본 · 전분기 비교 가능 지역")
+            with st.expander("상권 직접 선택"):
+                chosen_code = st.selectbox("분석 상권", ["", *codes], key="owner_market_choice",
+                    format_func=lambda code: next((f"{item['district']} · {item['name']}" for item in candidates
+                                                   if item["code"] == code), "상권을 선택해 주세요"))
 
     with st.container(key="owner-left-toggle"):
         if not st.session_state.owner_left_open:
@@ -245,7 +304,7 @@ with st.container(key="owner-canvas"):
                  boundaries=market_boundary(market["code"]) if market else [],
                  selected=map_selected, source="official",
                  district=market["district"] if market else "",
-                 fallback_districts=district_outline(district),
+                 fallback_districts=seoul_outline(),
                  radius=radius if mode == "나는 사장" and selected_business else None, height=820)
         clicked_code = getattr(map_result, "selected", map_result)
         if clicked_code and clicked_code in codes and clicked_code != chosen_code:

@@ -69,4 +69,32 @@ def apply_owner_layout() -> None:
 .st-key-owner-report-panel [data-testid="stSegmentedControl"] {width:100%;overflow-x:auto;}
 .st-key-owner-report-panel [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;min-height:48px;padding:5px 3px;margin:0!important;border:0!important;border-radius:12px!important;background:#f1f2f5!important;color:#101624!important;font-size:12px;font-weight:800!important;line-height:1.2;white-space:normal;box-shadow:none!important;}
 .st-key-owner-report-panel [data-testid="stSegmentedControl"] button p {font-size:12px;font-weight:800!important;color:#101624!important;line-height:1.2;white-space:normal!important;}
-.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"],.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}</style>""")
+.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"],.st-key-owner-report-panel [data-testid="stSegmentedControl"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
+/* Match the provided owner panel reference while retaining rising-page panel widths. */
+.st-key-owner-filter-panel {top:12px;bottom:12px;left:12px;border-radius:18px;}
+.st-key-owner-canvas:has(.kb-owner-left-collapsed) .st-key-owner-filter-panel {transform:translateX(calc(-100% - 12px));}
+.st-key-owner-left-toggle {left:calc(12px + clamp(380px,23vw,440px));top:24px;}
+.st-key-owner-filter-panel h2 {font-size:27px;line-height:1.15;}
+.st-key-owner-controls-card {padding:20px 16px 18px;}
+.st-key-owner-controls-card > [data-testid="stVerticalBlock"] {gap:.5rem;}
+.st-key-owner-controls-card [data-testid="stCaptionContainer"] {font-size:13px;color:#627188;}
+.st-key-owner-reset button {border:0;background:transparent;color:#123767;font-size:26px;padding:0;min-height:38px;box-shadow:none;}
+.st-key-owner-persona-control [data-testid="stButtonGroup"] [role="radiogroup"] {padding:5px!important;background:#eef0f4!important;border-radius:15px!important;gap:4px!important;}
+.st-key-owner-persona-control [data-testid="stButtonGroup"] button {min-height:55px!important;background:transparent!important;border-radius:12px!important;color:#627188!important;font-size:15px!important;}
+.st-key-owner-persona-control [data-testid="stButtonGroup"] button[data-selected] {background:#fff!important;color:#101624!important;box-shadow:0 2px 8px #0001!important;}
+.st-key-owner-find-control [data-testid="stButtonGroup"] [role="radiogroup"] {gap:0!important;border-bottom:1px solid #e3e6eb!important;}
+.st-key-owner-find-control [data-testid="stButtonGroup"] button {min-height:47px!important;border-radius:0!important;background:#fff!important;color:#627188!important;font-size:13px!important;}
+.st-key-owner-find-control [data-testid="stButtonGroup"] button[data-selected] {background:#fff!important;color:#101624!important;border-bottom:3px solid #ffbf00!important;}
+.st-key-owner-controls-card [data-testid="stSelectbox"] label {font-size:13px;font-weight:500;color:#243852;}
+.st-key-owner-controls-card [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:47px;border-color:#d8e0eb;border-radius:10px;background:#fff;}
+.st-key-owner-controls-card [data-testid="stSelectbox"] [aria-disabled="true"] {opacity:1;}
+.st-key-owner-controls-card [data-testid="stTextInput"] input {min-height:47px;border-radius:10px;border-color:#d8e0eb;}
+.st-key-owner-search button {min-height:47px;border:0;border-radius:10px;background:#eef0f4;color:#101624;font-size:24px;justify-content:center;}
+.st-key-owner-rank-card {padding:18px 16px;}
+.st-key-owner-rank-card h3 {font-size:17px;margin:0;}
+.st-key-owner-rank-card [data-testid="stSelectbox"] [data-baseweb="select"] > div {min-height:40px;border-color:#d8e0eb;border-radius:10px;}
+@media(max-width:1350px) {
+  .st-key-owner-filter-panel {top:auto;bottom:auto;left:auto;border-radius:18px;}
+  .st-key-owner-left-toggle {left:auto;top:auto;}
+}
+</style>""")
