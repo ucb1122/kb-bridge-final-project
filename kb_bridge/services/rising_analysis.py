@@ -113,7 +113,7 @@ def overview_cards(report: dict) -> list[dict]:
             if footfall is not None and previous_footfall is not None else None,
         "year_delta": (footfall - year_footfall) / divisor
             if footfall is not None and year_footfall is not None else None,
-        "source": f"3개월·1ha당 · 공개 원본 / {quarter[:4]}년 {quarter[-1]}분기 분석 면적" if density is not None else "공개 원본",
+        "source": f"3개월·1ha당 · 공개 원본 / {quarter[:4]}년 {quarter[-1]}분기 분석 면적 · 증감은 반올림 전 원본값 기준" if density is not None else "공개 원본",
         "rank": None,
     })
     return cards
