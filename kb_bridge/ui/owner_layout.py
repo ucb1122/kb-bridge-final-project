@@ -108,8 +108,8 @@ def apply_owner_layout() -> None:
 }
 .kb-owner-rank-number {display:block;text-align:left;font-size:12px;color:#172033;}
 .st-key-owner-rank-row-1 .kb-owner-rank-number,.st-key-owner-rank-row-2 .kb-owner-rank-number,.st-key-owner-rank-row-3 .kb-owner-rank-number {color:#c79c00;font-weight:800;}
-.kb-owner-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;font-weight:700;color:#101624;}
-.kb-owner-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;}
+.kb-owner-rank-value {display:block;text-align:left;white-space:nowrap;font-size:12px;font-weight:700;color:#101624;}
+.kb-owner-rank-change {display:block;text-align:left;white-space:nowrap;font-size:11px;}
 .kb-owner-rank-change.up {color:#e23570;}
 .kb-owner-rank-change.down {color:#278ce0;}
 .kb-owner-rank-change.flat {color:#667085;}
