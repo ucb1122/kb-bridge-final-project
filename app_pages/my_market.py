@@ -12,8 +12,7 @@ import streamlit as st
 from kb_bridge.config import load_settings
 from kb_bridge.domain.finance import amortizing_payment
 from kb_bridge.repositories import owner_snapshot
-from kb_bridge.ui.kakao_rank_map import show_map
-from kb_bridge.ui import owner_layout, owner_report
+from kb_bridge.ui import kakao_rank_map, owner_layout, owner_report
 
 # Streamlit reruns page code without re-importing modules already in the server process.
 if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
@@ -22,6 +21,9 @@ if (getattr(owner_snapshot, "OWNER_SNAPSHOT_VERSION", 0) != 2 or
 if getattr(owner_report, "OWNER_REPORT_VERSION", 0) != 1:
     importlib.reload(owner_report)
 importlib.reload(owner_layout)
+if getattr(kakao_rank_map, "COMPONENT_VERSION", 0) != 9:
+    importlib.reload(kakao_rank_map)
+show_map = kakao_rank_map.show_map
 render_section = owner_report.render_section
 owner_layout.apply_owner_layout()
 
@@ -332,7 +334,8 @@ with st.container(key="owner-canvas"):
                  selected=map_selected, source="official",
                  district=market["district"] if market else "",
                  fallback_districts=seoul_outline(),
-                 radius=radius if mode == "나는 사장" and selected_business else None, height=820)
+                 radius=radius if mode == "나는 사장" and selected_business else None,
+                 marker_style="card", height=820)
         clicked_code = getattr(map_result, "selected", map_result)
         if clicked_code and clicked_code in codes and clicked_code != chosen_code:
             st.session_state.owner_pending_map_choice = clicked_code
