@@ -311,8 +311,7 @@ with st.container(key="rising-canvas"):
     with st.container(key="rising-left-toggle"):
         if not st.session_state.rising_left_open:
             st.html('<span class="kb-left-collapsed-flag" hidden></span>')
-        if st.button("‹" if st.session_state.rising_left_open else "›", key="rising-left-collapse",
-                     help="왼쪽 분석 조건 접기 또는 펼치기"):
+        if st.button("‹" if st.session_state.rising_left_open else "›", key="rising-left-collapse"):
             st.session_state.rising_left_open = not st.session_state.rising_left_open
             st.rerun()
     selected_row = next((row for row in rows if row["code"] == st.session_state.rising_selected), None)
@@ -427,6 +426,6 @@ with st.container(key="rising-canvas"):
             if not st.session_state.rising_right_open:
                 st.html('<span class="kb-right-collapsed-flag" hidden></span>')
             if st.button("›" if st.session_state.rising_right_open else "‹",
-                         key="rising-right-collapse", help="오른쪽 분석 리포트 접기 또는 펼치기"):
+                         key="rising-right-collapse"):
                 st.session_state.rising_right_open = not st.session_state.rising_right_open
                 st.rerun()
