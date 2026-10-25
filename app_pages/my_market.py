@@ -443,8 +443,9 @@ with st.container(key="owner-canvas"):
                     if st.button("소상공인 경영상담 →", key="owner-management-consult", width="stretch"):
                         st.session_state.owner_consultation = "management"
                         st.rerun()
-                pdf_buttons = st.columns([1, 1, 4])
-                with pdf_buttons[0]:
-                    st.button("이 항목 PDF", key="owner-pdf-one", disabled=True, help="PDF 저장 개발 예정")
-                with pdf_buttons[1]:
-                    st.button("PDF 5종 받기", key="owner-pdf-all", disabled=True, help="PDF 저장 개발 예정")
+                with st.container(key="owner-report-pdf-actions"):
+                    pdf_buttons = st.columns([1, 1, 4])
+                    with pdf_buttons[0]:
+                        st.button("이 항목 PDF", key="owner-pdf-one", disabled=True, help="PDF 저장 개발 예정")
+                    with pdf_buttons[1]:
+                        st.button("PDF 5종 받기", key="owner-pdf-all", disabled=True, help="PDF 저장 개발 예정")
