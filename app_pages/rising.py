@@ -15,15 +15,15 @@ from kb_bridge.integrations import ollama_opinion
 from kb_bridge.repositories import rising_snapshot
 from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, overview_lines, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
-from kb_bridge.ui import kakao_rank_map
-from kb_bridge.ui.rising_layout import apply_rising_layout
+from kb_bridge.ui import kakao_rank_map, rising_layout
 from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, industry_chart, overview_card_grid
 
-apply_rising_layout()
+importlib.reload(rising_layout)
+rising_layout.apply_rising_layout()
 
 # Streamlit can rerun this page while retaining a previously imported map helper.
 # Reload it when the running helper predates the current component arguments.
-if "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
+if getattr(kakao_rank_map, "COMPONENT_VERSION", None) != 4 or "selector" not in inspect.signature(kakao_rank_map.show_map).parameters:
     importlib.reload(kakao_rank_map)
 show_map = kakao_rank_map.show_map
 map_helper_parameters = inspect.signature(show_map).parameters
@@ -163,6 +163,14 @@ def select_map_district() -> None:
     update_quick_filter("district", "rising_map_district")
 
 
+def reset_map_to_seoul() -> None:
+    st.session_state.rising_map_district = ""
+    st.session_state.rising_map_region = ""
+    st.session_state.rising_left_district = ""
+    st.session_state.rising_selected = None
+    st.session_state.rising_filters = {**st.session_state.rising_filters, "district": ""}
+
+
 def select_map_region() -> None:
     st.session_state.rising_selected = st.session_state.rising_map_region or None
 
@@ -193,31 +201,6 @@ with st.container(key="rising-canvas"):
             st.rerun()
         if not load_settings().kakao_map_javascript_key:
             st.info("카카오 지도 키가 없어 지도는 표시되지 않습니다. 왼쪽 순위 목록으로 보고서를 열 수 있습니다.")
-    with st.container(key="rising-map-selector"):
-        if st.session_state.rising_selector_open:
-            city_col, district_col, region_col, close_col = st.columns([1.2, 1, 1, 0.42], gap="small", vertical_alignment="center")
-            with city_col:
-                st.html('<span class="kb-rising-city">◉ 서울특별시</span>')
-            with district_col:
-                map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
-                                            key="rising_map_district", format_func=lambda value: value or "전체",
-                                            label_visibility="collapsed", on_change=select_map_district)
-            visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
-            visible_codes = {item["code"] for item in visible_locations}
-            if st.session_state.rising_map_region not in visible_codes:
-                st.session_state.rising_map_region = ""
-            with region_col:
-                st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
-                             key="rising_map_region", label_visibility="collapsed",
-                             format_func=lambda value: location_by_code[value]["name"] if value else "전체",
-                             on_change=select_map_region)
-            with close_col:
-                if st.button("접기", key="rising-selector-toggle", help="지역 선택창 접기"):
-                    st.session_state.rising_selector_open = False
-                    st.rerun()
-        elif st.button("지역 선택", key="rising-selector-toggle", help="지역 선택창 펼치기"):
-            st.session_state.rising_selector_open = True
-            st.rerun()
     with st.container(key="rising-filter-panel"):
         with st.container(key="rising-controls-card"):
             st.markdown("## 뜨는 상권")
@@ -256,7 +239,7 @@ with st.container(key="rising-canvas"):
                     comparison = st.segmented_control("조회분기", ["previous", "same"], format_func=lambda x: "전분기" if x == "previous" else "전년 동분기", default=applied["comparison"])
                     with st.container(key="rising-industry-control"):
                         industry = st.segmented_control("업종", ["all", "CS1", "CS2", "CS3"],
-                                                        default=applied["industry"], width="stretch", wrap=False,
+                                                        default=applied["industry"], width="stretch", wrap=True,
                                                         format_func=lambda x: {"all": "전체", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[x])
                     cancel_col, apply_col = st.columns(2)
                     with cancel_col:
@@ -309,20 +292,10 @@ with st.container(key="rising-canvas"):
     if selected_row is None:
         selected_row = location_by_code.get(st.session_state.rising_selected)
     if selected_row:
-        if not st.session_state.rising_right_open:
-            with st.container(key="rising-right-toggle"):
-                st.html('<span class="kb-right-collapsed-flag" hidden></span>')
-                if st.button("‹", key="rising-right-expand", help="오른쪽 분석 리포트 펼치기"):
-                    st.session_state.rising_right_open = True
-                    st.rerun()
         with st.container(key="rising-report-panel"):
             report = load_report(applied["kind"], selected_row["code"], result["quarter"], applied["industry"])
             if report:
                 st.html('<div class="kb-rising-report-banner">분석리포트 <span>지역 데이터에 기반한 참고 보고서</span></div>')
-                with st.container(key="rising-report-collapse-control"):
-                    if st.button("›", key="rising-right-collapse", help="오른쪽 분석 리포트 접기"):
-                        st.session_state.rising_right_open = False
-                        st.rerun()
                 st.subheader(f"{report['district']} {report['name']} 분석 리포트")
                 scope = {"all": "전체 업종", "CS1": "외식업", "CS2": "서비스업", "CS3": "소매업"}[report["industry"]]
                 st.caption(f"{report['quarter'][:4]}년 {report['quarter'][-1]}분기 · 점포수·매출: {scope} · 인구: 지역 전체 · 출처별 값을 구분합니다.")
@@ -422,3 +395,37 @@ with st.container(key="rising-canvas"):
                 if st.button("내 상권 경영·금융진단으로 이어가기", type="primary"):
                     st.session_state["consultation_region"] = {"code": report["code"], "kind": report["kind"], "name": report["name"], "district": report["district"], "quarter": report["quarter"]}
                     st.switch_page("app_pages/my_market.py")
+
+        with st.container(key="rising-right-toggle"):
+            if not st.session_state.rising_right_open:
+                st.html('<span class="kb-right-collapsed-flag" hidden></span>')
+            if st.button("›" if st.session_state.rising_right_open else "‹",
+                         key="rising-right-collapse", help="오른쪽 분석 리포트 접기 또는 펼치기"):
+                st.session_state.rising_right_open = not st.session_state.rising_right_open
+                st.rerun()
+    with st.container(key="rising-map-selector"):
+        if st.session_state.rising_selector_open:
+            city_col, district_col, region_col, close_col = st.columns([1.2, 1, 1, 0.42], gap="small", vertical_alignment="center")
+            with city_col:
+                st.button("◉ 서울특별시", key="rising-city-reset", on_click=reset_map_to_seoul,
+                          help="서울시 전체로 돌아가기", width="stretch")
+            with district_col:
+                map_district = st.selectbox("지도 자치구", ["", *options["districts"]],
+                                            key="rising_map_district", format_func=lambda value: value or "전체",
+                                            label_visibility="collapsed", on_change=select_map_district)
+            visible_locations = [item for item in locations if not map_district or item["district"] == map_district]
+            visible_codes = {item["code"] for item in visible_locations}
+            if st.session_state.rising_map_region not in visible_codes:
+                st.session_state.rising_map_region = ""
+            with region_col:
+                st.selectbox("지도 지역", ["", *(item["code"] for item in visible_locations)],
+                             key="rising_map_region", label_visibility="collapsed",
+                             format_func=lambda value: location_by_code[value]["name"] if value else "전체",
+                             on_change=select_map_region)
+            with close_col:
+                if st.button("접기", key="rising-selector-toggle", help="지역 선택창 접기"):
+                    st.session_state.rising_selector_open = False
+                    st.rerun()
+        elif st.button("지역 선택", key="rising-selector-toggle", help="지역 선택창 펼치기"):
+            st.session_state.rising_selector_open = True
+            st.rerun()
