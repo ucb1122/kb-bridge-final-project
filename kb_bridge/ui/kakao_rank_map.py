@@ -21,7 +21,7 @@ _MAP = st.components.v2.component(
 .kb-rank-marker {position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:82px;height:86px;padding:0;border:0;background:transparent;color:#101624;font:700 11px 'Malgun Gothic',sans-serif;cursor:pointer;text-align:center;overflow:visible;filter:drop-shadow(0 2px 5px #3c331b55)}
 .kb-rank-marker::before {content:"";position:absolute;z-index:-1;top:12px;left:4px;width:74px;height:74px;border-radius:50%;background:#ffbf0066;pointer-events:none}
 .kb-rank-marker::after {content:"";position:absolute;z-index:-2;top:12px;left:4px;width:74px;height:74px;border:2px solid #d69c00;border-radius:50%;pointer-events:none;animation:kb-rank-pulse 3.6s ease-out infinite}
-.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff8df;border:1px solid #d69c00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#5c4400;font-size:14px;font-weight:800}
+.kb-rank-marker strong {position:relative;display:grid;place-items:center;width:29px;height:30px;background:#fff;border:1px solid #d69c00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#5c4400;font-size:14px;font-weight:800}
 .kb-rank-marker span {position:relative;display:block;max-width:78px;width:73px;margin-top:-1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#d69c00;color:#fff}
 .kb-rank-marker small {position:relative;display:block;width:67px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 2px;border-radius:3px;background:#fff;color:#5c4400;font-size:10px}
 .kb-rank-marker.active::before {background:#ffbf0099}
@@ -52,8 +52,8 @@ function loadKakao(key) {
   return window.__kbKakaoLoading;
 }
 function paths(geometry) {
-  const rings=geometry?.type==='Polygon'?[geometry.coordinates]:geometry?.type==='MultiPolygon'?geometry.coordinates:[];
-  return rings.map(poly=>poly[0].map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
+  const lines=geometry?.type==='Polygon'?geometry.coordinates:geometry?.type==='MultiPolygon'?geometry.coordinates.flat():geometry?.type==='MultiLineString'?geometry.coordinates:geometry?.type==='LineString'?[geometry.coordinates]:[];
+  return lines.map(line=>line.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)));
 }
 function drawKakaoBoundaries(root,map,features,districts,showAll,allLocations,setTriggerValue) {
   if (!boundarySvg) {
@@ -65,8 +65,8 @@ function drawKakaoBoundaries(root,map,features,districts,showAll,allLocations,se
         const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
         shape.setAttribute('fill','none');
         shape.setAttribute('stroke','#ec4d95');
-        shape.setAttribute('stroke-opacity',showAll?'.85':'.55');
-        shape.setAttribute('stroke-width',showAll?'2':'1.4');
+        shape.setAttribute('stroke-opacity','.9');
+        shape.setAttribute('stroke-width','3');
         shape.style.pointerEvents='none';
         svg.appendChild(shape);boundaryPaths.push({shape,ring});
       }
@@ -82,14 +82,14 @@ function drawKakaoBoundaries(root,map,features,districts,showAll,allLocations,se
       for(const ring of paths(feature.geometry)) {
         if(ring.length<3)continue;
         const shape=document.createElementNS('http://www.w3.org/2000/svg','path');
-        shape.setAttribute('fill','#f3c53a');shape.setAttribute('fill-opacity','.14');
-        shape.setAttribute('stroke','#c59800');shape.setAttribute('stroke-width','2');
-        shape.style.pointerEvents='visiblePainted';shape.style.cursor='pointer';
+        shape.setAttribute('fill','#f3c53a');shape.setAttribute('fill-opacity','0');
+        shape.setAttribute('stroke','#c59800');shape.setAttribute('stroke-opacity','0');shape.setAttribute('stroke-width','2');
+        shape.style.pointerEvents='visibleFill';shape.style.cursor='pointer';
         const title=document.createElementNS('http://www.w3.org/2000/svg','title');
         title.textContent=feature.properties.name||String(feature.properties.code);
         shape.appendChild(title);
-        shape.addEventListener('mouseenter',()=>{shape.setAttribute('fill-opacity','.26');shape.setAttribute('stroke-width','3');});
-        shape.addEventListener('mouseleave',()=>{shape.setAttribute('fill-opacity','.14');shape.setAttribute('stroke-width','2');});
+        shape.addEventListener('mouseenter',()=>{shape.setAttribute('fill-opacity','.20');shape.setAttribute('stroke-opacity','.95');shape.setAttribute('stroke-width','3');});
+        shape.addEventListener('mouseleave',()=>{shape.setAttribute('fill-opacity','0');shape.setAttribute('stroke-width','2');});
         shape.addEventListener('click',()=>setTriggerValue('selected',String(feature.properties.code)));
         svg.appendChild(shape);boundaryPaths.push({shape,ring});
       }
@@ -132,7 +132,8 @@ function renderSvgFallback(root, data, setTriggerValue) {
   const districts=data.fallback_districts||[];
   const coordinateSets=[];
   const polygons=(feature)=>feature.geometry?.type==='Polygon'?[feature.geometry.coordinates]:feature.geometry?.type==='MultiPolygon'?feature.geometry.coordinates:[];
-  for(const feature of districts) for(const polygon of polygons(feature)) for(const point of polygon[0]) coordinateSets.push(point);
+  const lines=(feature)=>feature.geometry?.type==='MultiLineString'?feature.geometry.coordinates:feature.geometry?.type==='LineString'?[feature.geometry.coordinates]:[];
+  for(const feature of districts) for(const line of [...lines(feature),...polygons(feature).map(p=>p[0])]) for(const point of line) coordinateSets.push(point);
   if (!coordinateSets.length) return;
   const longitudes=coordinateSets.map(p=>p[0]), latitudes=coordinateSets.map(p=>p[1]);
   const minLng=Math.min(...longitudes), maxLng=Math.max(...longitudes);
@@ -154,11 +155,18 @@ function renderSvgFallback(root, data, setTriggerValue) {
       path.setAttribute('fill',top?'#ffe4a1':'#f8f8f5');
       path.setAttribute('stroke',top?'#d49a00':'#ec4d95');
       path.setAttribute('stroke-width',top?'2.5':'1.3');
-      if(top){path.style.cursor='pointer';path.onclick=()=>setTriggerValue('selected',String(feature.properties.code));}
+      if(top){path.style.cursor='pointer';path.style.fillOpacity='0';path.style.strokeOpacity='0';path.style.pointerEvents='visibleFill';path.onmouseenter=()=>{path.style.fillOpacity='.25';path.style.strokeOpacity='1';};path.onmouseleave=()=>{path.style.fillOpacity='0';path.style.strokeOpacity='0';};path.onclick=()=>setTriggerValue('selected',String(feature.properties.code));}
       svg.appendChild(path);
     }
   };
-  districts.forEach(f=>draw(f,false));
+  districts.forEach(feature=>{
+    for(const line of lines(feature)){
+      const path=document.createElementNS(ns,'path');
+      path.setAttribute('d',line.map(([lng,lat],i)=>`${i?'L':'M'}${x(lng).toFixed(1)} ${y(lat).toFixed(1)}`).join(' '));
+      path.setAttribute('fill','none');path.setAttribute('stroke','#ec4d95');path.setAttribute('stroke-width','2.5');
+      svg.appendChild(path);
+    }
+  });
   (data.all_locations||[]).forEach(location=>{
     if(!Number.isFinite(Number(location.lat))||!Number.isFinite(Number(location.lng)))return;
     const dot=document.createElementNS(ns,'circle');
@@ -232,8 +240,20 @@ async function renderTileFallback(root,data,setTriggerValue) {
       m.addLayer({id:'kb-all-location-dots',type:'circle',source:'kb-all-locations',paint:{'circle-radius':3,'circle-color':'#b98200','circle-opacity':.8}});
     }
     m.addSource('kb-rank-areas',{type:'geojson',data:collection(data.boundaries)});
-    m.addLayer({id:'kb-rank-fill',type:'fill',source:'kb-rank-areas',paint:{'fill-color':'#ffbf00','fill-opacity':.14}});
-    m.addLayer({id:'kb-rank-line',type:'line',source:'kb-rank-areas',paint:{'line-color':'#c59600','line-width':2}});
+    m.addLayer({id:'kb-rank-fill',type:'fill',source:'kb-rank-areas',paint:{'fill-color':'#ffbf00','fill-opacity':.001}});
+    m.addLayer({id:'kb-rank-hover-fill',type:'fill',source:'kb-rank-areas',filter:['==',['get','code'],''],paint:{'fill-color':'#ffbf00','fill-opacity':.20}});
+    m.addLayer({id:'kb-rank-hover-line',type:'line',source:'kb-rank-areas',filter:['==',['get','code'],''],paint:{'line-color':'#c59600','line-width':2.5}});
+    m.on('mousemove','kb-rank-fill',event=>{
+      const code=event.features?.[0]?.properties?.code||'';
+      m.setFilter('kb-rank-hover-fill',['==',['get','code'],code]);
+      m.setFilter('kb-rank-hover-line',['==',['get','code'],code]);
+      m.getCanvas().style.cursor='pointer';
+    });
+    m.on('mouseleave','kb-rank-fill',()=>{
+      m.setFilter('kb-rank-hover-fill',['==',['get','code'],'']);
+      m.setFilter('kb-rank-hover-line',['==',['get','code'],'']);
+      m.getCanvas().style.cursor='';
+    });
     m.on('click','kb-rank-fill',event=>{
       const code=event.features?.[0]?.properties?.code;
       if(code!=null)setTriggerValue('selected',String(code));
