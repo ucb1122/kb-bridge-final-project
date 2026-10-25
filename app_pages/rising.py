@@ -15,7 +15,14 @@ from kb_bridge.integrations import ollama_opinion
 from kb_bridge.repositories import rising_snapshot
 from kb_bridge.services.rising_analysis import LABELS, footfall_per_ha, human_value, percent, ranking_change_label, sales_per_store_month
 from kb_bridge.services.rising_pdf import build_pdf, build_zip
-from kb_bridge.ui import kakao_rank_map, rising_layout
+from kb_bridge.ui import kakao_rank_map, rising_layout, rising_report
+
+# An already running Streamlit process can retain these modules across page reruns.
+if not hasattr(rising_report, "highlight_trends"):
+    importlib.reload(rising_report)
+if not hasattr(rising_snapshot, "overview_ranks"):
+    importlib.reload(rising_snapshot)
+
 from kb_bridge.ui.rising_report import breakdown_chart, history_chart, history_table, highlight_trends, industry_chart, overview_card_grid
 
 importlib.reload(rising_layout)
