@@ -57,22 +57,21 @@ def apply_rising_layout() -> None:
 .st-key-rising-filter-panel [data-testid="stButton"] button:hover { border-color:#D69C00; color:#D69C00; }
 .st-key-rising-rank-card > [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-rank-card [data-testid="stCaptionContainer"] {text-align:left;color:#a27100;}
-[class*="st-key-rising-rank-row-"] {border-bottom:1px solid #dedede;min-height:38px;}
-[class*="st-key-rising-rank-row-"] [data-testid="stHorizontalBlock"] {display:grid!important;grid-template-columns:24px minmax(0,1fr) minmax(76px,22%) minmax(76px,22%);align-items:center;gap:6px!important;}
-[class*="st-key-rising-rank-row-"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {width:auto!important;min-width:0!important;flex:none!important;}
+[class*="st-key-rising-rank-row-"] {position:relative;border-bottom:1px solid #dedede;min-height:39px;}
 [class*="st-key-rising-rank-row-"] [data-testid="stVerticalBlock"] {gap:0;}
-.st-key-rising-rank-card [class*="st-key-rising-rank-row-"] [data-testid="stButton"] button {
-  display:flex!important;align-items:center;justify-content:flex-start!important;width:100%;min-height:37px;padding:0 2px;border:0;border-radius:0;
-  background:transparent;color:#172033;text-align:left;font-size:12px;font-weight:500;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.st-key-rising-rank-card [class*="st-key-rising-rank-row-"] [data-testid="stButton"] button [data-testid="stMarkdownContainer"],
-.st-key-rising-rank-card [class*="st-key-rising-rank-row-"] [data-testid="stButton"] button p {width:100%;margin:0;text-align:left!important;}
-.st-key-rising-rank-card [class*="st-key-rising-rank-row-"] [data-testid="stButton"] button:hover {color:#b57a00;background:#fff8df;}
-.kb-rank-number {display:block;text-align:left;font-size:12px;color:#172033;}
+.kb-rank-line {display:grid;grid-template-columns:20px minmax(0,1fr) minmax(70px,max-content) 70px;align-items:center;column-gap:6px;width:100%;min-height:39px;font-size:12px;color:#172033;}
+.kb-rank-line > span,.kb-rank-line > strong {min-width:0;}
+.kb-rank-number {text-align:left;color:#172033;}
 .st-key-rising-rank-row-1 .kb-rank-number,.st-key-rising-rank-row-2 .kb-rank-number,.st-key-rising-rank-row-3 .kb-rank-number {color:#c79c00;font-weight:800;}
-.kb-rank-value {display:block;text-align:right;white-space:nowrap;font-size:12px;color:#101624;}
-.kb-rank-change {display:block;text-align:right;white-space:nowrap;font-size:11px;color:#e23570;}
+.kb-rank-name {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;}
+.kb-rank-value {text-align:right;white-space:nowrap;font-weight:700;color:#101624;}
+.kb-rank-change {text-align:right;white-space:nowrap;font-size:11px;color:#e23570;}
+[class*="st-key-rising-rank-row-"] [data-testid="stElementContainer"]:has([data-testid="stButton"]) {position:absolute;inset:0;z-index:2;width:100%;height:100%;}
+[class*="st-key-rising-rank-row-"] [data-testid="stButton"],
+[class*="st-key-rising-rank-row-"] [data-testid="stButton"] button {width:100%;height:100%;min-height:39px;margin:0;padding:0;border:0;background:transparent;}
+[class*="st-key-rising-rank-row-"] [data-testid="stButton"] button {opacity:0;cursor:pointer;}
+[class*="st-key-rising-rank-row-"]:has([data-testid="stButton"] button:hover) .kb-rank-line {background:#fff8df;}
+[class*="st-key-rising-rank-row-"]:has([data-testid="stButton"] button:focus-visible) {outline:2px solid #b98200;outline-offset:-2px;}
 .st-key-rising-controls-card [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;gap:6px!important;width:100%;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;}
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button[data-variant="segmented_control"]:not([data-selected]):hover {background:#ffe182!important;color:#101624!important;}
 .st-key-rising-controls-card [data-testid="stButtonGroup"] button {flex:1 1 0;min-width:0;min-height:48px;padding:5px 3px;margin:0!important;border:0!important;border-radius:12px!important;background:#f1f2f5!important;color:#101624!important;font-size:12px;font-weight:800!important;line-height:1.2;white-space:normal;box-shadow:none!important;}

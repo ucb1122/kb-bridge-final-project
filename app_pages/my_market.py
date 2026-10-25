@@ -275,20 +275,19 @@ with st.container(key="owner-canvas"):
                 st.caption("전분기 변화가 없어 현재 값이 큰 순서로 표시합니다.")
             for place, item in enumerate(ranked[:10], 1):
                 with st.container(key=f"owner-rank-row-{place}"):
-                    number, name, value, change = st.columns([0.4, 2.5, 1.1, 0.9],
-                                                              gap="small", vertical_alignment="center")
-                    with number:
-                        st.html(f'<span class="kb-owner-rank-number">{place}</span>')
-                    with name:
-                        st.button(f"{item['district']} {item['name']}",
-                                  key=f"owner-rank-{item['code']}", width="stretch",
-                                  on_click=select_owner_market, args=(item["code"],))
-                    with value:
-                        st.html(f'<span class="kb-owner-rank-value">{escape(metric_display(metric, item["value"]))}</span>')
-                    with change:
-                        label = f"{item['change']:+.1f}%" if item["change"] else "변화 없음"
-                        trend = "up" if item["change"] > 0 else "down" if item["change"] < 0 else "flat"
-                        st.html(f'<span class="kb-owner-rank-change {trend}">{label}</span>')
+                    label = f"{item['change']:+.1f}%" if item["change"] else "변화 없음"
+                    trend = "up" if item["change"] > 0 else "down" if item["change"] < 0 else "flat"
+                    st.html(
+                        f'<div class="kb-owner-rank-line">'
+                        f'<span class="kb-owner-rank-number">{place}</span>'
+                        f'<span class="kb-owner-rank-name">{escape(item["district"])} {escape(item["name"])}</span>'
+                        f'<span class="kb-owner-rank-value">{escape(metric_display(metric, item["value"]))}</span>'
+                        f'<span class="kb-owner-rank-change {trend}">{label}</span>'
+                        '</div>'
+                    )
+                    st.button(f"{item['district']} {item['name']}",
+                              key=f"owner-rank-{item['code']}", width="stretch",
+                              on_click=select_owner_market, args=(item["code"],))
             st.caption("출처: 서울시 공개 상권 원본 · 전분기 비교 가능 지역")
             with st.expander("상권 직접 선택"):
                 chosen_code = st.selectbox("분석 상권", ["", *codes], key="owner_market_choice",
