@@ -174,16 +174,22 @@ class RisingPageInteractionTests(unittest.TestCase):
 
 @unittest.skipUnless(owner_snapshot.available(), "Local owner snapshot is absent")
 class OwnerPageInteractionTests(unittest.TestCase):
+    def setUp(self):
+        map_patch = patch("kb_bridge.ui.kakao_rank_map.show_map")
+        map_patch.start()
+        self.addCleanup(map_patch.stop)
     def test_market_selectbox_opens_side_report(self):
         app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
         first_code = owner_snapshot.markets()[0]["code"]
-        app.selectbox[2].set_value(first_code).run()
-        self.assertEqual(app.selectbox[2].value, first_code)
+        next(widget for widget in app.selectbox if widget.label == "분석 상권").set_value(first_code).run()
+        self.assertEqual(next(widget for widget in app.selectbox if widget.label == "분석 상권").value, first_code)
         self.assertTrue(any(button.key == "owner-collapse-report" for button in app.button))
         self.assertFalse(app.exception)
 
     def test_selection_report_collapse_and_finance_calculation(self):
         app = AppTest.from_file(str(ROOT / "app_pages" / "my_market.py"), default_timeout=30).run()
+        next(widget for widget in app.get("segmented_control")
+             if widget.label == "분석 대상").set_value("나도 곧 사장").run()
         next(button for button in app.button
              if button.key and button.key.startswith("owner-rank-")).click().run()
         self.assertFalse(app.exception)

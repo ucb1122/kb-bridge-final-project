@@ -37,24 +37,89 @@ def markets(*, district: str = "", query: str = "") -> list[dict]:
     return sorted(result, key=lambda a: (a["district"], a["name"]))
 
 
+FOOD_OFFICIAL_CODES = {
+    "korean": "CS100001", "chinese": "CS100002", "japanese": "CS100003",
+    "western": "CS100004", "bakery": "CS100005", "fastfood": "CS100006",
+    "chicken": "CS100007", "snack": "CS100008", "pub": "CS100009",
+    "coffee": "CS100010",
+}
+
+
+def official_scope_for_group(group: dict) -> str:
+    """Use only the explicit team crosswalk; never imply an unmapped licence covers all shops."""
+    return group.get("officialCode") or FOOD_OFFICIAL_CODES.get(group["id"], "unmapped")
+
+
+def _period_stats(period: dict, industry_scope: str | None) -> dict:
+    industries = period.get("industries", {})
+    if industry_scope == "unmapped":
+        entries = []
+    elif industry_scope in {"food", "service", "retail"}:
+        prefix = {"food": "CS1", "service": "CS2", "retail": "CS3"}[industry_scope]
+        entries = [stats for code, stats in industries.items() if code.startswith(prefix)]
+    elif industry_scope:
+        entries = [industries[industry_scope]] if industry_scope in industries else []
+    else:
+        entries = list(industries.values())
+    result = {}
+    for metric in ("stores", "opened", "closed", "sales"):
+        values = [entry[metric] for entry in entries if entry.get(metric) is not None]
+        result[metric] = sum(values) if values else None
+    return result
+
+
 def market_report(code: str, industry_code: str | None = None) -> dict:
     area = regional()["areas"][code]
     quarter = regional()["quarter"]
     previous = regional()["previous"]
     current = area["periods"].get(quarter, {})
     prior = area["periods"].get(previous, {})
-    current_industries = current.get("industries", {})
-    prior_industries = prior.get("industries", {})
-    if industry_code:
-        current_stats = current_industries.get(industry_code, {})
-        previous_stats = prior_industries.get(industry_code, {})
-    else:
-        current_stats = {metric: sum(entry.get(metric, 0) or 0 for entry in current_industries.values()) for metric in ("stores", "opened", "closed", "sales")}
-        previous_stats = {metric: sum(entry.get(metric, 0) or 0 for entry in prior_industries.values()) for metric in ("stores", "opened", "closed", "sales")}
     return {"area": {k: area.get(k) for k in ("code", "name", "district", "dong", "type", "area", "lat", "lng")},
-            "quarter": quarter, "previous": previous, "current": current_stats, "prior": previous_stats,
+            "quarter": quarter, "previous": previous,
+            "current": _period_stats(current, industry_code), "prior": _period_stats(prior, industry_code),
             "floating": current.get("floating"), "resident": current.get("resident"), "worker": current.get("worker"),
-            "industry_code": industry_code, "industry_name": regional()["industries"].get(industry_code) if industry_code else "전체 업종"}
+            "industry_code": industry_code,
+            "industry_name": regional()["industries"].get(industry_code, industry_code or "전체 업종")}
+
+
+def growth_rankings(*, industry_scope: str | None, metric: str, district: str = "", dong: str = "") -> list[dict]:
+    """Team founder ranking: comparable current/prior values, descending growth rate."""
+    if metric not in {"stores", "sales", "floating", "resident"}:
+        raise ValueError("Unknown ranking metric")
+    data = regional()
+    ranked = []
+    for area in data["areas"].values():
+        if district and area["district"] != district or dong and area.get("dong") != dong:
+            continue
+        current = area["periods"].get(data["quarter"], {})
+        previous = area["periods"].get(data["previous"], {})
+        if metric in {"stores", "sales"}:
+            value = _period_stats(current, industry_scope)[metric]
+            prior = _period_stats(previous, industry_scope)[metric]
+        else:
+            value, prior = current.get(metric), previous.get(metric)
+        if value is None or prior is None or prior <= 0:
+            continue
+        ranked.append({"code": area["code"], "name": area["name"], "district": area["district"],
+                       "dong": area.get("dong"), "lat": area["lat"], "lng": area["lng"],
+                       "value": value, "previous": prior, "change": (value - prior) / prior * 100})
+    return sorted(ranked, key=lambda row: (-row["change"], -row["value"], row["code"]))
+
+
+def search_businesses(query: str, *, limit: int = 30) -> list[dict]:
+    """Search only collected active licence observations; no address geocoding."""
+    term = query.strip().casefold()
+    if len(term) < 2:
+        return []
+    matches = []
+    for row in _businesses():
+        if not isinstance(row.get("lat"), (int, float)) or not isinstance(row.get("lng"), (int, float)):
+            continue
+        if term in (row.get("name") or "").casefold() or term in (row.get("address") or "").casefold():
+            matches.append(row)
+            if len(matches) >= limit:
+                break
+    return matches
 
 
 def founder_rankings(industry_code: str, *, district: str = "") -> list[dict]:

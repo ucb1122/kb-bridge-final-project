@@ -12,13 +12,13 @@ def apply_owner_layout() -> None:
 .st-key-owner-map-canvas {position:absolute;inset:0;z-index:0;}
 .st-key-owner-map-canvas [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-owner-filter-panel,.st-key-owner-report-panel {position:absolute;top:0;bottom:0;z-index:4;overflow-y:auto;scrollbar-width:thin;background:#fff;box-shadow:0 2px 12px #0002;}
-.st-key-owner-filter-panel {left:0;width:clamp(380px,23vw,440px);padding:18px 16px;}
+.st-key-owner-filter-panel {left:0;width:clamp(380px,23vw,440px);padding:0;box-shadow:2px 0 8px #0001;}
 .st-key-owner-report-panel {right:0;width:clamp(520px,36vw,720px);padding:18px 22px;border-top:5px solid #ffbf00;}
-.st-key-owner-filter-panel h2 {font-size:27px;margin:4px 0 8px;}
+.st-key-owner-filter-panel h2 {font-size:23px;margin:0;color:#101624;}
 .st-key-owner-filter-panel [data-testid="stCaptionContainer"] {color:#627188;}
 .st-key-owner-filter-panel [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;width:100%;flex-wrap:nowrap;}
 .st-key-owner-filter-panel [data-testid="stSegmentedControl"] button {flex:1 1 0;min-width:0;white-space:nowrap;}
-.st-key-owner-filter-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#ffbf00;color:#101624;font-weight:700;}
+.st-key-owner-filter-panel [data-testid="stButtonGroup"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
 .st-key-owner-filter-panel [data-testid="stSelectbox"] label,.st-key-owner-filter-panel [data-testid="stTextInput"] label {font-size:13px;color:#26364c;}
 .st-key-owner-report-panel h3 {font-size:22px;margin:0;}
 .st-key-owner-report-panel [data-testid="stSegmentedControl"] button[aria-checked="true"] {background:#ffbf00;color:#101624;}
@@ -43,4 +43,23 @@ def apply_owner_layout() -> None:
   .st-key-owner-left-toggle,.st-key-owner-right-toggle {position:relative;top:auto;left:auto;right:auto;order:2;margin:0 12px;}
   .st-key-owner-canvas:has(.kb-owner-left-collapsed) .st-key-owner-filter-panel,.st-key-owner-canvas:has(.kb-owner-right-collapsed) .st-key-owner-report-panel {display:none;}
 }
-</style>""")
+.st-key-owner-filter-panel > [data-testid="stVerticalBlock"],.st-key-owner-rank-card > [data-testid="stVerticalBlock"] {gap:0;}
+.st-key-owner-controls-card,.st-key-owner-rank-card {padding:16px 12px;background:#fff;border:0;border-bottom:6px solid #f2f4f5;border-radius:0;box-shadow:none;}
+.st-key-owner-filter-panel [data-testid="stVerticalBlock"] {gap:.32rem;}
+.st-key-owner-filter-panel [data-testid="stHorizontalBlock"] {gap:.25rem;}
+.st-key-owner-filter-panel [data-testid="stCaptionContainer"] {font-size:11px;}
+.st-key-owner-filter-panel [data-testid="stSelectbox"] label,.st-key-owner-filter-panel [data-testid="stTextInput"] label {font-size:12px;color:#101624;}
+.st-key-owner-controls-card [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;flex-wrap:nowrap;gap:6px!important;width:100%;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;}
+.st-key-owner-controls-card [data-testid="stButtonGroup"] button {flex:1 1 0;min-width:0;min-height:48px;padding:5px 3px;margin:0!important;border:0!important;border-radius:12px!important;background:#f1f2f5!important;color:#101624!important;font-size:12px;font-weight:800!important;line-height:1.2;white-space:normal;box-shadow:none!important;}
+.st-key-owner-controls-card [data-testid="stButtonGroup"] button p {color:inherit!important;font-weight:800!important;}
+.st-key-owner-controls-card [data-testid="stButtonGroup"] button[data-selected] {background:#ffbf00!important;color:#101624!important;}
+.st-key-owner-controls-card [data-testid="stButtonGroup"] button:hover {background:#ffe182!important;}
+.st-key-owner-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%;}
+.st-key-owner-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
+.st-key-owner-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#101624;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;}
+.st-key-owner-metric-control [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#101624;}
+.st-key-owner-metric-control [data-testid="stButton"] button:hover {background:#ffe182;color:#101624;}
+.st-key-owner-rank-card h3 {font-size:16px;margin:0 0 8px;}
+.st-key-owner-rank-card [data-testid="stButton"] button {justify-content:flex-start;border:0;border-bottom:1px solid #dedede;border-radius:0;box-shadow:none;padding:8px 2px;min-height:38px;font-size:12px;white-space:normal;text-align:left;}
+.st-key-owner-rank-card [data-testid="stButton"] button:hover {color:#b57a00;background:#fff8df;}
+.kb-owner-field-heading {font-size:13px;font-weight:400;margin:8px 0 3px;color:#101624;}</style>""")
