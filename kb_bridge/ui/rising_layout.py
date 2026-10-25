@@ -21,12 +21,12 @@ def apply_rising_layout() -> None:
 .st-key-rising-map-canvas [data-testid="stVerticalBlock"] { gap: 0; }
 .st-key-rising-filter-panel,
 .st-key-rising-report-panel {position:absolute;z-index:4;overflow-y:auto;scrollbar-width:thin;}
-.st-key-rising-filter-panel {top:0;bottom:0;left:0;width:clamp(430px,26vw,520px);padding:0;background:#fff;border:0;box-shadow:2px 0 8px #0001;}
+.st-key-rising-filter-panel {top:0;bottom:0;left:0;width:clamp(380px,23vw,440px);padding:0;background:#fff;border:0;box-shadow:2px 0 8px #0001;}
 .st-key-rising-filter-panel > [data-testid="stVerticalBlock"] {gap:0;}
 .st-key-rising-controls-card,.st-key-rising-rank-card {padding:16px 12px;background:#fff;border:0;border-bottom:6px solid #f2f4f5;border-radius:0;box-shadow:none;}
 .st-key-rising-report-panel {right:0;top:0;bottom:0;width:clamp(520px,36vw,720px);padding:18px 22px;background:#fff;border:0;border-top:5px solid #FFBF00;box-shadow:-2px 0 12px #0002;}
-.st-key-rising-map-selector {position:absolute;z-index:10000;top:12px;left:calc(50% + clamp(215px,13vw,260px) - clamp(260px,18vw,360px));transform:translateX(-50%);box-sizing:border-box;width:min(400px,calc(100% - clamp(430px,26vw,520px) - clamp(520px,36vw,720px) - 76px));padding:2px 5px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
-.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:calc(50% + clamp(215px,13vw,260px));width:min(400px,calc(100% - clamp(430px,26vw,520px) - 76px));}
+.st-key-rising-map-selector {position:absolute;z-index:10000;top:12px;left:calc(50% + clamp(190px,11.5vw,220px) - clamp(260px,18vw,360px));transform:translateX(-50%);box-sizing:border-box;width:min(400px,calc(100% - clamp(380px,23vw,440px) - clamp(520px,36vw,720px) - 76px));padding:2px 5px;background:#fff;border-radius:8px;box-shadow:0 3px 12px #0003;pointer-events:auto;}
+.st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:calc(50% + clamp(190px,11.5vw,220px));width:min(400px,calc(100% - clamp(380px,23vw,440px) - 76px));}
 .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-map-selector {left:calc(50% - clamp(260px,18vw,360px));width:min(400px,calc(100% - clamp(520px,36vw,720px) - 76px));}
 .st-key-rising-canvas:has(.kb-left-collapsed-flag):has(.kb-right-collapsed-flag) .st-key-rising-map-selector {left:50%;width:min(400px,calc(100% - 76px));}
 .st-key-rising-map-selector:has(.kb-rising-selector-collapsed) {width:88px!important;min-width:0!important;max-width:88px!important;padding:2px 4px;}
@@ -73,10 +73,10 @@ def apply_rising_layout() -> None:
 .st-key-rising-industry-control [data-testid="stSegmentedControl"] {width:100%;min-width:0;}
 .st-key-rising-industry-control [data-testid="stSegmentedControl"] [role="radiogroup"] {display:flex;flex-wrap:wrap!important;width:100%;gap:4px;}
 .kb-metric-label {font-size:13px;font-weight:600;margin:4px 0 6px;color:#172033}
-.st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:6px!important;width:100%}
+.st-key-rising-metric-control [data-testid="stHorizontalBlock"] {display:flex!important;flex-wrap:nowrap!important;gap:4px!important;width:100%}
 .st-key-rising-metric-control [data-testid="stColumn"] {flex:1 1 0!important;min-width:0!important;}
-.st-key-rising-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:58px;padding:5px 8px;border:0;border-radius:12px;background:#f1f2f5;color:#5f6f85;text-align:center;justify-content:center;font-size:17px;font-weight:800;white-space:nowrap;overflow:visible;text-overflow:clip}
-.st-key-rising-metric-control [data-testid="stButton"] button p {font-size:17px;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
+.st-key-rising-metric-control [data-testid="stButton"] button {width:100%;min-width:0;min-height:54px;padding:4px 2px;border:0;border-radius:12px;background:#f1f2f5;color:#5f6f85;text-align:center;justify-content:center;font-size:14px;font-weight:800!important;white-space:nowrap;overflow:visible;text-overflow:clip}
+.st-key-rising-metric-control [data-testid="stButton"] button p {font-size:14px;font-weight:800!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
 .st-key-rising-metric-control [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#101624}
 .st-key-rising-metric-control [data-testid="stButton"] button:hover {background:#ffe182;color:#101624}
 .st-key-rising-industry-control [data-testid="stSegmentedControl"] button {flex:1 1 calc(50% - 4px)!important;min-width:calc(50% - 4px)!important;min-height:42px;white-space:nowrap!important;}
@@ -106,7 +106,7 @@ def apply_rising_layout() -> None:
 .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-filter-panel {transform:translateX(-100%);}
 .st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-report-panel {transform:translateX(100%);}
 .st-key-rising-left-toggle,.st-key-rising-right-toggle {position:absolute;top:20px;z-index:10001;transform:none;width:42px!important;max-width:42px;pointer-events:none;}
-.st-key-rising-left-toggle {left:clamp(430px,26vw,520px);}
+.st-key-rising-left-toggle {left:clamp(380px,23vw,440px);}
 .st-key-rising-right-toggle {right:clamp(520px,36vw,720px);}
 .st-key-rising-canvas:has(.kb-left-collapsed-flag) .st-key-rising-left-toggle {left:0;}
 .st-key-rising-canvas:has(.kb-right-collapsed-flag) .st-key-rising-right-toggle {right:0;}
