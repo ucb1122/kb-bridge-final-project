@@ -116,4 +116,42 @@ def apply_owner_layout() -> None:
 [class*="st-key-owner-rank-row-"] [data-testid="stButton"] button {opacity:0;cursor:pointer;}
 [class*="st-key-owner-rank-row-"]:has([data-testid="stButton"] button:hover) .kb-owner-rank-line {background:#fff8df;}
 [class*="st-key-owner-rank-row-"]:has([data-testid="stButton"] button:focus-visible) {outline:2px solid #b98200;outline-offset:-2px;}
+
+/* Team report layout: fixed heading and actions with a scrollable analysis body. */
+.st-key-owner-report-panel {width:clamp(620px,54vw,1040px);padding:0;border:0;overflow:hidden;box-shadow:-2px 0 12px #0001;}
+.st-key-owner-report-panel > [data-testid="stVerticalBlock"] {height:100%;display:flex;flex-direction:column;gap:0;}
+.st-key-owner-report-header {flex:0 0 auto;padding:20px 32px 18px;border-bottom:1px solid #e5e8ef;}
+.st-key-owner-report-header [data-testid="stVerticalBlock"] {gap:.15rem;}
+.st-key-owner-report-header h3 {font-size:27px;line-height:1.2;margin:0;color:#152238;}
+.st-key-owner-report-header [data-testid="stCaptionContainer"] {font-size:15px;color:#65748b;}
+.st-key-owner-report-tabs {flex:0 0 auto;padding:0 24px;border-bottom:1px solid #e5e8ef;}
+.st-key-owner-report-tabs [data-testid="stSegmentedControl"] {overflow:visible;}
+.st-key-owner-report-tabs [data-testid="stButtonGroup"] [role="radiogroup"] {display:flex;width:100%;gap:0;border:0;background:#fff;box-shadow:none;}
+.st-key-owner-report-panel .st-key-owner-report-tabs [data-testid="stSegmentedControl"] button {flex:1 1 0;min-height:62px;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;background:#fff!important;color:#6b788e!important;font-size:16px;font-weight:700!important;}
+.st-key-owner-report-panel .st-key-owner-report-tabs [data-testid="stSegmentedControl"] button p {font-size:16px;color:inherit!important;white-space:nowrap!important;}
+.st-key-owner-report-panel .st-key-owner-report-tabs [data-testid="stSegmentedControl"] button[aria-checked="true"],.st-key-owner-report-panel .st-key-owner-report-tabs [data-testid="stSegmentedControl"] button[data-selected] {background:#fff!important;color:#745500!important;border-bottom-color:#ffbf00!important;}
+.st-key-owner-report-body {flex:1 1 auto;min-height:0;overflow-y:auto;padding:26px 32px 36px;scrollbar-width:thin;}
+.st-key-owner-report-body h3 {font-size:25px;line-height:1.3;margin:0 0 12px;}
+.st-key-owner-report-body [data-testid="stHorizontalBlock"] {gap:12px;}
+.st-key-owner-report-body [data-testid="stMetric"] {min-height:190px;padding:20px 18px;border:1px solid #edf0f5;border-radius:16px;background:#f5f7fa;}
+.st-key-owner-report-body [data-testid="stMetricLabel"] {font-size:16px;color:#65748b;}
+.st-key-owner-report-body [data-testid="stMetricValue"] {font-size:27px;line-height:1.25;color:#152238;}
+.st-key-owner-report-body [data-testid="stMetricDelta"] {font-size:14px;}
+.st-key-owner-report-body [data-testid="stExpander"] {border-color:#e9edf2;border-radius:12px;}
+.st-key-owner-report-body [data-testid="stExpander"] summary {font-weight:650;}
+.st-key-owner-report-body [data-testid="stExpander"]:first-of-type {background:#fff8e5;}
+.st-key-owner-report-footer {flex:0 0 auto;padding:8px 32px 12px;border-top:1px solid #e5e8ef;background:#fff;}
+.st-key-owner-report-footer [data-testid="stVerticalBlock"] {gap:.35rem;}
+.st-key-owner-report-footer [data-testid="stExpander"] {border:0;border-bottom:1px solid #e5e8ef;border-radius:0;}
+.st-key-owner-report-footer [data-testid="stHorizontalBlock"] {gap:12px;}
+.st-key-owner-report-footer [data-testid="stButton"] button {min-height:54px;font-weight:800;font-size:16px;border-radius:10px;}
+.st-key-owner-report-footer [data-testid="stButton"] button[kind="primary"] {background:#ffbf00;color:#111c31;border-color:#ffbf00;}
+.st-key-owner-right-toggle {right:18px;top:14px;z-index:10002;}
+.st-key-owner-right-toggle button {border:0;background:transparent;box-shadow:none;color:#34465e;font-size:30px;}
+.st-key-owner-canvas:has(.kb-owner-right-collapsed) .st-key-owner-right-toggle {right:0;top:20px;}
+.st-key-owner-canvas:has(.kb-owner-right-collapsed) .st-key-owner-right-toggle button {border:1px solid #e2d6aa;background:#fff;box-shadow:0 2px 8px #0002;font-size:24px;}
+@media(max-width:1350px) {
+  .st-key-owner-report-panel {width:auto;max-height:75dvh;overflow:hidden;}
+  .st-key-owner-right-toggle {position:relative;right:auto;top:auto;}
+}
 </style>""")
