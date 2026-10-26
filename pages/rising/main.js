@@ -11,7 +11,7 @@ let badges,provider='leaflet';
 const summaryCache=new Map();
 const boundaryCache=new Map();
 let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode=null;
-let flashOverlays=[],flashFrame=0;
+let flashOverlays=[],flashFrame=0,flashTimer=0;
 let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[],hoverLabel;
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
@@ -174,27 +174,53 @@ function updateBoundaryStyles(){
 }
 function setHover(code){hoveredCode=code;updateBoundaryStyles()}
 function clearBoundaryFlash(){
-  clearTimeout(flashFrame);flashFrame=0;
+  cancelAnimationFrame(flashFrame);clearTimeout(flashTimer);flashFrame=0;flashTimer=0;
   flashOverlays.forEach(overlay=>overlay.setMap(null));flashOverlays=[];
 }
 function flashSelectedBoundary(code){
   clearBoundaryFlash();
   if(provider!=='kakao')return;
   const glowLayers=[
-    {color:'#fff4c0',weight:24,opacity:.22,zIndex:8},
-    {color:'#ffd04c',weight:14,opacity:.36,zIndex:9},
-    {color:'#fffdf2',weight:5,opacity:.88,zIndex:10}
+    {color:'#fff4c0',weight:24,opacity:.22,zIndex:8,phase:0},
+    {color:'#ffd04c',weight:14,opacity:.36,zIndex:9,phase:1.4},
+    {color:'#fffdf2',weight:5,opacity:.88,zIndex:10,phase:2.7}
   ];
+  const animated=[];
   for(const {path,code:boundaryCode} of boundaryPolygons){
     if(boundaryCode!==String(code))continue;
     for(const layer of glowLayers){
-      flashOverlays.push(new kakao.maps.Polygon({
+      const overlay=new kakao.maps.Polygon({
         map,path,strokeColor:layer.color,strokeWeight:layer.weight,
         strokeOpacity:layer.opacity,fillOpacity:0,zIndex:layer.zIndex,clickable:false
-      }));
+      });
+      flashOverlays.push(overlay);animated.push({overlay,layer});
     }
   }
-  if(flashOverlays.length)flashFrame=setTimeout(clearBoundaryFlash,30000);
+  if(!animated.length)return;
+  flashTimer=setTimeout(clearBoundaryFlash,30000);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const start=performance.now();
+  let lastFrame=0;
+  function frame(now){
+    if(now-lastFrame>=66){
+      lastFrame=now;
+      const elapsed=(now-start)/1000;
+      for(const {overlay,layer} of animated){
+        const phase=layer.phase;
+        const energy=Math.max(0,Math.min(1,
+          .5+.28*Math.sin(elapsed*1.13+phase)
+             +.16*Math.sin(elapsed*2.39+phase*.73)
+             +.09*Math.sin(elapsed*4.07+phase*1.31)
+        ));
+        overlay.setOptions({
+          strokeOpacity:layer.opacity*(.48+.52*energy),
+          strokeWeight:layer.weight*(.82+.36*energy)
+        });
+      }
+    }
+    flashFrame=requestAnimationFrame(frame);
+  }
+  flashFrame=requestAnimationFrame(frame);
 }
 function drawBoundaries(){
   clearBoundaryFlash();
