@@ -307,8 +307,8 @@ function render(list){
 function updateSource(rankingSource){
   const scope=kind==='dong'?'행정동별':'상권별';
   const notes={stores:'업종별 전체 점포 수 합계',sales:'업종별 당월 추정매출액 합계',salesPerStore:'분기 추정매출 ÷ 3개월 ÷ 선택 업종 점포수',footfall:`${scope} 분기 유동인구 수`,residents:`${scope} 상주인구 수`};
-  $('rank-metric').textContent=labels[metric]+' 기준';
-  if(ownerMode)$('owner-rank-title').textContent=labels[metric]+' 비교';
+  if($('rank-metric'))$('rank-metric').textContent=labels[metric]+' 기준';
+  if(ownerMode)$('owner-rank-title').textContent=(metric==='salesPerStore'?'월평균 매출':labels[metric])+' 비교';
   $('source-note').textContent=`자료: 서울시 상권분석서비스 ${kind==='dong'?'행정동별':'상권별'} 원본 CSV · ${notes[metric]}. ${rankingSource==='official'?`순위와 증감률은 서울시 화면 기준${metric==='sales'?'이며 매출액도 서울시 표시값을 따릅니다':''}.`:'선택한 상세조건으로 원본 CSV를 집계한 순위입니다.'}`;
 }
 async function api(url){const response=await fetch(url),data=await response.json();if(!response.ok)throw Error(data.error||'데이터 조회 실패');return data}
@@ -362,8 +362,6 @@ function setupOwnerControls(){
   salesBasis.onchange=()=>{if(!['sales','salesPerStore'].includes(metric))return;const button=document.querySelector('.owner-unified .metric button:nth-child(2)');button.dataset.metric=salesBasis.value==='average'?'salesPerStore':'sales';button.click()};
   document.querySelectorAll('[data-owner-mode]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
-    $('owner-guidance').textContent=button.dataset.ownerMode==='preparing'?'창업 후보 지역의 점포·매출·인구를 살펴보세요.':'주변 상권과 우리 가게의 운영을 함께 점검해 보세요.';
-    $('owner-startup-link').hidden=button.dataset.ownerMode!=='preparing';
   });
   document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-find]').forEach(item=>item.classList.toggle('selected',item===button));
