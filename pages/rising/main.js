@@ -53,6 +53,7 @@ function syncFilterUi(){
     const active=draftFilters[button.dataset.filter]===button.dataset.value;
     button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));
   }
+  if(!$('filter-quarter-field'))return;
   $('filter-quarter-field').hidden=draftFilters.period!=='quarter';
   $('filter-year-field').hidden=draftFilters.period!=='year';
   const industryAvailable=['stores','sales','salesPerStore'].includes(metric);
@@ -60,7 +61,7 @@ function syncFilterUi(){
   $('filter-industry-hint').hidden=industryAvailable;
 }
 function closeFilter(){const body=$('filter-body');body.hidden=true;$('filter-toggle').setAttribute('aria-expanded','false')}
-$('filter-toggle').onclick=()=>{const body=$('filter-body');if(body.hidden){draftFilters={...appliedFilters};syncFilterUi()}body.hidden=!body.hidden;$('filter-toggle').setAttribute('aria-expanded',String(!body.hidden))};
+if($('filter-toggle'))$('filter-toggle').onclick=()=>{const body=$('filter-body');if(body.hidden){draftFilters={...appliedFilters};syncFilterUi()}body.hidden=!body.hidden;$('filter-toggle').setAttribute('aria-expanded',String(!body.hidden))};
 function chooseFilter(button){
   draftFilters[button.dataset.filter]=button.dataset.value;
   if(button.dataset.filter==='quarter')draftFilters.year=button.dataset.value.slice(0,4);
@@ -68,8 +69,8 @@ function chooseFilter(button){
   syncFilterUi();
 }
 document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>chooseFilter(button));
-$('filter-cancel').onclick=()=>{draftFilters={...appliedFilters};syncFilterUi();closeFilter()};
-$('filter-apply').onclick=()=>{
+if($('filter-cancel'))$('filter-cancel').onclick=()=>{draftFilters={...appliedFilters};syncFilterUi();closeFilter()};
+if($('filter-apply'))$('filter-apply').onclick=()=>{
   Object.assign(appliedFilters,draftFilters);
   if(ownerMode){$('owner-industry').value=appliedFilters.industry;$('owner-rank-sort').value=appliedFilters.criterion}
   if(appliedFilters.period==='year')appliedFilters.quarter=availableQuarters.find(q=>q.startsWith(appliedFilters.year))??appliedFilters.quarter;
@@ -289,9 +290,9 @@ async function init(){
     availableQuarters=filters.quarters;
     $('quarter').replaceChildren(...availableQuarters.map(q=>new Option(`${q.slice(0,4)}년 ${q.slice(4)}분기`,q)));
     appliedFilters.quarter=availableQuarters[0]??'';appliedFilters.year=appliedFilters.quarter.slice(0,4);draftFilters={...appliedFilters};
-    $('filter-quarters').replaceChildren(...availableQuarters.slice(0,5).map(q=>{const button=document.createElement('button');button.type='button';button.dataset.filter='quarter';button.dataset.value=q;button.textContent=`${q.slice(0,4)}년 ${q.slice(4)}분기`;return button}));
+    if($('filter-quarters'))$('filter-quarters').replaceChildren(...availableQuarters.slice(0,5).map(q=>{const button=document.createElement('button');button.type='button';button.dataset.filter='quarter';button.dataset.value=q;button.textContent=`${q.slice(0,4)}년 ${q.slice(4)}분기`;return button}));
     const years=Array.from({length:4},(_,i)=>String(Number(appliedFilters.year)-3+i));
-    $('filter-years').replaceChildren(...years.map(y=>{const button=document.createElement('button');button.type='button';button.dataset.filter='year';button.dataset.value=y;button.textContent=`${y}년`;button.disabled=!availableQuarters.some(q=>q.startsWith(y));return button}));
+    if($('filter-years'))$('filter-years').replaceChildren(...years.map(y=>{const button=document.createElement('button');button.type='button';button.dataset.filter='year';button.dataset.value=y;button.textContent=`${y}년`;button.disabled=!availableQuarters.some(q=>q.startsWith(y));return button}));
     document.querySelectorAll('#filter-quarters [data-filter],#filter-years [data-filter]').forEach(button=>button.onclick=()=>chooseFilter(button));
     syncFilterUi();
     if(ownerMode)setupOwnerControls();
