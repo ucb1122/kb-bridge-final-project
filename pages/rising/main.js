@@ -2,8 +2,9 @@ import {districts,populateDistricts,focusDistrict} from '../../shared/districts.
 import {renderReportTab} from './full-report.js';
 
 const $=id=>document.getElementById(id);
-const labels={stores:'점포수',sales:'매출',footfall:'유동인구',residents:'상주인구'};
-let kind='dong',metric='stores',map,requestId=0,summaryId=0,rows=[],selectedCode,pinned=false;
+const ownerMode=document.body.classList.contains('owner-unified');
+const labels={stores:'점포수',sales:'매출',salesPerStore:'점포당 월평균 매출',footfall:'유동인구',residents:'상주인구'};
+let kind='dong',metric=ownerMode?'salesPerStore':'stores',map,requestId=0,summaryId=0,rows=[],selectedCode,pinned=false;
 const appliedFilters={criterion:'growth',comparison:'previous',industry:'all',period:'quarter',quarter:'',year:''};
 let draftFilters={...appliedFilters},availableQuarters=[];
 let badges,provider='leaflet';
@@ -45,7 +46,7 @@ mapTopToggle.setAttribute('aria-label','지도 지역 선택창 접기');mapTopT
 mapTopToggle.onclick=()=>{const collapsed=mapTop.classList.toggle('collapsed');mapTopToggle.textContent=collapsed?'펼치기':'접기';mapTopToggle.setAttribute('aria-label',collapsed?'지도 지역 선택창 펼치기':'지도 지역 선택창 접기');mapTopToggle.setAttribute('aria-expanded',String(!collapsed))};
 
 document.querySelectorAll('[data-kind]').forEach(button=>button.onclick=()=>{kind=button.dataset.kind;select('[data-kind]',button);load()});
-document.querySelectorAll('[data-metric]').forEach(button=>button.onclick=()=>{metric=button.dataset.metric;select('[data-metric]',button);if(!['stores','sales'].includes(metric)){appliedFilters.industry='all';draftFilters.industry='all'}syncFilterUi();load()});
+document.querySelectorAll('[data-metric]').forEach(button=>button.onclick=()=>{metric=button.dataset.metric;select('[data-metric]',button);if(!['stores','sales','salesPerStore'].includes(metric)){appliedFilters.industry='all';draftFilters.industry='all'}syncFilterUi();load()});
 function select(selector,button){document.querySelectorAll(selector).forEach(item=>item.classList.toggle('selected',item===button))}
 function syncFilterUi(){
   for(const button of document.querySelectorAll('[data-filter]')){
@@ -54,7 +55,7 @@ function syncFilterUi(){
   }
   $('filter-quarter-field').hidden=draftFilters.period!=='quarter';
   $('filter-year-field').hidden=draftFilters.period!=='year';
-  const industryAvailable=['stores','sales'].includes(metric);
+  const industryAvailable=['stores','sales','salesPerStore'].includes(metric);
   for(const button of document.querySelectorAll('[data-filter="industry"]'))button.disabled=!industryAvailable;
   $('filter-industry-hint').hidden=industryAvailable;
 }
@@ -70,6 +71,7 @@ document.querySelectorAll('[data-filter]').forEach(button=>button.onclick=()=>ch
 $('filter-cancel').onclick=()=>{draftFilters={...appliedFilters};syncFilterUi();closeFilter()};
 $('filter-apply').onclick=()=>{
   Object.assign(appliedFilters,draftFilters);
+  if(ownerMode){$('owner-industry').value=appliedFilters.industry;$('owner-rank-sort').value=appliedFilters.criterion}
   if(appliedFilters.period==='year')appliedFilters.quarter=availableQuarters.find(q=>q.startsWith(appliedFilters.year))??appliedFilters.quarter;
   $('quarter').value=appliedFilters.quarter;
   closeFilter();load();
@@ -131,14 +133,15 @@ async function selectDong(event){
   await load();
   try{
     const summary=await api('/api/rising/summary?'+new URLSearchParams({kind:'dong',code:feature.properties.code,quarter:$('quarter').value}));
-    const item=summary?.metrics?.[metric];
+    const item=metric==='salesPerStore'&&summary?.metrics?.stores?.value>0
+      ?{value:(summary.metrics.sales?.value??0)/3/summary.metrics.stores.value,change:null}:summary?.metrics?.[metric];
     if(!item)return;
     const coordinates=feature.geometry.type==='Polygon'?feature.geometry.coordinates[0]:feature.geometry.coordinates[0][0];
     const [lng,lat]=coordinates[Math.floor(coordinates.length/2)];
     focusRegion({code:feature.properties.code,name:feature.properties.name,district,value:item.value,change:item.change,lat,lng});
   }catch(error){$('status').textContent=error.message}
 }
-function format(value,which=metric){return which==='sales'?(value/1e8).toLocaleString('ko-KR',{maximumFractionDigits:1})+'억 원':which==='footfall'?Math.round(value/1e4).toLocaleString('ko-KR')+'만 명':Math.round(value).toLocaleString('ko-KR')+(which==='stores'?'개':'명')}
+function format(value,which=metric){return which==='salesPerStore'?(value/1e4).toLocaleString('ko-KR',{maximumFractionDigits:1})+'만 원':which==='sales'?(value/1e8).toLocaleString('ko-KR',{maximumFractionDigits:1})+'억 원':which==='footfall'?Math.round(value/1e4).toLocaleString('ko-KR')+'만 명':Math.round(value).toLocaleString('ko-KR')+(which==='stores'?'개':'명')}
 function changeText(value){return value==null?'비교 자료 없음':`${value>=0?'+':''}${(value*100).toFixed(1)}%`}
 function rankingComparison(row){return appliedFilters.criterion==='highest'?'':appliedFilters.criterion==='absolute'?(row.delta==null?'—':`${row.delta>=0?'+':''}${format(row.delta)}`):changeText(row.change)}
 function html(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -225,7 +228,7 @@ function drawMap(){
   });
 }
 function focusRegion(row){
-  pinned=true;showSummary(row,rows.indexOf(row)>=0?rows.indexOf(row)+1:null,true);
+  pinned=true;if(ownerMode)$('owner-map-hint').textContent=`${row.district} ${row.name} · ${$('owner-industry').selectedOptions[0].textContent}`;showSummary(row,rows.indexOf(row)>=0?rows.indexOf(row)+1:null,true);
   $('region-card').classList.remove('collapsed');reportToggle.textContent='❯';reportToggle.setAttribute('aria-label','보고서 접기');reportToggle.setAttribute('aria-expanded','true');drawMap();
   if(!map)return;
   if(Number.isFinite(row.lat)&&Number.isFinite(row.lng)){
@@ -238,19 +241,22 @@ async function showSummary(row,rank,clicked=false){
   if(selectedCode!==row.code){$('report-body').scrollTop=0;document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.classList.toggle('selected',tab.dataset.reportTab==='overview'))}
   selectedCode=row.code;$('region-card').hidden=false;
   updateBoundaryStyles();
-  $('region-type').textContent=kind==='dong'?'뜨는 동네':'뜨는 상권';
+  $('region-type').textContent=ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
   $('region-title').textContent=`${row.district} ${row.name}`;
   $('region-rank').textContent=`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
   $('report-overview').textContent='지역 데이터를 불러오는 중…';
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
-  $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric});
-  const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}`;
+  $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
+  const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
   try{
     let summary=summaryCache.get(key);
-    if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code}));summaryCache.set(key,summary)}
+    if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
     for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
-    if(clicked){
+    if(clicked&&ownerMode&&appliedFilters.industry!=='all'){
+      const name=$('owner-industry').selectedOptions[0].textContent;
+      renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[`${name} 점포수와 매출은 선택 업종 원본으로 집계했습니다.`,`유동인구와 상주인구는 업종과 무관한 지역 전체 기준입니다.`],note:'선택 업종의 개별 점포 실적이나 대출 적격성을 의미하지 않습니다.'});
+    }else if(clicked){
       try{const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis)}
       catch(error){if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[],note:error.message})}
     }
@@ -268,14 +274,15 @@ function render(list){
 }
 function updateSource(rankingSource){
   const scope=kind==='dong'?'행정동별':'상권별';
-  const notes={stores:'업종별 전체 점포 수 합계',sales:'업종별 당월 추정매출액 합계',footfall:`${scope} 분기 유동인구 수`,residents:`${scope} 상주인구 수`};
+  const notes={stores:'업종별 전체 점포 수 합계',sales:'업종별 당월 추정매출액 합계',salesPerStore:'분기 추정매출 ÷ 3개월 ÷ 선택 업종 점포수',footfall:`${scope} 분기 유동인구 수`,residents:`${scope} 상주인구 수`};
   $('rank-metric').textContent=labels[metric]+' 기준';
+  if(ownerMode)$('owner-rank-title').textContent=labels[metric]+' 비교';
   $('source-note').textContent=`자료: 서울시 상권분석서비스 ${kind==='dong'?'행정동별':'상권별'} 원본 CSV · ${notes[metric]}. ${rankingSource==='official'?`순위와 증감률은 서울시 화면 기준${metric==='sales'?'이며 매출액도 서울시 표시값을 따릅니다':''}.`:'선택한 상세조건으로 원본 CSV를 집계한 순위입니다.'}`;
 }
 async function api(url){const response=await fetch(url),data=await response.json();if(!response.ok)throw Error(data.error||'데이터 조회 실패');return data}
 async function init(){
   try{
-    await initializeMap();
+    try{await initializeMap()}catch(mapError){$('map-legend').textContent=mapError.message;if(ownerMode)$('owner-map-hint').textContent=mapError.message}
     const filters=await api('/api/filters');populateDistricts($('district'));populateDistricts($('map-district'));
     try{const dongs=await api('/api/rising/boundaries?kind=dong');dongFeatures=dongs.features??[];boundaryCache.set('dong',dongs);populateDongs()}catch(error){$('status').textContent='행정동 목록을 불러오지 못했습니다: '+error.message}
     try{const outlines=await api('/pages/rising/district-boundaries.geojson');districtFeatures=outlines.features??[]}catch(error){$('status').textContent='자치구 경계를 불러오지 못했습니다: '+error.message}
@@ -287,6 +294,7 @@ async function init(){
     $('filter-years').replaceChildren(...years.map(y=>{const button=document.createElement('button');button.type='button';button.dataset.filter='year';button.dataset.value=y;button.textContent=`${y}년`;button.disabled=!availableQuarters.some(q=>q.startsWith(y));return button}));
     document.querySelectorAll('#filter-quarters [data-filter],#filter-years [data-filter]').forEach(button=>button.onclick=()=>chooseFilter(button));
     syncFilterUi();
+    if(ownerMode)setupOwnerControls();
     await load();
     drawMap();
   }catch(error){$('status').textContent=error.message}
@@ -308,7 +316,60 @@ async function load(){
     render(rows);updateSource(data.rankingSource);
     $('rank-scope').textContent=$('district').value||'전체';
     $('period').textContent=data.quarter?`${appliedFilters.period==='year'?`${appliedFilters.year}년`:`${data.quarter.slice(0,4)}년 ${data.quarter.slice(4)}분기`} 기준${appliedFilters.criterion==='highest'?'':` (${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비)`}`:'데이터 없음';
+    if(ownerMode)$('owner-map-hint').textContent=$('district').value?`${$('district').value} · ${$('owner-kind').selectedOptions[0].textContent} · 지역을 선택해 주세요.`:'서울시 전체 지도 · 분석할 지역을 선택해 주세요.';
     $('status').textContent=!data.available?'data/raw/seoul_public_data.zip을 넣고 npm run import:raw를 실행하세요.':data.rows.length?'':'선택한 조건의 데이터가 없습니다.';
   }catch(error){if(current===requestId)$('status').textContent=error.message}
+}
+function setupOwnerControls(){
+  const ownerKind=$('owner-kind'),ownerIndustry=$('owner-industry'),salesBasis=$('owner-sales-basis');
+  ownerKind.onchange=()=>document.querySelector(`[data-kind="${ownerKind.value}"]`).click();
+  $('quarter').onchange=()=>{appliedFilters.quarter=$('quarter').value;appliedFilters.year=appliedFilters.quarter.slice(0,4);draftFilters={...appliedFilters};syncFilterUi();load()};
+  ownerIndustry.onchange=()=>{appliedFilters.industry=ownerIndustry.value;draftFilters.industry=ownerIndustry.value;syncFilterUi();load()};
+  $('owner-rank-sort').onchange=event=>{appliedFilters.criterion=event.target.value;draftFilters.criterion=event.target.value;syncFilterUi();load()};
+  salesBasis.onchange=()=>{if(!['sales','salesPerStore'].includes(metric))return;const button=document.querySelector('.owner-unified .metric button:nth-child(2)');button.dataset.metric=salesBasis.value==='average'?'salesPerStore':'sales';button.click()};
+  document.querySelectorAll('[data-owner-mode]').forEach(button=>button.onclick=()=>{
+    document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
+    $('owner-guidance').textContent=button.dataset.ownerMode==='preparing'?'창업 후보 지역의 점포·매출·인구를 살펴보세요. 점포위치 분석은 창업 준비 화면에서도 할 수 있습니다.':'주변 상권과 우리 가게의 운영을 함께 점검해 보세요.';
+  });
+  document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
+    document.querySelectorAll('[data-find]').forEach(item=>item.classList.toggle('selected',item===button));
+    if(button.dataset.find==='direct')$('owner-search').focus();else document.querySelector('.owner-unified .metric').scrollIntoView({block:'nearest'});
+  });
+  document.querySelectorAll('.owner-unified [data-metric]').forEach(button=>button.addEventListener('click',()=>{
+    const available=['stores','sales','salesPerStore'].includes(button.dataset.metric);
+    ownerIndustry.disabled=!available;if(!available)ownerIndustry.value='all';
+    salesBasis.hidden=!['sales','salesPerStore'].includes(button.dataset.metric);
+    if(button.dataset.metric==='sales')salesBasis.value='total';
+    if(button.dataset.metric==='salesPerStore')salesBasis.value='average';
+  }));
+  const search=$('owner-search'),results=$('owner-search-results');
+  function updateSearch(){
+    const term=search.value.trim().replace(/\s/g,'');results.replaceChildren();
+    if(term.length<2){results.hidden=true;return}
+    const features=(ownerKind.value==='dong'?dongFeatures:boundaryFeatures).filter(feature=>
+      `${feature.properties?.district??''}${feature.properties?.name??''}`.replace(/\s/g,'').includes(term)).slice(0,12);
+    for(const feature of features){const button=document.createElement('button');button.type='button';button.setAttribute('role','option');button.textContent=`${feature.properties.district} ${feature.properties.name}`;button.onclick=()=>chooseOwnerRegion(feature);results.append(button)}
+    if(!features.length){const empty=document.createElement('p');empty.textContent='일치하는 지역이 없습니다. 자치구 또는 동 이름을 입력해 주세요.';results.append(empty)}
+    results.hidden=false;
+  }
+  search.oninput=updateSearch;
+  $('owner-search-form').onsubmit=event=>{event.preventDefault();const first=results.querySelector('button');if(first)first.click();else updateSearch()};
+  ownerKind.addEventListener('change',()=>{search.value='';results.hidden=true});
+  $('district').addEventListener('change',()=>{search.value='';results.hidden=true});
+  async function chooseOwnerRegion(feature){
+    results.hidden=true;search.value=`${feature.properties.district} ${feature.properties.name}`;
+    const district=feature.properties.district;
+    if($('district').value!==district){syncDistrict(district);populateDongs()}
+    if(ownerKind.value==='dong'){$('dong').value=String(feature.properties.code);$('map-dong').value=String(feature.properties.code)}
+    await load();
+    try{
+      const summary=await api('/api/rising/summary?'+new URLSearchParams({kind,code:feature.properties.code,quarter:$('quarter').value}));
+      const sales=summary.metrics?.sales?.value,stores=summary.metrics?.stores?.value;
+      const value=metric==='salesPerStore'&&sales!=null&&stores>0?sales/3/stores:summary.metrics?.[metric]?.value;
+      const polygon=feature.geometry.type==='Polygon'?feature.geometry.coordinates[0]:feature.geometry.coordinates[0][0];
+      const [lng,lat]=polygon[Math.floor(polygon.length/2)];
+      focusRegion({code:feature.properties.code,name:feature.properties.name,district,value:value??0,change:null,lat,lng});
+    }catch(error){$('status').textContent=error.message}
+  }
 }
 init();

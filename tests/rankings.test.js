@@ -89,3 +89,20 @@ test('이문1동 행정동 전체는 상권 합계가 아닌 원본 값으로 �
   assert.equal(report.metrics.footfall.value,14072454);
   assert.equal(report.history.find(row=>row.metric==='stores'&&row.quarter==='20261')?.value,1097);
 });
+
+
+test('내 상권 분석의 점포당 월평균은 분기 매출과 점포수로 계산한다',{skip:!hasData},()=>{
+  const result=getRankings({kind:'dong',metric:'salesPerStore',quarter:'20262',district:'구로구'});
+  const hang=result.rows.find(row=>row.name==='항동');
+  assert.ok(hang);
+  assert.equal(Math.round(hang.value/1e4*10)/10,10.9);
+});
+
+test('선택 업종 보고서의 매출과 점포수는 해당 업종만 집계한다',{skip:!hasData},()=>{
+  const all=getRegionReport({kind:'dong',code:'11230740',quarter:'20262'});
+  const food=getRegionReport({kind:'dong',code:'11230740',quarter:'20262',industry:'CS1'});
+  assert.equal(food.scopeIndustry,'CS1');
+  assert.ok(food.metrics.stores.value<all.metrics.stores.value);
+  assert.ok(food.metrics.sales.value<all.metrics.sales.value);
+  assert.ok(food.industries.every(row=>row.code.startsWith('CS1')));
+});

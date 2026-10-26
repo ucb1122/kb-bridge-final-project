@@ -1,6 +1,6 @@
 import {quarter} from './report-view.js';
 import {renderReportTab} from './full-report.js';
-const params=new URLSearchParams(location.search),query=new URLSearchParams({kind:params.get('kind')||'',code:params.get('code')||'',quarter:params.get('quarter')||''});
+const params=new URLSearchParams(location.search),query=new URLSearchParams({kind:params.get('kind')||'',code:params.get('code')||'',quarter:params.get('quarter')||'',industry:params.get('industry')||'all'});
 const $=id=>document.getElementById(id);
 $('print').onclick=()=>window.print();
 async function api(path){const response=await fetch(path+'?'+query),data=await response.json();if(!response.ok||!data)throw Error(data?.error||'지역 자료를 찾을 수 없습니다.');return data}
