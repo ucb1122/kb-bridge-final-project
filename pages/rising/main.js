@@ -206,23 +206,34 @@ function flashSelectedBoundary(code){
       points[i-1].getLng()+(points[i].getLng()-points[i-1].getLng())*fraction
     );
   };
-  const layers=[
+  const colorLayers=[
     {from:0,to:1,color:'#fff0b8',weight:19,opacity:.36,zIndex:8},
     {from:0,to:.25,color:'#dc7900',weight:3,opacity:.8,zIndex:9},
     {from:.25,to:.55,color:'#ffad00',weight:5,opacity:.95,zIndex:10},
     {from:.55,to:.82,color:'#ffda3d',weight:8,opacity:1,zIndex:11},
     {from:.82,to:1,color:'#fffdf0',weight:11,opacity:1,zIndex:12}
-  ].map(layer=>({
-    ...layer,
-    line:new kakao.maps.Polyline({map,path:[points[0]],strokeColor:layer.color,strokeWeight:layer.weight,strokeOpacity:layer.opacity,zIndex:layer.zIndex,clickable:false})
+  ];
+  const streaks=[
+    {offset:0,length:.14,brightness:1},
+    {offset:1/3,length:.11,brightness:.85},
+    {offset:2/3,length:.09,brightness:.72}
+  ].map(streak=>({
+    ...streak,
+    layers:colorLayers.map(layer=>({
+      ...layer,
+      line:new kakao.maps.Polyline({map,path:[points[0]],strokeColor:layer.color,strokeWeight:layer.weight,strokeOpacity:layer.opacity*streak.brightness,zIndex:layer.zIndex,clickable:false})
+    }))
   }));
-  flashOverlays.push(...layers.map(layer=>layer.line));
-  const start=performance.now(),duration=1050,trail=perimeter*.14;
+  flashOverlays.push(...streaks.flatMap(streak=>streak.layers.map(layer=>layer.line)));
+  const start=performance.now(),duration=1050;
   function frame(now){
-    const progress=Math.min((now-start)/duration,1),head=perimeter*progress;
-    for(const layer of layers){
-      const span=layer.to-layer.from;
-      layer.line.setPath(Array.from({length:13},(_,i)=>positionAt(head-trail+trail*(layer.from+span*i/12))));
+    const progress=Math.min((now-start)/duration,1);
+    for(const streak of streaks){
+      const head=perimeter*(progress+streak.offset),trail=perimeter*streak.length;
+      for(const layer of streak.layers){
+        const span=layer.to-layer.from;
+        layer.line.setPath(Array.from({length:13},(_,i)=>positionAt(head-trail+trail*(layer.from+span*i/12))));
+      }
     }
     if(progress<1)flashFrame=requestAnimationFrame(frame);
     else clearBoundaryFlash();
