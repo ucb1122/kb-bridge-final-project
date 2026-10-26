@@ -14,7 +14,6 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.stdout.reconfigure(encoding="utf-8")
 SOURCES = {
     "stores": ("서울시 상권분석서비스(점포-상권).csv", "전체_점포_수"),
     "sales": ("서울시 상권분석서비스(추정매출-상권).csv", "당월_매출_금액"),
