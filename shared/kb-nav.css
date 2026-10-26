@@ -1,0 +1,10 @@
+/* Keep the navigation aligned with the rising-market screen. */
+body .kb-header{height:100px;padding:0 44px;gap:38px;border-bottom:1px solid #ececec}
+.kb-header nav{gap:34px}
+.kb-header nav a{font-size:17px!important;font-weight:700!important;color:#121827!important;border-bottom:4px solid transparent!important}
+.kb-header nav a.active{border-bottom-color:#ffbc00!important}
+.kb-header .help-link{font-size:15px!important;color:#334155!important}
+.kb-project-badge{display:none!important}
+.reference-owner .owner-canvas,.reference-founder .owner-canvas{height:calc(100dvh - 130px)}
+@media(max-width:1200px){body .kb-header{padding:0 22px;gap:22px}.kb-header nav{gap:18px}.kb-header nav a{font-size:14px!important}}
+@media(max-width:760px){body .kb-header{height:70px;padding:0 14px;gap:15px}.kb-header nav{gap:13px}.kb-header nav a{font-size:12px!important}.reference-owner .owner-canvas,.reference-founder .owner-canvas{height:calc(100dvh - 100px)}}
