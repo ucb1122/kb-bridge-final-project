@@ -174,74 +174,27 @@ function updateBoundaryStyles(){
 }
 function setHover(code){hoveredCode=code;updateBoundaryStyles()}
 function clearBoundaryFlash(){
-  cancelAnimationFrame(flashFrame);flashFrame=0;
+  clearTimeout(flashFrame);flashFrame=0;
   flashOverlays.forEach(overlay=>overlay.setMap(null));flashOverlays=[];
 }
 function flashSelectedBoundary(code){
   clearBoundaryFlash();
-  if(provider!=='kakao'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const rings=boundaryPolygons.filter(item=>item.code===String(code)).map(item=>item.path[0]).filter(ring=>ring?.length>2);
-  if(!rings.length)return;
-  const measure=ring=>ring.reduce((sum,point,i)=>{
-    const next=ring[(i+1)%ring.length],latitude=(point.getLat()+next.getLat())*Math.PI/360;
-    return sum+Math.hypot((next.getLng()-point.getLng())*Math.cos(latitude),next.getLat()-point.getLat());
-  },0);
-  const ring=rings.sort((left,right)=>measure(right)-measure(left))[0];
-  const points=[...ring];
-  if(points[0].getLat()!==points.at(-1).getLat()||points[0].getLng()!==points.at(-1).getLng())points.push(points[0]);
-  const lengths=[0];
-  for(let i=1;i<points.length;i++){
-    const latitude=(points[i-1].getLat()+points[i].getLat())*Math.PI/360;
-    lengths.push(lengths.at(-1)+Math.hypot((points[i].getLng()-points[i-1].getLng())*Math.cos(latitude),points[i].getLat()-points[i-1].getLat()));
-  }
-  const perimeter=lengths.at(-1);
-  if(!perimeter)return;
-  const positionAt=distance=>{
-    const target=((distance%perimeter)+perimeter)%perimeter;
-    let low=1,high=lengths.length-1;
-    while(low<high){const mid=(low+high)>>1;if(lengths[mid]<target)low=mid+1;else high=mid}
-    const i=low,span=lengths[i]-lengths[i-1],fraction=span?(target-lengths[i-1])/span:0;
-    return new kakao.maps.LatLng(
-      points[i-1].getLat()+(points[i].getLat()-points[i-1].getLat())*fraction,
-      points[i-1].getLng()+(points[i].getLng()-points[i-1].getLng())*fraction
-    );
-  };
-  const colorLayers=[
-    {from:0,to:1,color:'#fff0b8',weight:19,opacity:.36,zIndex:8},
-    {from:0,to:.25,color:'#dc7900',weight:3,opacity:.8,zIndex:9},
-    {from:.25,to:.55,color:'#ffad00',weight:5,opacity:.95,zIndex:10},
-    {from:.55,to:.82,color:'#ffda3d',weight:8,opacity:1,zIndex:11},
-    {from:.82,to:1,color:'#fffdf0',weight:11,opacity:1,zIndex:12}
+  if(provider!=='kakao')return;
+  const glowLayers=[
+    {color:'#fff4c0',weight:24,opacity:.22,zIndex:8},
+    {color:'#ffd04c',weight:14,opacity:.36,zIndex:9},
+    {color:'#fffdf2',weight:5,opacity:.88,zIndex:10}
   ];
-  const streaks=[
-    {offset:0,length:.23,brightness:1},
-    {offset:1/3,length:.19,brightness:.85},
-    {offset:2/3,length:.16,brightness:.72}
-  ].map(streak=>({
-    ...streak,
-    layers:colorLayers.map(layer=>({
-      ...layer,
-      line:new kakao.maps.Polyline({map,path:[points[0]],strokeColor:layer.color,strokeWeight:layer.weight,strokeOpacity:layer.opacity*streak.brightness,zIndex:layer.zIndex,clickable:false})
-    }))
-  }));
-  flashOverlays.push(...streaks.flatMap(streak=>streak.layers.map(layer=>layer.line)));
-  const start=performance.now(),duration=30000;
-  let lastFrame=0;
-  function frame(now){
-    if(now-lastFrame<33&&now-start<duration){flashFrame=requestAnimationFrame(frame);return}
-    lastFrame=now;
-    const progress=Math.min((now-start)/duration,1);
-    for(const streak of streaks){
-      const head=perimeter*(progress*25+streak.offset),trail=perimeter*streak.length;
-      for(const layer of streak.layers){
-        const span=layer.to-layer.from;
-        layer.line.setPath(Array.from({length:13},(_,i)=>positionAt(head-trail+trail*(layer.from+span*i/12))));
-      }
+  for(const {path,code:boundaryCode} of boundaryPolygons){
+    if(boundaryCode!==String(code))continue;
+    for(const layer of glowLayers){
+      flashOverlays.push(new kakao.maps.Polygon({
+        map,path,strokeColor:layer.color,strokeWeight:layer.weight,
+        strokeOpacity:layer.opacity,fillOpacity:0,zIndex:layer.zIndex,clickable:false
+      }));
     }
-    if(progress<1)flashFrame=requestAnimationFrame(frame);
-    else clearBoundaryFlash();
   }
-  flashFrame=requestAnimationFrame(frame);
+  if(flashOverlays.length)flashFrame=setTimeout(clearBoundaryFlash,30000);
 }
 function drawBoundaries(){
   clearBoundaryFlash();
