@@ -11,6 +11,7 @@ let badges,provider='leaflet';
 const summaryCache=new Map();
 const boundaryCache=new Map();
 let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode=null;
+let flashOverlays=[],flashFrame=0;
 let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[],hoverLabel;
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
@@ -172,7 +173,35 @@ function updateBoundaryStyles(){
   }
 }
 function setHover(code){hoveredCode=code;updateBoundaryStyles()}
+function clearBoundaryFlash(){
+  cancelAnimationFrame(flashFrame);flashFrame=0;
+  flashOverlays.forEach(overlay=>overlay.setMap(null));flashOverlays=[];
+}
+function flashSelectedBoundary(code){
+  clearBoundaryFlash();
+  if(provider!=='kakao'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  for(const {path,code:boundaryCode} of boundaryPolygons){
+    if(boundaryCode!==String(code))continue;
+    const glow=new kakao.maps.Polygon({map,path,strokeColor:'#ffffff',strokeWeight:8,strokeOpacity:0,fillOpacity:0,zIndex:8,clickable:false});
+    const highlight=new kakao.maps.Polygon({map,path,strokeColor:'#ffbc00',strokeWeight:3,strokeOpacity:0,fillOpacity:0,zIndex:9,clickable:false});
+    flashOverlays.push(glow,highlight);
+  }
+  if(!flashOverlays.length)return;
+  const start=performance.now(),duration=1500;
+  function frame(now){
+    const progress=Math.min((now-start)/duration,1);
+    const pulse=Math.sin(progress*Math.PI*2)**2*(1-progress*.4);
+    for(let i=0;i<flashOverlays.length;i+=2){
+      flashOverlays[i].setOptions({strokeOpacity:.55*pulse,strokeWeight:8+4*pulse});
+      flashOverlays[i+1].setOptions({strokeOpacity:.95*pulse,strokeWeight:3+2*pulse});
+    }
+    if(progress<1)flashFrame=requestAnimationFrame(frame);
+    else clearBoundaryFlash()
+  }
+  flashFrame=requestAnimationFrame(frame);
+}
 function drawBoundaries(){
+  clearBoundaryFlash();
   hoverLabel?.setMap(null);hoveredCode=null;
   boundaryPolygons.forEach(({polygon})=>polygon.setMap(null));boundaryPolygons=[];
   if(provider!=='kakao')return;
@@ -184,7 +213,7 @@ function drawBoundaries(){
     for(const path of boundaryPaths(feature.geometry)){
       if(!path[0]||path[0].length<3)continue;
       const polygon=new kakao.maps.Polygon({map,path,strokeStyle:'solid',strokeOpacity:.001,fillOpacity:.001,zIndex:0});
-      boundaryPolygons.push({polygon,code});
+      boundaryPolygons.push({polygon,code,path});
       kakao.maps.event.addListener(polygon,'mouseover',event=>{
         setHover(code);
         hoverLabel.setContent(`<div class="boundary-hover-label">${html(feature.properties?.district??'')} ${html(feature.properties?.name??'')}</div>`);
@@ -237,6 +266,7 @@ function focusRegion(row){
     if(provider==='kakao'){map.setCenter(new kakao.maps.LatLng(row.lat,row.lng));map.setLevel(4)}
     else map.setView([row.lat,row.lng],16);
   }
+  flashSelectedBoundary(row.code);
 }
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
