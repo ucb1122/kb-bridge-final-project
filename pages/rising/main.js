@@ -225,11 +225,14 @@ function flashSelectedBoundary(code){
     }))
   }));
   flashOverlays.push(...streaks.flatMap(streak=>streak.layers.map(layer=>layer.line)));
-  const start=performance.now(),duration=2400;
+  const start=performance.now(),duration=30000;
+  let lastFrame=0;
   function frame(now){
+    if(now-lastFrame<33&&now-start<duration){flashFrame=requestAnimationFrame(frame);return}
+    lastFrame=now;
     const progress=Math.min((now-start)/duration,1);
     for(const streak of streaks){
-      const head=perimeter*(progress*2+streak.offset),trail=perimeter*streak.length;
+      const head=perimeter*(progress*25+streak.offset),trail=perimeter*streak.length;
       for(const layer of streak.layers){
         const span=layer.to-layer.from;
         layer.line.setPath(Array.from({length:13},(_,i)=>positionAt(head-trail+trail*(layer.from+span*i/12))));
