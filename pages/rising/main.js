@@ -180,23 +180,42 @@ function clearBoundaryFlash(){
 function flashSelectedBoundary(code){
   clearBoundaryFlash();
   if(provider!=='kakao'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  for(const {path,code:boundaryCode} of boundaryPolygons){
-    if(boundaryCode!==String(code))continue;
-    const glow=new kakao.maps.Polygon({map,path,strokeColor:'#ffffff',strokeWeight:8,strokeOpacity:0,fillOpacity:0,zIndex:8,clickable:false});
-    const highlight=new kakao.maps.Polygon({map,path,strokeColor:'#ffbc00',strokeWeight:3,strokeOpacity:0,fillOpacity:0,zIndex:9,clickable:false});
-    flashOverlays.push(glow,highlight);
+  const rings=boundaryPolygons.filter(item=>item.code===String(code)).map(item=>item.path[0]).filter(ring=>ring?.length>2);
+  if(!rings.length)return;
+  const measure=ring=>ring.reduce((sum,point,i)=>{
+    const next=ring[(i+1)%ring.length],latitude=(point.getLat()+next.getLat())*Math.PI/360;
+    return sum+Math.hypot((next.getLng()-point.getLng())*Math.cos(latitude),next.getLat()-point.getLat());
+  },0);
+  const ring=rings.sort((left,right)=>measure(right)-measure(left))[0];
+  const points=[...ring];
+  if(points[0].getLat()!==points.at(-1).getLat()||points[0].getLng()!==points.at(-1).getLng())points.push(points[0]);
+  const lengths=[0];
+  for(let i=1;i<points.length;i++){
+    const latitude=(points[i-1].getLat()+points[i].getLat())*Math.PI/360;
+    lengths.push(lengths.at(-1)+Math.hypot((points[i].getLng()-points[i-1].getLng())*Math.cos(latitude),points[i].getLat()-points[i-1].getLat()));
   }
-  if(!flashOverlays.length)return;
-  const start=performance.now(),duration=1500;
+  const perimeter=lengths.at(-1);
+  if(!perimeter)return;
+  const positionAt=distance=>{
+    const target=((distance%perimeter)+perimeter)%perimeter;
+    let low=1,high=lengths.length-1;
+    while(low<high){const mid=(low+high)>>1;if(lengths[mid]<target)low=mid+1;else high=mid}
+    const i=low,span=lengths[i]-lengths[i-1],fraction=span?(target-lengths[i-1])/span:0;
+    return new kakao.maps.LatLng(
+      points[i-1].getLat()+(points[i].getLat()-points[i-1].getLat())*fraction,
+      points[i-1].getLng()+(points[i].getLng()-points[i-1].getLng())*fraction
+    );
+  };
+  const glow=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#fff6cf',strokeWeight:9,strokeOpacity:.65,zIndex:8,clickable:false});
+  const light=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#ffbc00',strokeWeight:4,strokeOpacity:1,zIndex:9,clickable:false});
+  flashOverlays.push(glow,light);
+  const start=performance.now(),duration=1050,trail=perimeter*.045;
   function frame(now){
-    const progress=Math.min((now-start)/duration,1);
-    const pulse=Math.sin(progress*Math.PI*2)**2*(1-progress*.4);
-    for(let i=0;i<flashOverlays.length;i+=2){
-      flashOverlays[i].setOptions({strokeOpacity:.55*pulse,strokeWeight:8+4*pulse});
-      flashOverlays[i+1].setOptions({strokeOpacity:.95*pulse,strokeWeight:3+2*pulse});
-    }
+    const progress=Math.min((now-start)/duration,1),head=perimeter*progress;
+    const segment=Array.from({length:17},(_,i)=>positionAt(head-trail+trail*i/16));
+    glow.setPath(segment);light.setPath(segment);
     if(progress<1)flashFrame=requestAnimationFrame(frame);
-    else clearBoundaryFlash()
+    else clearBoundaryFlash();
   }
   flashFrame=requestAnimationFrame(frame);
 }
