@@ -7,18 +7,17 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./owner-reference.css">
-  <link rel="stylesheet" href="./vendor/maplibre-gl.css">
   <link rel="stylesheet" href="./reference-theme.css">
-<link rel="stylesheet" href="../owner/kb-theme.css"><link rel="stylesheet" href="./brand.css"><link rel="stylesheet" href="/shared/kb-nav.css"></head>
+<link rel="stylesheet" href="../owner/kb-theme.css"><link rel="stylesheet" href="./brand.css"><link rel="stylesheet" href="/shared/kb-nav.css"><link rel="stylesheet" href="/shared/kakao-overlay.css"></head>
 <body class="reference-owner">
   <a class="skip-link" href="#wizard">분석 조건으로 바로가기</a>
-  <header class="site-header kb-header"><a class="brand" href="/pages/owner/" aria-label="KB 상권브릿지"><span class="kb-brand-image" aria-hidden="true"><img class="kb-brand-source" src="./assets/kb-bank-brand-source.png" width="500" height="500" alt="" decoding="async"></span><span class="kb-product-name">상권브릿지</span></a><nav aria-label="주 메뉴"><a href="/pages/rising/">뜨는 상권</a><a href="/pages/owner/" class="active" aria-current="page">내 상권 분석</a><a href="/pages/intended-owner/" >창업 준비</a><a href="/pages/warning/">위험상권</a><a href="/pages/products/">금융 상품 추천</a></nav><button id="help-button" type="button" class="help-link">이용안내</button><span class="kb-project-badge">교육용 프로젝트</span></header>
+  <header class="site-header kb-header"><a class="brand" href="/pages/owner/" aria-label="KB 상권브릿지"><span class="kb-brand-image" aria-hidden="true"><img class="kb-brand-source" src="./assets/kb-bank-brand-source.png" width="500" height="500" alt="" decoding="async"></span><span class="kb-product-name">상권브릿지</span></a><nav aria-label="주 메뉴"><a href="/pages/rising/">뜨는 상권</a><a href="/pages/owner/" class="active" aria-current="page">내 상권 분석</a><a href="/pages/warning/">위험상권</a><a href="/pages/products/">금융상품 추천</a></nav><button id="help-button" type="button" class="help-link">이용안내</button><span class="kb-project-badge">교육용 프로젝트</span></header>
   <main class="owner-canvas" aria-label="나는 사장 상권분석">
     <div id="map" aria-label="서울시 지도"></div>
     <div class="region-selector"><span class="region-city">⌖ 서울특별시</span><select id="map-district" aria-label="자치구 선택"></select><select id="map-dong" aria-label="행정동 선택"><option value="">전체</option></select><button id="reset-map" type="button" aria-label="선택 조건 초기화">↺</button></div>
     <div id="wizard" class="wizard-shell">
       <aside id="picker" class="picker" aria-label="점포 위치 업종 분석영역 선택">
-        <div class="picker-title"><h1>나는 사장</h1><a href="/pages/owner/dong.html">행정동 전체 원본 분석 →</a></div>
+        <div class="picker-title"><h1>나는 사장</h1><span class="owner-related-links"><a href="/pages/intended-owner/">창업 준비 →</a><a href="/pages/owner/dong.html">행정동 전체 원본 분석 →</a></span></div>
         <div class="step-tabs" role="tablist" aria-label="상권분석 단계">
           <button id="step-location" class="active" data-step="location" type="button" role="tab" aria-controls="pane-location" aria-selected="true"><b>점포위치</b><span id="location-summary">선택해주세요</span></button>
           <button id="step-industry" data-step="industry" type="button" role="tab" aria-controls="pane-industry" aria-selected="false"><b>업종선택</b><span id="industry-summary">선택해주세요</span></button>
@@ -77,10 +76,8 @@
   <dialog id="info-dialog" aria-labelledby="info-title"><div class="dialog-heading"><h2 id="info-title"></h2><button id="info-close" type="button" aria-label="안내 닫기">×</button></div><div id="info-content"></div></dialog>
   <dialog id="finance-dialog" aria-labelledby="finance-title"><div class="dialog-heading"><h2 id="finance-title">금융상담 준비하기</h2><button id="finance-close" type="button" aria-label="상담창 닫기">×</button></div><p class="notice">상담 준비용 시연 기능입니다. 실제로 접수되거나 외부로 전송되지 않습니다.</p><p id="finance-context"></p><label for="finance-topic">상담 주제</label><select id="finance-topic"><option>창업자금</option><option>운전자금</option><option>정책금융 안내</option></select><label for="finance-memo">준비 메모</label><textarea id="finance-memo" rows="4"></textarea><button id="download-finance" class="primary-button" type="button">준비 메모 저장</button><p id="finance-status" role="status"></p></dialog>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="../owner/vendor/maplibre-gl.js"></script>
-  <script src="../owner/vendor/leaflet-maplibre-gl.js"></script>
   <script src="../owner/vendor/pdf-lib.min.js"></script>
   <script src="../owner/vendor/fontkit.umd.min.js"></script>
-  <script type="module" src="./main.js"></script>
+  <script type="module" data-kakao-entry="/pages/owner/main.js" src="/shared/kakao-bootstrap.js"></script>
 <footer class="kb-project-footer">KB-Bridge 03조 블렌드 교육용 프로젝트 · 실제 KB국민은행 운영·제휴 서비스가 아닙니다.</footer></body>
 </html>

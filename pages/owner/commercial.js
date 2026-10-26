@@ -1,4 +1,4 @@
-import {createMap} from '../../shared/map.js';
+import {createMap} from './commercial-map.js';
 import {populateDistricts,focusDistrict} from '../../shared/districts.js';
 import {selectBusinesses,searchBusinesses,polygonArea,validPolygon} from './analysis.js';
 const $=id=>document.getElementById(id),fmt=n=>n.toLocaleString('ko-KR'),founder=document.body.dataset.mode==='founder';

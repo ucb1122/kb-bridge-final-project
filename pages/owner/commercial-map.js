@@ -1,45 +1,39 @@
-import {MAP_STYLE_URL,MAP_ZOOM_OPTIONS} from './map-config.js';
+import {MAP_ZOOM_OPTIONS} from './map-config.js';
 
-/** Page-local Leaflet interface. Layers and event handlers survive a basemap failure. */
-export function createMap(id='map',options={}){
- if(!window.L)throw Error('Leaflet 라이브러리를 불러오지 못했습니다.');
- const map=L.map(id,{zoomControl:false,...MAP_ZOOM_OPTIONS}).setView([37.5665,126.978],12.25);
- const attribution='<a href="https://openfreemap.org/">OpenFreeMap</a> © <a href="https://openmaptiles.org/">OpenMapTiles</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
- let vector,gl,timer,fallback=false;
- function restore(error){
-  if(fallback)return;fallback=true;clearTimeout(timer);
-  console.error('[상권지도] OpenFreeMap 로딩 실패. OpenStreetMap으로 복구합니다.',error);
-  if(vector&&map.hasLayer(vector))map.removeLayer(vector);
-  map.attributionControl.removeAttribution(attribution);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
-  map.getContainer().dataset.basemap='osm-fallback';
-  map.fire('basemapchange',{name:'osm-fallback'});
- }
- try{
-  if(!window.maplibregl||!L.maplibreGL)throw Error('MapLibre GL / Leaflet 어댑터 없음');
-  vector=L.maplibreGL({style:options.style||MAP_STYLE_URL,interactive:false,attribution}).addTo(map);
-  gl=vector.getMaplibreMap();
-  const loaded=()=>{
-   clearTimeout(timer);
-   // Keep Bright's roads/water/colors, with Korean-first place labels.
-   for(const layer of gl.getStyle().layers||[])if(layer.type==='symbol'&&JSON.stringify(layer.layout?.['text-field']||'').includes('name'))gl.setLayoutProperty(layer.id,'text-field',['coalesce',['get','name:ko'],['get','name:nonlatin'],['get','name'],['get','name_en']]);
-   map.getContainer().dataset.basemap='openfreemap';map.fire('basemapchange',{name:'openfreemap'});
+const kakaoLevel=zoom=>Math.max(1,Math.min(14,Math.round(20-zoom)));
+
+/** Keep Leaflet analysis layers interactive over the official Kakao basemap. */
+export function createMap(id='map'){
+  if(!window.L)throw Error('분석 도형 라이브러리를 불러오지 못했습니다.');
+  if(!window.kakao?.maps?.Map)throw Error('카카오 지도를 불러오지 못했습니다.');
+  const host=document.getElementById(id);
+  if(!host)throw Error('지도 영역을 찾을 수 없습니다.');
+  const base=document.createElement('div');base.className='kakao-basemap';base.setAttribute('aria-label','카카오 지도');
+  const overlay=document.createElement('div');overlay.className='analysis-map-overlay';
+  host.replaceChildren(base,overlay);
+  const center=[37.5665,126.978];
+  const kakaoMap=new kakao.maps.Map(base,{center:new kakao.maps.LatLng(...center),level:kakaoLevel(12.25),draggable:false,scrollwheel:false});
+  const map=L.map(overlay,{zoomControl:false,attributionControl:false,...MAP_ZOOM_OPTIONS}).setView(center,12.25);
+  let scheduled=false;
+  const sync=()=>{
+    if(scheduled)return;scheduled=true;
+    requestAnimationFrame(()=>{
+      scheduled=false;
+      const point=map.getCenter(),level=kakaoLevel(map.getZoom());
+      if(kakaoMap.getLevel()!==level)kakaoMap.setLevel(level,{animate:false});
+      kakaoMap.setCenter(new kakao.maps.LatLng(point.lat,point.lng));
+    });
   };
-  gl.once('load',loaded);
-  gl.on('error',event=>{
-   console.error('[상권지도] 벡터 지도 오류',event.error);
-   // A bad tile alone may recover. A missing style or source before first paint cannot.
-   if(!gl.isStyleLoaded()&&!gl.getStyle()?.sources)restore(event.error);
-  });
-  gl.getCanvas().addEventListener('webglcontextlost',()=>restore(Error('WebGL context lost')));
-  timer=setTimeout(()=>{if(!gl.loaded())restore(Error('지도 로딩 시간 초과 (25초)'));},25000);
-  map.getContainer().dataset.basemap='loading';
- }catch(error){restore(error);}
- L.control.zoom({position:'bottomright'}).addTo(map);
- L.control.scale({imperial:false,position:'bottomright'}).addTo(map);
- const markers=L.layerGroup().addTo(map);
- map.on('unload',()=>clearTimeout(timer));
- return {map,show(points){markers.clearLayers();for(const p of points)if(Number.isFinite(+p.lat)&&Number.isFinite(+p.lng)){
-  const name=document.createElement('span');name.textContent=p.name||'';L.marker([+p.lat,+p.lng]).bindPopup(name).addTo(markers);
- }},focus(lat,lng){map.setView([lat,lng],14);},restore};
+  map.on('move zoom resize',sync);
+  map.on('resize',()=>kakaoMap.relayout());
+  sync();
+  L.control.zoom({position:'bottomright'}).addTo(map);
+  L.control.scale({imperial:false,position:'bottomright'}).addTo(map);
+  const markers=L.layerGroup().addTo(map);
+  host.dataset.basemap='kakao';
+  map.fire('basemapchange',{name:'kakao'});
+  return {map,kakaoMap,show(points){markers.clearLayers();for(const point of points)if(Number.isFinite(+point.lat)&&Number.isFinite(+point.lng)){
+    const name=document.createElement('span');name.textContent=point.name||'';
+    L.marker([+point.lat,+point.lng]).bindPopup(name).addTo(markers);
+  }},focus(lat,lng){map.setView([lat,lng],14)},restore(){}};
 }

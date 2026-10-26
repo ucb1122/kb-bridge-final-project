@@ -8,3 +8,17 @@ body .kb-header{height:100px;padding:0 44px;gap:38px;border-bottom:1px solid #ec
 .reference-owner .owner-canvas,.reference-founder .owner-canvas{height:calc(100dvh - 130px)}
 @media(max-width:1200px){body .kb-header{padding:0 22px;gap:22px}.kb-header nav{gap:18px}.kb-header nav a{font-size:14px!important}}
 @media(max-width:760px){body .kb-header{height:70px;padding:0 14px;gap:15px}.kb-header nav{gap:13px}.kb-header nav a{font-size:12px!important}.reference-owner .owner-canvas,.reference-founder .owner-canvas{height:calc(100dvh - 100px)}}
+/* The map fills the viewport below the shared navigation. */
+.reference-owner .owner-canvas,.reference-founder .owner-canvas{height:calc(100dvh - 100px)!important;min-height:0!important}
+.kb-project-footer{display:none!important}
+.owner-related-links{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:flex-end}
+@media(max-width:760px){.reference-owner .owner-canvas,.reference-founder .owner-canvas{height:calc(100dvh - 70px)!important}}
+.picker-title h1{flex:none}
+.owner-related-links{flex:1;min-width:0;justify-content:flex-end;align-items:center;font-size:11px;line-height:1.3}
+.owner-related-links a{white-space:nowrap}
+body .consult-header{height:100px;padding:0 44px;gap:38px;box-sizing:border-box}
+.consult-header nav{gap:34px}
+.consult-header nav a{font-size:17px!important;font-weight:700!important;color:#121827!important;border-bottom:4px solid transparent!important}
+.consult-header nav a.active{border-bottom-color:#ffbc00!important}
+@media(max-width:1200px){body .consult-header{padding:0 22px;gap:22px}.consult-header nav{gap:18px}.consult-header nav a{font-size:14px!important}}
+@media(max-width:760px){body .consult-header{height:70px;padding:0 14px;gap:15px}.consult-header nav{gap:13px}.consult-header nav a{font-size:12px!important}}

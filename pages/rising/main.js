@@ -1,4 +1,3 @@
-import {createMap} from '../owner/commercial-map.js';
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
 import {renderReportTab} from './full-report.js';
 
@@ -14,6 +13,7 @@ let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode
 let dongFeatures=[],districtFeatures=[],districtOutlines=[],hoverLabel;
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
+  if(!config.kakaoJavaScriptKey)throw Error('카카오 지도 JavaScript 키를 .env에 설정해 주세요.');
   if(config.kakaoJavaScriptKey){
     await new Promise((resolve,reject)=>{
       const script=document.createElement('script');
@@ -29,10 +29,6 @@ async function initializeMap(){
     map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(37.5665,126.978),level:9});
     hoverLabel=new kakao.maps.CustomOverlay({zIndex:999,yAnchor:1});
     badges=[];
-  }else{
-    map=createMap().map;
-    map.setView([37.5665,126.978],11.5,{animate:false});
-    badges=window.L.layerGroup().addTo(map);
   }
 }
 const reportToggle=document.createElement('button');

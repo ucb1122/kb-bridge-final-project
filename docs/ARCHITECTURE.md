@@ -22,7 +22,7 @@
 | `pages/owner/` | 현재 사업자 위치·업종·영역 분석과 상담 준비 시연 |
 | `pages/intended-owner/` | 예비 창업자 지역 비교와 보고서 |
 | `pages/warning/`, `pages/products/` | 개발 중인 위험 진단·금융 연결 안내 |
-| `shared/` | 공용 지도·보조 화면 코드 |
+| `shared/` | 카카오 SDK 로더, 분석 도형 레이어, 공용 화면 코드 |
 | `scripts/` | 원본 다운로드·SQLite 적재·공식 순위 동기화 |
 | `data/` | 공개 원본, 생성 DB·경계, 출처가 구분된 공식 확인값 |
 
