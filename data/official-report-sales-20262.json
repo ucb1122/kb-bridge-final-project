@@ -1,0 +1,9 @@
+{
+  "quarter": "20262",
+  "source": "https://golmok.seoul.go.kr/commercialArea/commercialArea.do",
+  "unit": "만원/점포/월",
+  "values": {
+    "dong:11710690": { "current": 1003, "previousChange": -60, "yearAgoChange": -184 },
+    "dong:11500540": { "current": 1194, "previousChange": -14, "yearAgoChange": 27 }
+  }
+}

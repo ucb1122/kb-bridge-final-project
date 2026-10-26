@@ -1,0 +1,379 @@
+{
+  "snapshot": "2026-10-22",
+  "total": 125732,
+  "sources": [
+    {
+      "file": "대규모점포\\서울시 대규모점포 인허가 정보.csv",
+      "rows": 1054,
+      "active": 714,
+      "included": 654,
+      "excluded": 9,
+      "duplicate": 0,
+      "unmatched": 51,
+      "coordinateSource": "서울시 대규모점포 인허가 정보_좌표WGS84.csv",
+      "sha256": "8f80c746db5a09c0949b2283fbb7fd6ed40af5da7b310349ea110d78b036d602"
+    },
+    {
+      "file": "동물병원\\서울시 동물병원 인허가 정보.csv",
+      "rows": 2241,
+      "active": 985,
+      "included": 974,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 11,
+      "coordinateSource": "서울시 동물병원 인허가 정보_좌표WGS84.csv",
+      "sha256": "05bd3282e82d3700306705932e0a0621c77bc743bd6a2048f0032973db9f5574"
+    },
+    {
+      "file": "동물판매업\\서울시 동물판매업 인허가 정보.csv",
+      "rows": 1491,
+      "active": 334,
+      "included": 326,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 8,
+      "coordinateSource": "서울시 동물판매업 인허가 정보_좌표WGS84.csv",
+      "sha256": "d5f754c84fd82a25727b484a9cfd9492dfce8de9eb363940aa54c968e807ef39"
+    },
+    {
+      "file": "미용업\\서울시 미용업 인허가 정보.csv",
+      "rows": 100068,
+      "active": 33756,
+      "included": 33303,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 453,
+      "coordinateSource": "서울시 미용업 인허가 정보_좌표WGS84.csv",
+      "sha256": "ee6e821b57726e0dc8e69db6d147d74552eb2a45a083a57c57946bb0182396d9"
+    },
+    {
+      "file": "세탁업\\서울시 세탁업 인허가 정보.csv",
+      "rows": 15365,
+      "active": 3253,
+      "included": 3231,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 22,
+      "coordinateSource": "서울시 세탁업 인허가 정보_좌표WGS84.csv",
+      "sha256": "89be46ed3e71a0d57d426cad7ebf67092ed3a424142b27300a22ba971768011c"
+    },
+    {
+      "file": "스포츠강습\\서울시 골프연습장업 인허가 정보.csv",
+      "rows": 3619,
+      "active": 1380,
+      "included": 1363,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 17,
+      "coordinateSource": "서울시 골프연습장업 인허가 정보_좌표WGS84.csv",
+      "sha256": "d99789cdc999e45546ce9ea7fa8c8e231c423386fe0b27b598bdb9e4aea3152f"
+    },
+    {
+      "file": "스포츠강습\\서울시 무도학원업 인허가 정보.csv",
+      "rows": 414,
+      "active": 58,
+      "included": 53,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 5,
+      "coordinateSource": "서울시 무도학원업 인허가 정보_좌표WGS84.csv",
+      "sha256": "aedf3762e8f565703c6bfffcea1eb1b13526f1d64a2ab38d4608b0f27ba8e115"
+    },
+    {
+      "file": "스포츠강습\\서울시 수영장업 인허가 정보.csv",
+      "rows": 264,
+      "active": 145,
+      "included": 142,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 3,
+      "coordinateSource": "서울시 수영장업 인허가 정보_좌표WGS84.csv",
+      "sha256": "81af88dfc664b5924e2fa84e8d31712024069327f458ae94513b37a7ae08f5c4"
+    },
+    {
+      "file": "스포츠강습\\서울시 체력단련장업 인허가 정보.csv",
+      "rows": 7343,
+      "active": 4460,
+      "included": 4397,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 63,
+      "coordinateSource": "서울시 체력단련장업 인허가 정보_좌표WGS84.csv",
+      "sha256": "fa2a06ded8f77261580b57d7ede89b205e2ac557b16979b78097e9b4a4b96668"
+    },
+    {
+      "file": "스포츠강습\\서울시 체육도장업 인허가 정보.csv",
+      "rows": 5729,
+      "active": 2652,
+      "included": 2624,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 28,
+      "coordinateSource": "서울시 체육도장업 인허가 정보_좌표WGS84.csv",
+      "sha256": "238d5ac36f8c61da45a39b5d8965f62aded07ff3f511b3d671efbb8456d6bd74"
+    },
+    {
+      "file": "안경업\\서울시 안경업 인허가 정보.csv",
+      "rows": 4914,
+      "active": 2301,
+      "included": 2251,
+      "excluded": 5,
+      "duplicate": 0,
+      "unmatched": 45,
+      "coordinateSource": "서울시 안경업 인허가 정보_좌표WGS84.csv",
+      "sha256": "a0f6905e9b1f3baae98e2d2fce0e6b41a034961465af1869508d67f524e7b84c"
+    },
+    {
+      "file": "약국\\서울시 약국 인허가 정보.csv",
+      "rows": 22476,
+      "active": 5940,
+      "included": 5861,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 79,
+      "coordinateSource": "서울시 약국 인허가 정보_좌표WGS84.csv",
+      "sha256": "2c352a3565980316c28656bec923b30a3a2203573e2a55303bf75fbb14d664b1"
+    },
+    {
+      "file": "의료기기판매\\서울시 의료기기판매(임대)업 인허가 정보.csv",
+      "rows": 70422,
+      "active": 22430,
+      "included": 22053,
+      "excluded": 7,
+      "duplicate": 0,
+      "unmatched": 370,
+      "coordinateSource": "서울시 의료기기판매(임대)업 인허가 정보_좌표WGS84.csv",
+      "sha256": "f0456c5210852c47f489b22c892caf35ffecbf87388d78ba38845cc45c81ccfe"
+    },
+    {
+      "file": "의원\\서울시 의원 인허가 정보.csv",
+      "rows": 37724,
+      "active": 19275,
+      "included": 18812,
+      "excluded": 2,
+      "duplicate": 0,
+      "unmatched": 461,
+      "coordinateSource": "서울시 의원 인허가 정보_좌표WGS84.csv",
+      "sha256": "ca403801abcfbdf112607a7ed7388a61b6240128da8694b1034af37ce2fcfbe5"
+    },
+    {
+      "file": "제과점영업\\서울시 제과점영업 인허가 정보.csv",
+      "rows": 16973,
+      "active": 4295,
+      "included": 4223,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 72,
+      "coordinateSource": "서울시 제과점영업 인허가 정보_좌표WGS84.csv",
+      "sha256": "b51964a9176b14abb622adb7e635a3cc6190accd322b8b004f39a53221fa26df"
+    },
+    {
+      "file": "학원교습소\\서울시 학원 교습소정보.csv",
+      "rows": 25512,
+      "active": 25512,
+      "included": 25465,
+      "excluded": 0,
+      "duplicate": 0,
+      "unmatched": 47,
+      "coordinateSource": "서울시 학원 교습소정보_좌표WGS84.csv",
+      "sha256": "73cafaa6d9d512bc4f15398fd17f1001e77b11d770cbcc63e6a004c54e18f9ae"
+    }
+  ],
+  "industries": [
+    [
+      "의료기기판매 · 의료기기판매",
+      22053
+    ],
+    [
+      "미용업 · 일반미용업",
+      20172
+    ],
+    [
+      "학원교습소 · 일반교습학원",
+      16588
+    ],
+    [
+      "의원 · 의원",
+      10418
+    ],
+    [
+      "학원교습소 · 예술학원",
+      6891
+    ],
+    [
+      "미용업 · 피부미용업",
+      5900
+    ],
+    [
+      "약국 · 약국",
+      5861
+    ],
+    [
+      "미용업 · 네일아트업",
+      4853
+    ],
+    [
+      "의원 · 치과의원",
+      4769
+    ],
+    [
+      "스포츠강습 · 체력단련장업",
+      4397
+    ],
+    [
+      "제과점영업 · 제과점영업",
+      4223
+    ],
+    [
+      "의원 · 한의원",
+      3586
+    ],
+    [
+      "세탁업 · 일반세탁업",
+      3128
+    ],
+    [
+      "안경업 · 안경업",
+      2251
+    ],
+    [
+      "미용업 · 메이크업업",
+      2151
+    ],
+    [
+      "학원교습소 · 외국어학원",
+      1393
+    ],
+    [
+      "스포츠강습 · 골프연습장업",
+      1363
+    ],
+    [
+      "스포츠강습 · 태권도",
+      1268
+    ],
+    [
+      "동물병원 · 동물병원",
+      974
+    ],
+    [
+      "스포츠강습 · 권투",
+      560
+    ],
+    [
+      "학원교습소 · 독서실",
+      412
+    ],
+    [
+      "스포츠강습 · 체육도장업",
+      397
+    ],
+    [
+      "동물판매업 · 동물판매업",
+      326
+    ],
+    [
+      "대규모점포 · 그 밖의 대규모점포",
+      241
+    ],
+    [
+      "미용업 · 기타",
+      226
+    ],
+    [
+      "대규모점포 · 구분없음",
+      185
+    ],
+    [
+      "학원교습소 · 컴퓨터학원",
+      181
+    ],
+    [
+      "스포츠강습 · 수영장업",
+      142
+    ],
+    [
+      "스포츠강습 · 유도",
+      121
+    ],
+    [
+      "스포츠강습 · 합기도",
+      114
+    ],
+    [
+      "스포츠강습 · 검도",
+      108
+    ],
+    [
+      "대규모점포 · 대형마트",
+      57
+    ],
+    [
+      "스포츠강습 · 무도학원업",
+      53
+    ],
+    [
+      "대규모점포 · 복합쇼핑몰",
+      48
+    ],
+    [
+      "세탁업 · 빨래방업",
+      44
+    ],
+    [
+      "스포츠강습 · 레슬링",
+      43
+    ],
+    [
+      "대규모점포 · 쇼핑센터",
+      40
+    ],
+    [
+      "세탁업 · 운동화전문세탁업",
+      39
+    ],
+    [
+      "대규모점포 · 시장",
+      31
+    ],
+    [
+      "대규모점포 · 백화점",
+      26
+    ],
+    [
+      "대규모점포 · 전문점",
+      26
+    ],
+    [
+      "의원 · 보건소",
+      23
+    ],
+    [
+      "세탁업 · 세탁업 기타",
+      20
+    ],
+    [
+      "스포츠강습 · 우슈",
+      13
+    ],
+    [
+      "의원 · 보건지소",
+      13
+    ],
+    [
+      "의원 · 조산원",
+      3
+    ],
+    [
+      "미용업 · 일반이용업",
+      1
+    ]
+  ],
+  "scope": "추가 확보 16개 인허가 원본의 영업/정상·개원 및 유효 서울 좌표. 좌표 sidecar를 원본 키로 결합. 전체 업종 모집단이 아님.",
+  "coordinateNote": "원본이 다른 좌표계이므로 제공한 WGS84 sidecar만 사용. 일부 자료는 좌표 변환에 수십~수백 m 오차 가능.",
+  "notes": [
+    "대규모점포는 입점 개별 점포가 아닌 시설 단위로 별도 분류한다.",
+    "학원 업종은 계열·분야·과정으로 묶은 검색용 분류다.",
+    "대표자명, 전화번호, 사업자등록번호 및 민감한 상세 필드는 게시하지 않는다."
+  ]
+}
