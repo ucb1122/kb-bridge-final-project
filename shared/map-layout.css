@@ -10,7 +10,7 @@ header.kb-header{height:76px;padding:0 22px;gap:24px}
 main{height:calc(100dvh - 76px)}
 .map-top,.owner-unified .map-top{top:18px;left:50%;transform:translateX(-50%);width:min(360px,calc(100vw - 28px));min-height:51px;display:grid;grid-template-columns:16px 75px minmax(0,1fr) minmax(0,1fr) 40px;align-items:center;gap:5px;box-sizing:border-box}
 .map-top select,.map-top #map-dong{width:100%;min-width:0;max-width:none;flex:none;box-sizing:border-box}
-.map-top.collapsed{width:min(360px,calc(100vw - 28px));min-height:51px;display:flex;padding:9px 13px;justify-content:flex-end}
+.map-top.collapsed,.owner-unified .map-top.collapsed{width:fit-content;max-width:calc(100vw - 28px);min-height:51px;display:flex;padding:9px 13px;justify-content:center}
 .map-top.collapsed .map-top-toggle{border-left:0}
 .owner-unified .owner-map-hint{display:none}
 .kakao-rank-marker .rank-badge::before,.kakao-rank-marker.region-hovered::before,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before{display:none}
