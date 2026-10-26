@@ -21,7 +21,7 @@ main{height:calc(100dvh - 100px);min-height:540px;background:#f8f7f4}.sidebar{le
 /* 선명한 노란 원에서 두 겹의 파동이 계속 퍼진다. */
 .kakao-rank-marker .rank-badge::before{background:#ffbc00;box-shadow:0 2px 8px #74590045}
 .kakao-rank-marker:hover .rank-badge::before,.kakao-rank-marker.region-hovered .rank-badge::before{background:#ffbc00}
-.kakao-rank-marker::before,.kakao-rank-marker::after,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before,.kakao-rank-marker.region-hovered::before{content:"";position:absolute;top:11px;left:1px;box-sizing:border-box;width:72px;height:72px;border:3px solid #ffbc00;border-radius:50%;background:#ffbc0033;pointer-events:none;animation:kb-rank-wave 2.8s ease-out infinite}
+.kakao-rank-marker::before,.kakao-rank-marker::after,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before,.kakao-rank-marker.region-hovered::before{content:"";position:absolute;top:11px;left:1px;box-sizing:border-box;width:72px;height:72px;border:1px solid #ffbc00;border-radius:50%;background:transparent;pointer-events:none;animation:kb-rank-wave 2.8s ease-out infinite}
 .kakao-rank-marker::after{animation-delay:1.4s}
 @keyframes kb-rank-wave{0%{transform:scale(.85);opacity:.85}100%{transform:scale(1.9);opacity:0}}
 @media(prefers-reduced-motion:reduce){.kakao-rank-marker::before,.kakao-rank-marker::after{animation:none;opacity:0}}
