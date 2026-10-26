@@ -12,6 +12,8 @@
 .owner-unified .owner-mode button{min-height:58px;border:0;border-radius:13px;background:transparent;color:#65748b;font-size:16px;font-weight:700;cursor:pointer}
 .owner-unified .owner-mode button.selected{background:#fff;color:#101624;box-shadow:0 1px 4px #0001}
 .owner-unified .owner-guidance{margin:7px 0 17px;color:#8894a7;font-size:13px;line-height:1.5}
+.owner-unified .owner-guidance a{color:#806000;font-weight:700}
+.owner-unified .owner-guidance a[hidden]{display:none}
 .owner-unified .owner-find{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e2e5e9}
 .owner-unified .owner-find button{min-height:48px;border:0;border-bottom:3px solid transparent;background:#fff;color:#5b718f;font-size:16px;font-weight:700;cursor:pointer}
 .owner-unified .owner-find button.selected{border-bottom-color:#ffbc00;color:#111827}
@@ -29,7 +31,7 @@
 .owner-unified .sidebar .owner-sales-basis{display:block;font-weight:500;font-size:14px;color:#273346}
 .owner-unified .sidebar .owner-sales-basis[hidden]{display:none!important}
 .owner-unified .sidebar .owner-sales-basis select{height:48px;margin-top:6px;border-radius:10px}
-.owner-unified .metric{padding:0 26px 16px;gap:6px}
+.owner-unified .sidebar .panel-head .metric{padding:10px 0 4px;gap:6px}
 .owner-unified .metric button{height:58px;font-size:15px}
 .owner-unified .rank-panel{flex:1;min-height:260px}
 .owner-unified .rank-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px;padding:16px 25px}

@@ -329,7 +329,8 @@ function setupOwnerControls(){
   salesBasis.onchange=()=>{if(!['sales','salesPerStore'].includes(metric))return;const button=document.querySelector('.owner-unified .metric button:nth-child(2)');button.dataset.metric=salesBasis.value==='average'?'salesPerStore':'sales';button.click()};
   document.querySelectorAll('[data-owner-mode]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
-    $('owner-guidance').textContent=button.dataset.ownerMode==='preparing'?'창업 후보 지역의 점포·매출·인구를 살펴보세요. 점포위치 분석은 창업 준비 화면에서도 할 수 있습니다.':'주변 상권과 우리 가게의 운영을 함께 점검해 보세요.';
+    $('owner-guidance').textContent=button.dataset.ownerMode==='preparing'?'창업 후보 지역의 점포·매출·인구를 살펴보세요.':'주변 상권과 우리 가게의 운영을 함께 점검해 보세요.';
+    $('owner-startup-link').hidden=button.dataset.ownerMode!=='preparing';
   });
   document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-find]').forEach(item=>item.classList.toggle('selected',item===button));
