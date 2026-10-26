@@ -60,3 +60,6 @@
 .owner-unified .rank-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .owner-unified .rank-head b{font-size:18px;white-space:nowrap;min-width:0}
 .owner-unified .rank-head select{flex:none;max-width:130px}
+
+.owner-unified .owner-details summary{display:flex;list-style:none}
+.owner-unified .owner-details summary::-webkit-details-marker{display:none}
