@@ -11,7 +11,7 @@ let badges,provider='leaflet';
 const summaryCache=new Map();
 const boundaryCache=new Map();
 let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode=null;
-let flashOverlays=[],flashFrame=0,flashTimer=0;
+let flashOverlays=[],flashFrame=0;
 let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[],hoverLabel;
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
@@ -159,7 +159,7 @@ function updateBoundaryStyles(){
     const active=pinned&&code===selectedCode,hovered=code===hoveredCode;
     polygon.setOptions({
       strokeColor:active?'#9c7300':hovered?'#bc8d00':'#ae8a33',
-      strokeWeight:active?3:hovered?1.5:1,
+      strokeWeight:active?2:hovered?1.5:1,
       strokeStyle:active?'shortdash':'solid',
       strokeOpacity:active||hovered?.9:.001,
       fillColor:active?'#7950dc':hovered?'#8c68e8':'#ae94e9',
@@ -174,51 +174,29 @@ function updateBoundaryStyles(){
 }
 function setHover(code){hoveredCode=code;updateBoundaryStyles()}
 function clearBoundaryFlash(){
-  cancelAnimationFrame(flashFrame);clearTimeout(flashTimer);flashFrame=0;flashTimer=0;
+  cancelAnimationFrame(flashFrame);flashFrame=0;
   flashOverlays.forEach(overlay=>overlay.setMap(null));flashOverlays=[];
 }
 function flashSelectedBoundary(code){
   clearBoundaryFlash();
-  if(provider!=='kakao')return;
-  const glowLayers=[
-    {color:'#fff4c0',weight:24,opacity:.22,zIndex:8,phase:0},
-    {color:'#ffd04c',weight:14,opacity:.36,zIndex:9,phase:1.4},
-    {color:'#fffdf2',weight:5,opacity:.88,zIndex:10,phase:2.7}
-  ];
-  const animated=[];
+  if(provider!=='kakao'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   for(const {path,code:boundaryCode} of boundaryPolygons){
     if(boundaryCode!==String(code))continue;
-    for(const layer of glowLayers){
-      const overlay=new kakao.maps.Polygon({
-        map,path,strokeColor:layer.color,strokeWeight:layer.weight,
-        strokeOpacity:layer.opacity,fillOpacity:0,zIndex:layer.zIndex,clickable:false
-      });
-      flashOverlays.push(overlay);animated.push({overlay,layer});
-    }
+    const glow=new kakao.maps.Polygon({map,path,strokeColor:'#ffffff',strokeWeight:8,strokeOpacity:0,fillOpacity:0,zIndex:8,clickable:false});
+    const highlight=new kakao.maps.Polygon({map,path,strokeColor:'#ffbc00',strokeWeight:3,strokeOpacity:0,fillOpacity:0,zIndex:9,clickable:false});
+    flashOverlays.push(glow,highlight);
   }
-  if(!animated.length)return;
-  flashTimer=setTimeout(clearBoundaryFlash,30000);
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const start=performance.now();
-  let lastFrame=0;
+  if(!flashOverlays.length)return;
+  const start=performance.now(),duration=1500;
   function frame(now){
-    if(now-lastFrame>=66){
-      lastFrame=now;
-      const elapsed=(now-start)/1000;
-      for(const {overlay,layer} of animated){
-        const phase=layer.phase;
-        const energy=Math.max(0,Math.min(1,
-          .5+.28*Math.sin(elapsed*1.13+phase)
-             +.16*Math.sin(elapsed*2.39+phase*.73)
-             +.09*Math.sin(elapsed*4.07+phase*1.31)
-        ));
-        overlay.setOptions({
-          strokeOpacity:layer.opacity*(.48+.52*energy),
-          strokeWeight:layer.weight*(.82+.36*energy)
-        });
-      }
+    const progress=Math.min((now-start)/duration,1);
+    const pulse=Math.sin(progress*Math.PI*2)**2*(1-progress*.4);
+    for(let i=0;i<flashOverlays.length;i+=2){
+      flashOverlays[i].setOptions({strokeOpacity:.55*pulse,strokeWeight:8+4*pulse});
+      flashOverlays[i+1].setOptions({strokeOpacity:.95*pulse,strokeWeight:3+2*pulse});
     }
-    flashFrame=requestAnimationFrame(frame);
+    if(progress<1)flashFrame=requestAnimationFrame(frame);
+    else clearBoundaryFlash()
   }
   flashFrame=requestAnimationFrame(frame);
 }
