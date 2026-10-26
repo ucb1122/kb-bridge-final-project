@@ -214,9 +214,9 @@ function flashSelectedBoundary(code){
     {from:.82,to:1,color:'#fffdf0',weight:11,opacity:1,zIndex:12}
   ];
   const streaks=[
-    {offset:0,length:.14,brightness:1},
-    {offset:1/3,length:.11,brightness:.85},
-    {offset:2/3,length:.09,brightness:.72}
+    {offset:0,length:.23,brightness:1},
+    {offset:1/3,length:.19,brightness:.85},
+    {offset:2/3,length:.16,brightness:.72}
   ].map(streak=>({
     ...streak,
     layers:colorLayers.map(layer=>({
@@ -225,11 +225,11 @@ function flashSelectedBoundary(code){
     }))
   }));
   flashOverlays.push(...streaks.flatMap(streak=>streak.layers.map(layer=>layer.line)));
-  const start=performance.now(),duration=1050;
+  const start=performance.now(),duration=2400;
   function frame(now){
     const progress=Math.min((now-start)/duration,1);
     for(const streak of streaks){
-      const head=perimeter*(progress+streak.offset),trail=perimeter*streak.length;
+      const head=perimeter*(progress*2+streak.offset),trail=perimeter*streak.length;
       for(const layer of streak.layers){
         const span=layer.to-layer.from;
         layer.line.setPath(Array.from({length:13},(_,i)=>positionAt(head-trail+trail*(layer.from+span*i/12))));
