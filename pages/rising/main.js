@@ -228,7 +228,7 @@ function drawMap(){
   });
 }
 function focusRegion(row){
-  pinned=true;if(ownerMode)$('owner-map-hint').textContent=`${row.district} ${row.name} · ${$('owner-industry').selectedOptions[0].textContent}`;showSummary(row,rows.indexOf(row)>=0?rows.indexOf(row)+1:null,true);
+  pinned=true;if(ownerMode&&$('owner-map-hint'))$('owner-map-hint').textContent=`${row.district} ${row.name} · ${$('owner-industry').selectedOptions[0].textContent}`;showSummary(row,rows.indexOf(row)>=0?rows.indexOf(row)+1:null,true);
   $('region-card').classList.remove('collapsed');reportToggle.textContent='❯';reportToggle.setAttribute('aria-label','보고서 접기');reportToggle.setAttribute('aria-expanded','true');drawMap();
   if(!map)return;
   if(Number.isFinite(row.lat)&&Number.isFinite(row.lng)){
@@ -282,7 +282,7 @@ function updateSource(rankingSource){
 async function api(url){const response=await fetch(url),data=await response.json();if(!response.ok)throw Error(data.error||'데이터 조회 실패');return data}
 async function init(){
   try{
-    try{await initializeMap()}catch(mapError){$('map-legend').textContent=mapError.message;if(ownerMode)$('owner-map-hint').textContent=mapError.message}
+    try{await initializeMap()}catch(mapError){$('map-legend').textContent=mapError.message;if(ownerMode&&$('owner-map-hint'))$('owner-map-hint').textContent=mapError.message}
     const filters=await api('/api/filters');populateDistricts($('district'));populateDistricts($('map-district'));
     try{const dongs=await api('/api/rising/boundaries?kind=dong');dongFeatures=dongs.features??[];boundaryCache.set('dong',dongs);populateDongs()}catch(error){$('status').textContent='행정동 목록을 불러오지 못했습니다: '+error.message}
     try{const outlines=await api('/pages/rising/district-boundaries.geojson');districtFeatures=outlines.features??[]}catch(error){$('status').textContent='자치구 경계를 불러오지 못했습니다: '+error.message}
@@ -316,7 +316,7 @@ async function load(){
     render(rows);updateSource(data.rankingSource);
     $('rank-scope').textContent=$('district').value||'전체';
     $('period').textContent=data.quarter?`${appliedFilters.period==='year'?`${appliedFilters.year}년`:`${data.quarter.slice(0,4)}년 ${data.quarter.slice(4)}분기`} 기준${appliedFilters.criterion==='highest'?'':` (${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비)`}`:'데이터 없음';
-    if(ownerMode)$('owner-map-hint').textContent=$('district').value?`${$('district').value} · ${$('owner-kind').selectedOptions[0].textContent} · 지역을 선택해 주세요.`:'서울시 전체 지도 · 분석할 지역을 선택해 주세요.';
+    if(ownerMode&&$('owner-map-hint'))$('owner-map-hint').textContent=$('district').value?`${$('district').value} · ${$('owner-kind').selectedOptions[0].textContent} · 지역을 선택해 주세요.`:'서울시 전체 지도 · 분석할 지역을 선택해 주세요.';
     $('status').textContent=!data.available?'data/raw/seoul_public_data.zip을 넣고 npm run import:raw를 실행하세요.':data.rows.length?'':'선택한 조건의 데이터가 없습니다.';
   }catch(error){if(current===requestId)$('status').textContent=error.message}
 }
