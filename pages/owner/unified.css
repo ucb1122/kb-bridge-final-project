@@ -9,7 +9,7 @@
 .owner-unified .owner-title-row h1{margin:0 0 10px;font-size:29px;color:#101624}
 .owner-unified .owner-title-row a{font-size:11px;color:#806000;text-decoration:underline;white-space:nowrap}
 .owner-unified .owner-mode{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px;background:#eceef2;border-radius:16px}
-.owner-unified .owner-mode button{min-height:58px;border:0;border-radius:13px;background:transparent;color:#65748b;font-size:16px;font-weight:700;cursor:pointer}
+.owner-unified .owner-mode button{min-height:58px;border:0;border-radius:13px;background:transparent;color:#65748b;font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer}
 .owner-unified .owner-mode button.selected{background:#fff;color:#101624;box-shadow:0 1px 4px #0001}
 .owner-unified .owner-guidance{margin:7px 0 17px;color:#8894a7;font-size:13px;line-height:1.5}
 .owner-unified .owner-guidance a{color:#806000;font-weight:700}
