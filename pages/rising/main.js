@@ -206,10 +206,10 @@ function flashSelectedBoundary(code){
       points[i-1].getLng()+(points[i].getLng()-points[i-1].getLng())*fraction
     );
   };
-  const glow=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#fff6cf',strokeWeight:9,strokeOpacity:.65,zIndex:8,clickable:false});
-  const light=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#ffbc00',strokeWeight:4,strokeOpacity:1,zIndex:9,clickable:false});
+  const glow=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#fff6cf',strokeWeight:13,strokeOpacity:.65,zIndex:8,clickable:false});
+  const light=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#ffbc00',strokeWeight:6,strokeOpacity:1,zIndex:9,clickable:false});
   flashOverlays.push(glow,light);
-  const start=performance.now(),duration=1050,trail=perimeter*.045;
+  const start=performance.now(),duration=1050,trail=perimeter*.095;
   function frame(now){
     const progress=Math.min((now-start)/duration,1),head=perimeter*progress;
     const segment=Array.from({length:17},(_,i)=>positionAt(head-trail+trail*i/16));
