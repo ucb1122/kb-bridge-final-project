@@ -159,7 +159,7 @@ function updateBoundaryStyles(){
     const active=pinned&&code===selectedCode,hovered=code===hoveredCode;
     polygon.setOptions({
       strokeColor:active?'#9c7300':hovered?'#bc8d00':'#ae8a33',
-      strokeWeight:active?2:hovered?1.5:1,
+      strokeWeight:active?3:hovered?1.5:1,
       strokeStyle:active?'shortdash':'solid',
       strokeOpacity:active||hovered?.9:.001,
       fillColor:active?'#7950dc':hovered?'#8c68e8':'#ae94e9',
@@ -206,14 +206,24 @@ function flashSelectedBoundary(code){
       points[i-1].getLng()+(points[i].getLng()-points[i-1].getLng())*fraction
     );
   };
-  const glow=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#fff6cf',strokeWeight:13,strokeOpacity:.65,zIndex:8,clickable:false});
-  const light=new kakao.maps.Polyline({map,path:[points[0]],strokeColor:'#ffbc00',strokeWeight:6,strokeOpacity:1,zIndex:9,clickable:false});
-  flashOverlays.push(glow,light);
-  const start=performance.now(),duration=1050,trail=perimeter*.095;
+  const layers=[
+    {from:0,to:1,color:'#fff0b8',weight:19,opacity:.36,zIndex:8},
+    {from:0,to:.25,color:'#dc7900',weight:3,opacity:.8,zIndex:9},
+    {from:.25,to:.55,color:'#ffad00',weight:5,opacity:.95,zIndex:10},
+    {from:.55,to:.82,color:'#ffda3d',weight:8,opacity:1,zIndex:11},
+    {from:.82,to:1,color:'#fffdf0',weight:11,opacity:1,zIndex:12}
+  ].map(layer=>({
+    ...layer,
+    line:new kakao.maps.Polyline({map,path:[points[0]],strokeColor:layer.color,strokeWeight:layer.weight,strokeOpacity:layer.opacity,zIndex:layer.zIndex,clickable:false})
+  }));
+  flashOverlays.push(...layers.map(layer=>layer.line));
+  const start=performance.now(),duration=1050,trail=perimeter*.14;
   function frame(now){
     const progress=Math.min((now-start)/duration,1),head=perimeter*progress;
-    const segment=Array.from({length:17},(_,i)=>positionAt(head-trail+trail*i/16));
-    glow.setPath(segment);light.setPath(segment);
+    for(const layer of layers){
+      const span=layer.to-layer.from;
+      layer.line.setPath(Array.from({length:13},(_,i)=>positionAt(head-trail+trail*(layer.from+span*i/12))));
+    }
     if(progress<1)flashFrame=requestAnimationFrame(frame);
     else clearBoundaryFlash();
   }
