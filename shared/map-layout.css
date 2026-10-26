@@ -1,0 +1,26 @@
+/* 뜨는 상권과 내 상권 분석의 공통 화면 크기 */
+header.kb-header{height:76px;padding:0 22px;gap:24px}
+.kb-header .brand{font-size:26px}
+.kb-brand-image{--kb-symbol-width:48px}
+.kb-header nav{display:flex;gap:0;align-self:stretch;min-width:0;overflow-x:auto}
+.kb-header nav a{display:flex;align-items:center;justify-content:center;flex:0 0 132px;padding:0 8px;font-size:16px}
+.kb-header .header-actions{display:flex;align-items:center;gap:12px;margin-left:auto;flex:none}
+.kb-header .header-end{display:inline-flex;align-items:center;margin:0}
+.kb-header .header-login{padding:9px 17px;border:1px solid #ded8c9;border-radius:10px;background:#fff;color:#344054;font-size:14px;font-weight:600;opacity:1;cursor:default}
+main{height:calc(100dvh - 76px)}
+.map-top,.owner-unified .map-top{top:18px;left:50%;transform:translateX(-50%);width:min(360px,calc(100vw - 28px));min-height:51px;display:grid;grid-template-columns:16px 75px minmax(0,1fr) minmax(0,1fr) 40px;align-items:center;gap:5px;box-sizing:border-box}
+.map-top select,.map-top #map-dong{width:100%;min-width:0;max-width:none;flex:none;box-sizing:border-box}
+.map-top.collapsed,.owner-unified .map-top.collapsed{width:fit-content;max-width:calc(100vw - 28px);min-height:51px;display:flex;padding:9px 13px;justify-content:center}
+.map-top.collapsed .map-top-toggle{border-left:0}
+.owner-unified .owner-map-hint{display:none}
+.kakao-rank-marker .rank-badge::before,.kakao-rank-marker.region-hovered::before,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before{display:none}
+@media(max-width:1200px){header.kb-header{gap:12px;padding:0 16px}.kb-header nav a{flex-basis:112px;font-size:14px}.kb-header .header-actions{gap:8px}}
+@media(max-width:760px){header.kb-header{height:64px;padding:0 10px}.kb-header .brand{font-size:18px}.kb-brand-image{--kb-symbol-width:36px}.kb-header nav a{flex-basis:94px;font-size:12px}.kb-header .header-end{display:none}.kb-header .header-login{padding:6px 9px;font-size:12px}main{height:calc(100dvh - 64px)}.map-top,.owner-unified .map-top{left:50%;top:8px;transform:translateX(-50%)}.map-top.collapsed{min-height:51px}}
+
+/* 두 지도 화면의 패널 위치와 폭을 같은 기준으로 맞춘다. */
+.owner-unified .sidebar{left:24px;top:18px;bottom:18px;width:clamp(380px,25vw,480px)}
+.owner-unified .sidebar-toggle{left:calc(24px + clamp(380px,25vw,480px))}
+.owner-unified .sidebar-toggle.collapsed{left:0}
+.owner-unified .region-card{right:0;top:0;bottom:auto;width:clamp(460px,35vw,650px);height:100%;border-radius:0}
+@media(max-width:1200px){.owner-unified .sidebar{left:24px;width:clamp(380px,25vw,480px)}.owner-unified .sidebar-toggle{left:calc(24px + clamp(380px,25vw,480px))}.owner-unified .sidebar-toggle.collapsed{left:0}.owner-unified .region-card{right:0;width:clamp(460px,35vw,650px)}}
+@media(max-width:760px){.owner-unified .sidebar{left:10px;top:65px;bottom:10px;width:min(360px,calc(100vw - 55px))}.owner-unified .sidebar-toggle{left:min(370px,calc(100vw - 45px))}.owner-unified .sidebar-toggle.collapsed{left:0}.owner-unified .region-card{right:0;top:auto;bottom:0;width:calc(100vw - 28px);height:min(600px,78%);border-radius:0}}

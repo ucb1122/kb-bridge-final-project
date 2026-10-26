@@ -1,0 +1,22 @@
+import {metricValue,licenseToOfficial} from './regional.js';
+import {distance} from './analysis.js';
+export const ANALYSIS_KEY='kb-bridge-analysis-v3';
+export function makeAnalysisContext({location,industry,area,market,regional,license,mode='owner'}){
+ const code=industry.code||industry.officialCode||licenseToOfficial[industry.id]||(industry.id==='all'?'all':null);
+ const metric=(key,q=regional.quarter)=>market&&code?metricValue(market,q,code,key):null;
+ return {version:3,createdAt:new Date().toISOString(),mode,location:{name:location.name,address:location.address||(market?market.district+' '+market.dong:''),lat:location.lat,lng:location.lng,marketCode:market?.code||null},industry:{id:industry.id||null,code,label:industry.label,category:industry.category||''},area:{kind:area.kind,label:area.label,area:area.area||null,radius:area.radius||null,geometry:area.geometry||null,walkBudget:area.walk?.budget||null},market:market?{code:market.code,name:market.name,district:market.district,dong:market.dong,type:market.type}:null,quarter:regional.quarter,previousQuarter:regional.previous,metrics:{stores:metric('stores'),previousStores:metric('stores',regional.previous),sales:metric('sales'),previousSales:metric('sales',regional.previous),floating:market?metricValue(market,regional.quarter,'all','floating'):null,previousFloating:market?metricValue(market,regional.previous,'all','floating'):null},license:license?{selected:license.selected,total:license.total,snapshot:license.snapshot}:null};
+}
+export function validAnalysisContext(c){return c?.version===3&&['owner','founder'].includes(c.mode)&&typeof c.location?.name==='string'&&c.location.name.length<300&&Number.isFinite(c.location.lat)&&Number.isFinite(c.location.lng)&&c.location.lat>37.4&&c.location.lat<37.72&&c.location.lng>126.76&&c.location.lng<127.2&&typeof c.industry?.label==='string'&&typeof c.area?.label==='string'&&c.metrics&&typeof c.metrics==='object';}
+export function readAnalysis(storage){try{const raw=storage.getItem(ANALYSIS_KEY);if(!raw||raw.length>200000)return null;const c=JSON.parse(raw);return validAnalysisContext(c)?c:null;}catch{return null;}}
+export function launchConsultation(context){if(!validAnalysisContext(context))throw Error('분석 조건을 먼저 선택해 주세요.');sessionStorage.setItem(ANALYSIS_KEY,JSON.stringify(context));location.assign(new URL('./consultation/',import.meta.url));}
+export function formatBusinessNumber(value){const n=String(value).replace(/\D/g,'').slice(0,10);return n.length>5?n.slice(0,3)+'-'+n.slice(3,5)+'-'+n.slice(5):n.length>3?n.slice(0,3)+'-'+n.slice(3):n;}
+export function validateBusiness({number,name,opened},today){
+ if(!/^\d{3}-?\d{2}-?\d{5}$/.test(number.trim()))return '사업자등록번호 10자리를 입력해 주세요.';
+ if(!name.trim())return '대표자명을 입력해 주세요.';
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(opened)||!Number.isFinite(Date.parse(opened))||new Date(opened).toISOString().slice(0,10)!==opened||opened>today)return '오늘 이전의 올바른 개업일자를 입력해 주세요.';
+ return '';
+}
+export function nearestBranches(branches,origin,limit=3){return branches.filter(b=>Number.isFinite(b.lat)&&Number.isFinite(b.lng)&&b.address&&b.id).map(b=>({...b,meters:distance(origin,b)})).sort((a,b)=>a.meters-b.meters).slice(0,limit);}
+export async function loadOfficialBranches(){const r=await fetch(new URL('./assets/kb-branches.json',import.meta.url));if(!r.ok)throw Error('공식 영업점 자료를 불러오지 못했습니다.');return r.json();}
+export function validateRequest({name,phone,purpose,date,branch},today){if(!name.trim())return '상담 요청자 이름을 입력해 주세요.';if(!/^01[016789]\d{7,8}$/.test(phone.replace(/[-\s]/g,'')))return '연락처 형식을 확인해 주세요.';if(!purpose)return '상담 유형을 선택해 주세요.';if(!branch?.id)return '영업점을 선택해 주세요.';if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date||date<today)return '오늘 이후의 상담 희망일을 선택해 주세요.';return '';}
+export function requestSummary({analysis,business,profile,request,branch}){return {title:'KB 상권브릿지 상담 요청서 (시연·미접수)',transmitted:false,verification:'국세청 API 미연결. 입력 형식 확인 및 사용자가 선택한 시연 상태이며 본인인증이 아닙니다.',analysis,business,profile:{...profile,evidence:'사용자 입력 / 증빙자료 미제출·미검증'},request,branch:{id:branch.id,name:branch.name,address:branch.address,phone:branch.phone,source:branch.source},questions:['상담 목적과 자금 사용 계획을 확인해 주세요.','실제 사업자등록 상태와 대표자 본인확인이 필요합니다.','신고 매출·소득 및 기존 대출 관련 증빙을 확인해 주세요.','상권 추정매출과 개별 사업장 실매출의 차이를 확인해 주세요.'],notice:'이 문서는 로컬 시연용입니다. KB국민은행에 전송·접수되지 않았으며 예약이 확정되지 않았습니다.'};}

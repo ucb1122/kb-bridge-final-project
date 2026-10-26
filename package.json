@@ -1,0 +1,19 @@
+{
+  "name": "kb-bridge-final-project",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "test": "node --test tests/rankings.test.js",
+    "import:csv": "node scripts/import-csv.js",
+    "fetch:dong": "python scripts/fetch-dong.py",
+    "import:raw": "python scripts/import-raw.py",
+    "import:details": "python scripts/import-details.py",
+    "sync:rankings": "node scripts/sync-official-rankings.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "description": "서울시 상권 분석과 소상공인 경영·금융 상담 준비 서비스"
+}

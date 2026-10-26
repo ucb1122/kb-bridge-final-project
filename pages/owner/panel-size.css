@@ -1,0 +1,15 @@
+/* Keep the selection panel and the report panel equal in the owner view. */
+@media screen and (min-width:761px){
+  .reference-owner .wizard-shell .picker{flex:1 1 auto}
+  .reference-owner .wizard-shell .wizard-content{flex:1 1 auto;height:auto;max-height:none}
+}
+@media screen and (min-width:1101px){
+  .reference-owner{--owner-panel-width:clamp(380px,25vw,480px)}
+  .reference-owner .wizard-shell{left:24px;top:18px;bottom:18px;width:var(--owner-panel-width)}
+  .reference-owner #report-panel{position:absolute;top:18px;right:24px;bottom:18px;width:var(--owner-panel-width);height:auto;max-width:none;max-height:none;border-radius:16px}
+}
+@media screen and (min-width:761px) and (max-width:1100px){
+  .reference-owner{--owner-panel-width:360px}
+  .reference-owner .wizard-shell{left:16px;top:18px;bottom:18px;width:var(--owner-panel-width)}
+  .reference-owner #report-panel{position:absolute;top:18px;right:16px;bottom:18px;width:var(--owner-panel-width);height:auto;max-width:none;max-height:none;border-radius:12px}
+}
