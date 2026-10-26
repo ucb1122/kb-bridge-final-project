@@ -8,9 +8,9 @@ header.kb-header{height:76px;padding:0 22px;gap:24px}
 .kb-header .header-end{display:inline-flex;align-items:center;margin:0}
 .kb-header .header-login{padding:9px 17px;border:1px solid #ded8c9;border-radius:10px;background:#fff;color:#344054;font-size:14px;font-weight:600;opacity:1;cursor:default}
 main{height:calc(100dvh - 76px)}
-.map-top,.owner-unified .map-top{top:18px;left:50%;transform:translateX(-50%);width:min(480px,calc(100vw - 28px));min-height:51px;justify-content:space-between;gap:8px;box-sizing:border-box}
-.map-top select{min-width:0;flex:1}
-.map-top.collapsed{width:min(480px,calc(100vw - 28px));min-height:51px;padding:9px 13px;justify-content:flex-end}
+.map-top,.owner-unified .map-top{top:18px;left:50%;transform:translateX(-50%);width:min(480px,calc(100vw - 28px));min-height:51px;display:grid;grid-template-columns:18px 82px minmax(0,1fr) minmax(0,1fr) 44px;align-items:center;gap:8px;box-sizing:border-box}
+.map-top select,.map-top #map-dong{width:100%;min-width:0;max-width:none;flex:none;box-sizing:border-box}
+.map-top.collapsed{width:min(480px,calc(100vw - 28px));min-height:51px;display:flex;padding:9px 13px;justify-content:flex-end}
 .map-top.collapsed .map-top-toggle{border-left:0}
 .owner-unified .owner-map-hint{display:none}
 .kakao-rank-marker .rank-badge::before,.kakao-rank-marker.region-hovered::before,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before{display:none}

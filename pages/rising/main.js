@@ -115,11 +115,11 @@ function drawDistrictOutline(){
   districtOutlines.forEach(line=>line.setMap(null));districtOutlines=[];
   const district=$('district').value;
   if(provider!=='kakao')return;
-  const feature=district?districtFeatures.find(item=>item.properties?.district===district):(ownerMode?seoulOutlineFeature:null);
+  const feature=district?districtFeatures.find(item=>item.properties?.district===district):seoulOutlineFeature;
   const rings=feature?.geometry?.type==='Polygon'?feature.geometry.coordinates:feature?.geometry?.coordinates??[];
   for(const ring of rings){
     const path=ring.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng));
-    const line=new kakao.maps.Polyline({map,path,strokeWeight:district?4:3,strokeColor:district?'#d82d72':'#a77c00',strokeOpacity:.95,strokeStyle:'solid',zIndex:4});
+    const line=new kakao.maps.Polyline({map,path,strokeWeight:district?4:3,strokeColor:'#d82d72',strokeOpacity:.95,strokeStyle:'solid',zIndex:4});
     districtOutlines.push(line);
   }
 }
@@ -288,7 +288,7 @@ async function init(){
     const filters=await api('/api/filters');populateDistricts($('district'));populateDistricts($('map-district'));
     try{const dongs=await api('/api/rising/boundaries?kind=dong');dongFeatures=dongs.features??[];boundaryCache.set('dong',dongs);populateDongs()}catch(error){$('status').textContent='행정동 목록을 불러오지 못했습니다: '+error.message}
     try{const outlines=await api('/pages/rising/district-boundaries.geojson');districtFeatures=outlines.features??[]}catch(error){$('status').textContent='자치구 경계를 불러오지 못했습니다: '+error.message}
-    if(ownerMode)try{const seoul=await api('/pages/rising/seoul-boundary.geojson');seoulOutlineFeature=seoul.features?.[0]??null}catch(error){$('status').textContent='서울시 경계를 불러오지 못했습니다: '+error.message}
+    try{const seoul=await api('/pages/rising/seoul-boundary.geojson');seoulOutlineFeature=seoul.features?.[0]??null}catch(error){$('status').textContent='서울시 경계를 불러오지 못했습니다: '+error.message}
     availableQuarters=filters.quarters;
     $('quarter').replaceChildren(...availableQuarters.map(q=>new Option(`${q.slice(0,4)}년 ${q.slice(4)}분기`,q)));
     appliedFilters.quarter=availableQuarters[0]??'';appliedFilters.year=appliedFilters.quarter.slice(0,4);draftFilters={...appliedFilters};
