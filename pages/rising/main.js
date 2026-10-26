@@ -155,7 +155,7 @@ function updateBoundaryStyles(){
   for(const {polygon,code} of boundaryPolygons){
     const active=pinned&&code===selectedCode,hovered=code===hoveredCode;
     polygon.setOptions({
-      strokeColor:active?'#4b25a9':hovered?'#0879ce':'#7645c2',
+      strokeColor:active?'#9c7300':hovered?'#bc8d00':'#ae8a33',
       strokeWeight:active?2:hovered?1.5:1,
       strokeStyle:active?'shortdash':'solid',
       strokeOpacity:active||hovered?.9:.001,

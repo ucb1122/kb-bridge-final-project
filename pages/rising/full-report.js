@@ -23,9 +23,9 @@ function chart(values,labels,mode='bar'){
   [30,80,130,180].forEach(y=>graphic.append(svg('line',{x1:42,y1:y,x2:580,y2:y,stroke:'#e6e9ef'})));
   const xs=values.map((_,i)=>65+(490*i/Math.max(values.length-1,1)));
   if(mode==='line'){
-    const line=svg('polyline',{points:values.map((n,i)=>`${xs[i]},${185-(n-min)/span*135}`).join(' '),fill:'none',stroke:'#168cdb','stroke-width':3});graphic.append(line);
-    values.forEach((n,i)=>graphic.append(svg('circle',{cx:xs[i],cy:185-(n-min)/span*135,r:4,fill:'#168cdb'})));
-  }else values.forEach((n,i)=>graphic.append(svg('rect',{x:xs[i]-Math.min(26,220/values.length),y:185-n/max*145,width:Math.min(52,440/values.length),height:Math.max(n/max*145,1),fill:i===values.indexOf(max)?'#168cdb':'#b9c2cb'})));
+    const line=svg('polyline',{points:values.map((n,i)=>`${xs[i]},${185-(n-min)/span*135}`).join(' '),fill:'none',stroke:'#c49200','stroke-width':3});graphic.append(line);
+    values.forEach((n,i)=>graphic.append(svg('circle',{cx:xs[i],cy:185-(n-min)/span*135,r:4,fill:'#c49200'})));
+  }else values.forEach((n,i)=>graphic.append(svg('rect',{x:xs[i]-Math.min(26,220/values.length),y:185-n/max*145,width:Math.min(52,440/values.length),height:Math.max(n/max*145,1),fill:i===values.indexOf(max)?'#c49200':'#b9c2cb'})));
   values.forEach((n,i)=>{
     const y=mode==='line'?185-(n-min)/span*135:185-n/max*145;
     const val=svg('text',{x:xs[i],y:Math.max(17,y-8),'text-anchor':'middle',fill:'#2e3540','font-size':11});val.textContent=short(n);graphic.append(val);
