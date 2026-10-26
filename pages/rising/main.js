@@ -119,7 +119,7 @@ function drawDistrictOutline(){
   const rings=feature?.geometry?.type==='Polygon'?feature.geometry.coordinates:feature?.geometry?.coordinates??[];
   for(const ring of rings){
     const path=ring.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng));
-    const line=new kakao.maps.Polyline({map,path,strokeWeight:district?4:3,strokeColor:'#d82d72',strokeOpacity:.95,strokeStyle:'solid',zIndex:4});
+    const line=new kakao.maps.Polyline({map,path,strokeWeight:district?4:3,strokeColor:'#667085',strokeOpacity:.95,strokeStyle:'solid',zIndex:4});
     districtOutlines.push(line);
   }
 }
