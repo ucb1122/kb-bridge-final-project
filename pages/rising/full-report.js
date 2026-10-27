@@ -16,7 +16,7 @@ const short=n=>Math.abs(n)>=1e8?`${(n/1e8).toFixed(1)}억`:Math.abs(n)>=1e4?`${M
 function panel(title,description){const box=make('section','report-block');box.append(make('h3','',title));if(description)box.append(make('p','report-caption',description));return box}
 function unavailable(text){return make('p','report-unavailable',text)}
 function table(headers,rows){const t=make('table','detail-table'),thead=make('thead'),head=make('tr');headers.forEach(x=>head.append(make('th','',x)));thead.append(head);t.append(thead);const body=make('tbody');rows.forEach(row=>{const tr=make('tr');row.forEach((x,i)=>tr.append(make(i?'td':'th','',x)));body.append(tr)});t.append(body);return t}
-function chart(values,labels,mode='bar'){
+function chart(values,labels,mode='bar',format=short){
   const box=make('div','detail-chart');if(!values.length)return box;
   const max=Math.max(...values,1),min=mode==='line'?Math.min(...values):0,span=Math.max(max-min,1);
   const graphic=svg('svg',{viewBox:'0 0 600 245',role:'img','aria-label':labels.map((label,i)=>`${label} ${number(values[i])}`).join(', ')});
@@ -28,7 +28,7 @@ function chart(values,labels,mode='bar'){
   }else values.forEach((n,i)=>graphic.append(svg('rect',{x:xs[i]-Math.min(26,220/values.length),y:185-n/max*145,width:Math.min(52,440/values.length),height:Math.max(n/max*145,1),fill:i===values.indexOf(max)?'#c49200':'#b9c2cb'})));
   values.forEach((n,i)=>{
     const y=mode==='line'?185-(n-min)/span*135:185-n/max*145;
-    const val=svg('text',{x:xs[i],y:Math.max(17,y-8),'text-anchor':'middle',fill:'#2e3540','font-size':11});val.textContent=short(n);graphic.append(val);
+    const val=svg('text',{x:xs[i],y:Math.max(17,y-8),'text-anchor':'middle',fill:'#2e3540','font-size':11});val.textContent=format(n);graphic.append(val);
     const label=svg('text',{x:xs[i],y:211,'text-anchor':'middle',fill:'#5b626c','font-size':10});label.textContent=labels[i].length>8?labels[i].slice(-7):labels[i];graphic.append(label);
   });box.append(graphic);return box;
 }
@@ -143,14 +143,15 @@ function ownerOverview(report){
     const section=panel(title);
     const items=recent.map(q=>({q,v:observation(q,key)}));
     const available=items.filter(({v})=>v!=null);
-    if(available.length>1)section.append(chart(available.map(({v})=>v),available.map(({q})=>quarter(q)),'line'));
-    const summary=items.map(({q,v})=>`${quarter(q)} ${v==null?'자료 없음':value(v,key)}`).join(', ');
-    section.append(make('p','owner-trend-summary',`${title}: ${summary}`));
+    if(available.length>1)section.append(chart(available.map(({v})=>v),available.map(({q})=>quarter(q)),'line',n=>key==='stores'?number(n):value(n,'sales').replace(/ 원$/,'')));
     content.append(section);
   }
   const evidence=make('details','report-block owner-evidence');evidence.append(make('summary','','원본 수치·계산 근거'));
   evidence.append(make('h4','','최근 분기 원본 수치'));
   evidence.append(table(['분기','점포수','분기 추정매출','유동인구 집계'],recent.map(q=>[quarter(q),observation(q,'stores')==null?'자료 없음':`${number(observation(q,'stores'))}개`,observation(q,'sales')==null?'자료 없음':`${number(observation(q,'sales'))}원`,observation(q,'footfall')==null?'자료 없음':`${number(observation(q,'footfall'))}명`])));
+  const industry={all:'전체 업종',CS1:'외식업',CS2:'서비스업',CS3:'소매업'}[report.scopeIndustry||'all']||report.scopeIndustry;
+  evidence.append(make('h4','','분석 조건'));
+  evidence.append(table(['항목','내용'],[['지역',report.name],['공간 기준',report.kind==='dong'?'행정동 전체':'공식 상권'],['자치구',report.district],['업종',industry],['분석 분기',quarter(report.quarter)],['비교 분기',recent.length>1?quarter(recent.at(-2)):'자료 없음']]));
   content.append(evidence);
   content.append(make('p','report-source','출처: 서울특별시 서울 열린데이터광장 / 공공데이터포털(data.go.kr)'));
   return content;
