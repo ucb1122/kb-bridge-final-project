@@ -255,10 +255,7 @@ async function showSummary(row,rank,clicked=false){
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
     for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
-    if(clicked&&ownerMode&&appliedFilters.industry!=='all'){
-      const name=$('owner-industry').selectedOptions[0].textContent;
-      renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[`${name} 점포수와 매출은 선택 업종 원본으로 집계했습니다.`,`유동인구와 상주인구는 업종과 무관한 지역 전체 기준입니다.`],note:'선택 업종의 개별 점포 실적이나 대출 적격성을 의미하지 않습니다.'});
-    }else if(clicked){
+    if(clicked&&!ownerMode){
       try{const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis)}
       catch(error){if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[],note:error.message})}
     }
