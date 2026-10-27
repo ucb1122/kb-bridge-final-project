@@ -118,7 +118,50 @@ function bestSummary(report){
   }
   return wrap;
 }
+function ownerOverview(report){
+  const content=make('div','full-report owner-overview');
+  const recent=[...new Set(report.history.filter(x=>x.quarter<=report.quarter).map(x=>x.quarter))].sort().slice(-5);
+  const observation=(q,key)=>report.history.find(x=>x.quarter===q&&x.metric===key)?.value;
+  const previous=recent.at(-2);
+  const cards=make('div','owner-overview-cards');
+  for(const [key,title] of [['stores','점포수'],['sales','매출액'],['footfall','유동인구']]){
+    const currentValue=observation(report.quarter,key)??report.metrics[key]?.value;
+    const card=make('article','owner-overview-card');
+    let displayed='자료 없음';
+    if(key==='stores'&&currentValue!=null)displayed=`${number(currentValue)}개`;
+    if(key==='sales'){
+      const monthly=report.officialReportSales?.current;
+      const stores=observation(report.quarter,'stores')??report.metrics.stores?.value;
+      if(monthly!=null)displayed=`${number(monthly)}만 원`;
+      else if(currentValue!=null&&stores>0)displayed=`${number(Math.round(currentValue/3/stores/1e4))}만 원`;
+    }
+    if(key==='footfall'&&currentValue!=null&&report.analysisAreaM2>0)displayed=`${number(Math.round(currentValue/(report.analysisAreaM2/10000)))}명/ha`;
+    card.append(make('span','owner-card-title',title),make('small','owner-card-quarter',quarter(report.quarter)),make('strong','owner-card-value',displayed));
+    cards.append(card);
+  }
+  content.append(cards);
+  for(const [key,title] of [['stores','점포수 추이'],['sales','분기 추정매출 추이']]){
+    const section=panel(title);
+    const items=recent.map(q=>({q,v:observation(q,key)}));
+    const available=items.filter(({v})=>v!=null);
+    if(available.length>1)section.append(chart(available.map(({v})=>v),available.map(({q})=>quarter(q)),'line'));
+    const values=make('div','owner-trend-values');
+    items.forEach(({q,v})=>{const item=make('div','owner-trend-value');item.append(make('small','',quarter(q)),make('strong','',v==null?'자료 없음':value(v,key)));values.append(item)});
+    section.append(values);
+    content.append(section);
+  }
+  const evidence=make('details','report-block owner-evidence');evidence.append(make('summary','','원본 수치·계산 근거'));
+  evidence.append(make('h4','','최근 분기 원본 수치'));
+  evidence.append(table(['분기','점포수','분기 추정매출','유동인구 집계'],recent.map(q=>[quarter(q),observation(q,'stores')==null?'자료 없음':`${number(observation(q,'stores'))}개`,observation(q,'sales')==null?'자료 없음':`${number(observation(q,'sales'))}원`,observation(q,'footfall')==null?'자료 없음':`${number(observation(q,'footfall'))}명`])));
+  evidence.append(make('h4','','분석 조건'));
+  const industry={all:'전체 업종',CS1:'외식업',CS2:'서비스업',CS3:'소매업'}[report.scopeIndustry||'all']||report.scopeIndustry;
+  evidence.append(table(['항목','내용'],[['지역',report.name],['공간 기준',report.kind==='dong'?'행정동 전체':'공식 상권'],['자치구',report.district],['업종',industry],['분석 분기',quarter(report.quarter)],['비교 분기',previous?quarter(previous):'자료 없음']]));
+  evidence.append(make('p','report-source','출처: 서울특별시 서울 열린데이터광장 / 공공데이터포털(data.go.kr)'));
+  content.append(evidence);
+  return content;
+}
 export function renderReportTab(target,report,tab,analysis){
+  if(tab==='overview'&&document.body.classList.contains('owner-unified')){target.replaceChildren(ownerOverview(report));return}
   const content=make('div','full-report');
   if(report.scopeIndustry){const label={CS1:'외식업',CS2:'서비스업',CS3:'소매업'}[report.scopeIndustry];content.append(make('p','report-source',`${label} 점포수·매출은 선택 업종 기준입니다. 인구·주변 환경과 세부 요일·시간대 자료는 지역 전체 기준입니다.`))}
   if(!report.detailAvailable)content.append(unavailable('세부 원본 데이터가 적재되지 않았습니다. npm run import:details를 실행하세요.'));
