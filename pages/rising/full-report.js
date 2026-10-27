@@ -154,6 +154,12 @@ function ownerOverview(report){
   evidence.append(make('h4','','분석 조건'));
   const conditionTable=table(['항목','내용'],[['지역',report.name],['공간 기준',report.kind==='dong'?'행정동 전체':'공식 상권'],['자치구',report.district],['업종',industry],['분석 분기',quarter(report.quarter)],['비교 분기',recent.length>1?quarter(recent.at(-2)):'자료 없음']]);
   conditionTable.classList.add('owner-condition-table');evidence.append(conditionTable);
+  evidence.addEventListener('toggle',()=>{
+    if(!evidence.open)return;
+    const body=document.getElementById('report-body');
+    if(!body)return;
+    requestAnimationFrame(()=>{body.scrollTop+=evidence.getBoundingClientRect().top-body.getBoundingClientRect().top-12});
+  });
   content.append(evidence);
   content.append(make('p','report-source','출처: 서울특별시 서울 열린데이터광장 / 공공데이터포털(data.go.kr)'));
   return content;

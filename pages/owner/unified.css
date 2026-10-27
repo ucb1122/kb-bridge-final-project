@@ -115,3 +115,6 @@
 .owner-unified .owner-card-quarter{margin-top:8px;font-size:11px;white-space:nowrap}
 .owner-unified .owner-trend-summary{margin:10px 0 0;font-size:12px;line-height:1.6;color:#44516a}
 .owner-unified .owner-overview>.report-source{margin:12px 2px;color:#69778e;font-size:11px}
+.owner-unified .owner-overview>.report-block>h3{margin:0 0 14px;font-size:16px;line-height:1.4;font-weight:700}
+.owner-unified .owner-evidence summary{min-height:54px;box-sizing:border-box;line-height:1.4;align-items:center}
+.owner-unified .owner-evidence>h4{font-size:14px;line-height:1.4;font-weight:700}
