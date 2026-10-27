@@ -177,7 +177,7 @@ function ownerOverview(report){
 }
 function ownerMetricCard(title,n,unit='개',change=null,note=''){
   const card=make('article','owner-overview-card');
-  card.append(make('span','owner-card-title',title),make('strong','owner-card-value',n==null?'자료 없음':amount(n,unit)));
+  card.append(make('span','owner-card-title',title),make('strong','owner-card-value',n==null?'행정동 자료 미제공':amount(n,unit)));
   if(change!=null)card.append(make('small','owner-card-change',`전분기 대비 ${rate(change)}`));
   if(note)card.append(make('small','owner-card-note',note));
   return card;
@@ -225,17 +225,19 @@ function ownerTab(report,tab){
   }
   if(tab==='population'){
     const workers=now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null;
-    content.append(ownerCards([['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change],['상주인구',metric('residents'),'명',report.metrics.residents?.change],...(workers==null?[]:[['직장인구',workers,'명']])]));
+    content.append(ownerCards([['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change],['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':'']]));
     content.append(ownerBars('시간대별 유동인구',hours.map((label,i)=>({label,n:now.footfall?.[`hour_${i}`]})),'명'));
     content.append(ownerBars('연령대별 유동인구',ages.map((label,i)=>({label,n:now.footfall?.[`age_${i===5?60:(i+1)*10}`]})),'명'));
     const workerHistory=Object.keys(report.details||{}).sort().filter(q=>qs.includes(q)).map(q=>({q,n:report.details[q]?.workers?.male!=null&&report.details[q]?.workers?.female!=null?report.details[q].workers.male+report.details[q].workers.female:null}));
     if(workerHistory.some(x=>x.n!=null))content.append(ownerLine(report,'직장인구 추이',workerHistory));
+    else content.append(ownerDetail('직장인구 추이 · 행정동 자료 미제공','현재 원본에는 공식 상권별 직장인구만 있어 행정동 추이를 표시할 수 없습니다.'));
     const extra=ownerDetail('인구 세부 자료 더 보기');extra.append(ownerLine(report,'유동인구 추이',history('footfall')),ownerLine(report,'상주인구 추이',history('residents')));content.append(extra);
   }
   if(tab==='hinterland'){
     const workers=now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null;
-    content.append(ownerCards([['상주인구',metric('residents'),'명',report.metrics.residents?.change],...(workers==null?[]:[['직장인구',workers,'명']]),['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change]]));
+    content.append(ownerCards([['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':''],['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change]]));
     if(now.facilities?.subway!=null||now.facilities?.bus!=null)content.append(ownerBars('집객시설 현황',[['지하철역',now.facilities?.subway],['버스 정류소',now.facilities?.bus]].map(([label,n])=>({label,n})),'개','원본 CSV에 제공된 시설 수이며 지도 기준점 반경 집계와 다릅니다.'));
+    else content.append(ownerDetail('집객시설 현황 · 행정동 자료 미제공','현재 원본의 시설 수는 공식 상권 기준으로만 제공됩니다. 행정동 전체의 시설 수나 지도 기준점 반경 수치로 바꿔 표시하지 않습니다.'));
     const extra=ownerDetail('그래프 더 보기');extra.append(ownerLine(report,'상주인구 추이',history('residents')),ownerLine(report,'유동인구 추이',history('footfall')));content.append(extra);
   }
   const basis=ownerDetail('분석 설명·집계 기준');basis.append(make('p','report-caption','행정동 전체와 공식 상권의 범위는 다릅니다. 매출은 공개 원본의 추정치이며 실제 점포 매출과 다를 수 있습니다.'));content.append(basis);
