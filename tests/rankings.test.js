@@ -6,6 +6,13 @@ import {monthlySalesPerStore} from '../pages/rising/report-view.js';
 
 const hasData=fs.existsSync(new URL('../data/commerce.sqlite',import.meta.url));
 
+test('행정동 직장인구는 별도 공개자료의 지역 전체 값으로 표시한다',{skip:!hasData},()=>{
+  for(const [code,expected] of [['11140580',4450],['11260580',1611],['11305603',364]]){
+    const report=getRegionReport({kind:'dong',code,quarter:'20262'});
+    assert.equal(report.details['20262'].workers.total,expected);
+  }
+});
+
 test('서울시 화면의 강남구 점포수 순위와 일치한다',{skip:!hasData},()=>{
   const result=getRankings({kind:'dong',metric:'stores',quarter:'20262',district:'강남구'});
   assert.equal(result.rankingSource,'official');

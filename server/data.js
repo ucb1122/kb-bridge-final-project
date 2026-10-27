@@ -19,6 +19,11 @@ function officialReportSales(quarter,kind,code){
   const snapshot=JSON.parse(fs.readFileSync(filename,'utf8'));
   return snapshot.quarter===quarter?snapshot.values?.[`${kind}:${code}`]??null:null;
 }
+function officialDongWorkers(code){
+  const filename=path.join(root,'data','official-dong-workers-20252-20262.json');
+  if(!fs.existsSync(filename))return {};
+  return JSON.parse(fs.readFileSync(filename,'utf8')).values?.[code]??{};
+}
 export function getFilters(){
   const db=open();if(!db)return {quarters:[],districts:[],available:false};
   try{return {quarters:db.prepare("SELECT quarter FROM observations GROUP BY quarter HAVING COUNT(DISTINCT kind || ':' || metric)=8 ORDER BY quarter DESC").all().map(x=>x.quarter),districts:db.prepare("SELECT DISTINCT district FROM observations WHERE district != '' ORDER BY district").all().map(x=>x.district),available:true}}finally{db.close()}
@@ -156,6 +161,9 @@ export function getRegionReport(query={}){
     const details={};
     for(const row of rows)(details[row.quarter]??={})[row.category]??={};
     for(const row of rows)details[row.quarter][row.category][row.key]=row.value;
+    if(summary.kind==='dong')for(const [quarter,total] of Object.entries(officialDongWorkers(summary.code))){
+      if(details[quarter]?.workers?.total==null)(details[quarter]??={}).workers={...details[quarter]?.workers,total};
+    }
     const industries=db.prepare(`SELECT industry_code AS code,name,stores,regular,franchise,opened,closed,sales,transactions
       FROM report_industries WHERE kind=? AND region_code=? AND quarter=? ORDER BY stores DESC`).all(summary.kind,summary.code,summary.quarter);
     const industryHistory=db.prepare(`SELECT quarter,SUBSTR(industry_code,1,3) AS group_code,SUM(stores) AS stores
