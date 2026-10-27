@@ -12,21 +12,30 @@ const periods=r=>[...new Set([...r.history.map(x=>x.quarter),...Object.keys(r.de
 const detail=(r,group,key)=>current(r)[group]?.[key];
 const amount=(n,unit='개')=>n==null?'자료 없음':unit==='원'?value(n,'sales'):`${number(n)}${unit}`;
 const short=n=>Math.abs(n)>=1e8?`${(n/1e8).toFixed(1)}억`:Math.abs(n)>=1e4?`${Math.round(n/1e4)}만`:number(n);
+let chartGradientId=0;
 
 function panel(title,description){const box=make('section','report-block');box.append(make('h3','',title));if(description)box.append(make('p','report-caption',description));return box}
 function unavailable(text){return make('p','report-unavailable',text)}
 function table(headers,rows){const t=make('table','detail-table'),thead=make('thead'),head=make('tr');headers.forEach(x=>head.append(make('th','',x)));thead.append(head);t.append(thead);const body=make('tbody');rows.forEach(row=>{const tr=make('tr');row.forEach((x,i)=>tr.append(make(i?'td':'th','',x)));body.append(tr)});t.append(body);return t}
 function chart(values,labels,mode='bar',format=short){
   const box=make('div','detail-chart');if(!values.length)return box;
+  const ownerStyle=document.body.classList.contains('owner-unified');
   const max=Math.max(...values,1),min=mode==='line'?Math.min(...values):0,span=Math.max(max-min,1);
   const yFor=n=>mode==='line'&&max===min?117.5:185-(n-min)/span*135;
   const graphic=svg('svg',{viewBox:'0 0 600 245',role:'img','aria-label':labels.map((label,i)=>`${label} ${number(values[i])}`).join(', ')});
+  let chartFill='#c49200';
+  if(ownerStyle){
+    const id=`owner-chart-gradient-${++chartGradientId}`;
+    const defs=svg('defs'),gradient=svg('linearGradient',{id,x1:'0%',y1:'0%',x2:'0%',y2:'100%'});
+    gradient.append(svg('stop',{offset:'0%','stop-color':'#428cf2'}),svg('stop',{offset:'100%','stop-color':'#c8e1ff'}));
+    defs.append(gradient);graphic.append(defs);chartFill=`url(#${id})`;
+  }
   [30,80,130,180].forEach(y=>graphic.append(svg('line',{x1:42,y1:y,x2:580,y2:y,stroke:'#e6e9ef'})));
   const xs=values.map((_,i)=>65+(490*i/Math.max(values.length-1,1)));
   if(mode==='line'){
-    const line=svg('polyline',{points:values.map((n,i)=>`${xs[i]},${yFor(n)}`).join(' '),fill:'none',stroke:'#c49200','stroke-width':3});graphic.append(line);
-    values.forEach((n,i)=>graphic.append(svg('circle',{cx:xs[i],cy:yFor(n),r:4,fill:'#c49200'})));
-  }else values.forEach((n,i)=>graphic.append(svg('rect',{x:xs[i]-Math.min(26,220/values.length),y:185-n/max*145,width:Math.min(52,440/values.length),height:Math.max(n/max*145,1),fill:i===values.indexOf(max)?'#c49200':'#b9c2cb'})));
+    const line=svg('polyline',{points:values.map((n,i)=>`${xs[i]},${yFor(n)}`).join(' '),fill:'none',stroke:chartFill,'stroke-width':3});graphic.append(line);
+    values.forEach((n,i)=>graphic.append(svg('circle',{cx:xs[i],cy:yFor(n),r:4,fill:ownerStyle?'#498ff0':'#c49200'})));
+  }else values.forEach((n,i)=>graphic.append(svg('rect',{x:xs[i]-Math.min(26,220/values.length),y:185-n/max*145,width:Math.min(52,440/values.length),height:Math.max(n/max*145,1),fill:ownerStyle?chartFill:i===values.indexOf(max)?'#c49200':'#b9c2cb'})));
   values.forEach((n,i)=>{
     const y=mode==='line'?yFor(n):185-n/max*145;
     const val=svg('text',{x:xs[i],y:Math.max(17,y-8),'text-anchor':'middle',fill:'#2e3540','font-size':11});val.textContent=format(n);graphic.append(val);
