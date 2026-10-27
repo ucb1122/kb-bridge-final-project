@@ -1,0 +1,6 @@
+#map .kakao-basemap,#consult-map .kakao-basemap,#map .analysis-map-overlay,#consult-map .analysis-map-overlay{position:absolute;inset:0}
+#map .kakao-basemap,#consult-map .kakao-basemap{z-index:0}
+#map .analysis-map-overlay,#consult-map .analysis-map-overlay{z-index:1;background:transparent!important}
+.analysis-map-overlay.leaflet-container{background:transparent!important}
+#map.map-error,#consult-map.map-error{display:grid;place-items:center;padding:24px;background:#f8f7f4;color:#9b3131;font-weight:700;text-align:center}
+#consult-map{position:relative;overflow:hidden}

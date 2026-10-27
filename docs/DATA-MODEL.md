@@ -1,49 +1,25 @@
-# Data model and ERD
+# 데이터와 표시 기준
 
-The SQLite schema in kb_bridge/repositories/schema.sql is a small baseline for source-aware observations. It contains no real observations yet.
+## 파일과 관측 단위
 
-~~~mermaid
-erDiagram
-  AREA ||--o{ METRIC_OBSERVATION : measures
-  SOURCE_DATASET ||--o{ METRIC_OBSERVATION : provides
-  AREA {
-    text area_code PK
-    text area_name
-    text area_kind
-    text parent_area_code FK
-  }
-  SOURCE_DATASET {
-    text source_id PK
-    text provider
-    text dataset_name
-    text retrieved_at
-    text reference_url
-  }
-  METRIC_OBSERVATION {
-    text area_code PK,FK
-    text period PK
-    text metric_code PK
-    real value
-    text unit
-    text derivation PK
-    text source_id PK,FK
-  }
-~~~
+| 자료 | 경로 | 단위·용도 |
+| --- | --- | --- |
+| 서울시 원본 ZIP | `data/raw/seoul_public_data.zip` | 상권별 분기·업종 자료. Git 제외 |
+| 행정동 CSV·경계 | `data/raw/dong/` | 행정동 전체 통계와 지도 경계. Git 제외 |
+| 생성 DB | `data/commerce.sqlite` | `observations`, `report_details`, `report_industries` 조회. Git 제외 |
+| 지도 경계 | `data/commerce.geojson`, `data/commerce-dong.geojson` | 상권·행정동 코드와 경계. 생성 파일, Git 제외 |
+| 공식 기본 순위 | `data/official-rankings-20262.json` | 확인된 2026년 2분기 기본 조건의 순서·표시값 |
+| 공식 보고서 매출 | `data/official-report-sales-20262.json` | 실제 화면에서 확인된 일부 지역·분기의 표시값 |
+| 사업자 화면 자료 | `pages/owner/assets/` | 위치·인허가 관측·지역 자료의 정적 스냅샷 |
 
-## Grain and keys
+공식 화면 확인값은 확인된 분기·지역·조건에만 적용합니다. 다른 조건을 공식값으로 꾸며 채우지 않습니다. 같은 단위라도 공개 원본과 공식 보고서 표시값은 일부 다를 수 있으므로 출처를 구분합니다.
 
-- One observation means one area × period × metric × source × derivation. Re-importing the same identity must update or reject it deliberately, never silently duplicate it.
-- area_code must include the source/code-system context when administrative dong and commercial-area codes can overlap. area_kind distinguishes district, dong and market.
-- period uses YYYYQn in the application contract. An ingestion adapter converts source-specific values such as 20262.
-- metric_code and unit must be defined together in the domain catalog before importing data. Do not mix quarterly totals, monthly per-store values and per-hectare density under one metric code.
-- derivation distinguishes source data, calculated data and manually verified official display values. The selection priority for a report belongs in a service and must be shown to the user.
-- source_dataset records provider, retrieval date and reference so old snapshots remain traceable. No fake source or date should be inserted to satisfy the schema.
+## 계산
 
-## Next schema decisions
+- 점포당 월평균 추정매출 = 분기 추정매출 합계 ÷ 3개월 ÷ 같은 분기 점포수.
+- 유동인구 밀도(명/ha) = 분기 유동인구 집계 ÷ 확인된 분석 면적(ha). 면적이 없으면 총량을 밀도로 바꾸지 않습니다.
+- 전분기 변화율 = `(현 분기 값 − 전분기 값) ÷ 전분기 값 × 100`. 전분기 값이 0이거나 없으면 계산하지 않습니다.
+- 행정동 전체 점포수는 `kind='dong'`인 원본 관측입니다. 공식 상권 값의 합계나 반경 내 인허가 건수로 만들지 않습니다.
+- 원본 결측은 `자료 없음`으로 두고 0과 구분합니다.
 
-- Define normalized industry codes and their source mappings before adding an industry dimension.
-- Decide whether an owner's private inputs are stored at all. If stored, make retention, consent and access controls explicit.
-- Model financial scenarios separately from public area observations. A scenario result is not a loan recommendation.
-- Define risk-model version, training period, validation result and explanation before adding warning tables.
-
-The current notebook reproduces historical 2021/2022 analysis and estimates some area labels. It is research input, not a validated forecast. A future warning must show its observation date, model version, scope and uncertainty.
+지역의 추정매출·인구는 개별 점포의 실매출, 고객 수, 수익성, 신용도 또는 대출 적격성이 아닙니다. 사례별 대조는 [뜨는 상권 개발 기록](RISING-AREA-DEVELOPMENT-NOTES.md)을 참고하세요.

@@ -1,23 +1,28 @@
-# 데이터 폴더 사용법
+# 데이터 준비와 저장 위치
 
-## 현재 원본 위치
+웹 앱은 `data/commerce.sqlite`를 읽습니다. 원본 ZIP·CSV, 생성 DB·GeoJSON은 로컬에 두고 Git에는 올리지 않습니다. 저장소에는 확인된 공식 기본 순위·일부 보고서 값의 작은 JSON만 포함합니다.
 
-사용자가 제공한 seoul_data 전체를 data/raw/seoul_data/에 둔다. 하위 폴더와 원본 파일명, 각 .meta.json을 유지한다.
-
-| 원본 하위 폴더 | 용도 | 주의 |
+| 경로 | 내용 | Git |
 | --- | --- | --- |
-| 01_상가업소_휴폐업_점포-상권 | 상권별 점포 수와 개·폐업 | 최근 CSV와 2021~2024 ZIP의 기간 중복 확인 |
-| 02_인허가업소 | 개별 일반음식점 인허가 | 점포-상권 집계와 같은 관측 단위가 아님 |
-| 05-08_상권영역 | 상권 코드와 경계 GeoJSON | 좌표계와 상권 코드 버전 확인 |
-| 13_추정매출-상권 | 상권별 추정매출 | 개별 점포의 실제 매출이 아님 |
-| 14_생활인구_행정동 | 행정동 생활인구 | 월별·행정동 자료를 분기·상권 자료와 바로 합산하지 않음 |
-| 15_길단위인구-상권 | 상권 유동인구 | 집계 기간과 면적당 환산 기준 확인 |
+| `data/raw/seoul_public_data.zip` | 서울시 상권별 공개 원본 | 제외 |
+| `data/raw/dong/` | 서울시 행정동별 점포·매출·유동·상주인구 CSV와 경계 | 제외 |
+| `data/commerce.sqlite` | 현재 Node.js API가 조회하는 생성 SQLite | 제외 |
+| `data/commerce.geojson`, `data/commerce-dong.geojson` | 지도용 상권·행정동 경계 | 제외 |
+| `data/official-rankings-20262.json` | 확인된 최신 기본 순위 응답 | 포함 |
+| `data/official-report-sales-20262.json` | 확인된 일부 지역의 공식 보고서 매출 표시값 | 포함 |
 
-- data/raw/: 내려받은 원본. 사람이 임의로 열 이름·인코딩을 고쳐 저장하지 않는다.
-- data/processed/: 적재 코드가 만든 정규화 결과.
-- data/local/: 생성된 SQLite DB.
-- output/: 생성된 PDF·ZIP 및 검증 산출물.
+## 재구성
 
-원본과 가공본, DB, output은 Git에서 제외된다. ZIP은 원본 그대로 두고, 적재기가 내부 파일을 읽거나 검증된 작업 공간에 풀도록 구현한다. 파일을 복사하는 것만으로 DB나 화면에 자동 반영되지는 않는다. 현재 이 저장소에는 데이터 적재 명령이 아직 없다.
+Node.js 22.13 이상과 Python 3을 준비합니다. 원본 ZIP을 `data/raw/seoul_public_data.zip`에 두고 `.env`에 필요한 서울시 API 키를 설정합니다.
 
-데이터를 팀과 공유할 때는 Git에 대용량 원본을 올리는 대신 출처 URL, 수집일, SHA-256, 기간, 인코딩과 재현 명령을 기록한다. 개인정보가 포함될 수 있는 인허가 원본은 필요한 열만 선별해 가공한다.
+```powershell
+npm run fetch:dong
+npm run import:raw
+npm run import:details
+npm run sync:rankings
+npm test
+```
+
+`fetch:dong`은 행정동 공개 자료를 준비하며, `import:raw`가 상권 ZIP과 행정동 자료를 SQLite에 적재합니다. `import:details`는 보고서 세부 열을 보강합니다. `sync:rankings`는 기본 순위 확인값의 기준 분기를 갱신할 때만 사용합니다. 원본 제공 범위, 인코딩, 자료 시점을 먼저 확인하고 기존 공식 확인값을 무조건 덮어쓰지 마세요.
+
+원본과 생성 산출물을 공유할 때는 출처, 수집일, SHA-256, 관측 분기와 재현 명령을 함께 전달합니다. 인허가 기록은 공식 점포수와 다른 관측 단위입니다.

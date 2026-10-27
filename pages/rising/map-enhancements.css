@@ -1,0 +1,136 @@
+.rank-marker{border:0;background:transparent}
+.kakao-rank-marker{display:block;width:74px;height:84px;padding:0;cursor:pointer;border:0;outline-offset:3px}
+.kakao-rank-marker{position:relative;background:transparent}
+.boundary-hover-label{pointer-events:none;background:#fff;color:#30214f;border:1px solid #c6b8e5;border-radius:5px;box-shadow:0 2px 8px #0002;padding:4px 7px;font-size:11px;font-weight:700;white-space:nowrap;transform:translateY(-8px)}
+.kakao-rank-marker .rank-badge{z-index:1}
+.kakao-rank-marker.region-hovered::before,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before{content:"";position:absolute;top:11px;left:1px;box-sizing:border-box;width:72px;height:72px;border:2px solid #0879ce;border-radius:50%;pointer-events:none;animation:region-ripple 2.8s ease-out infinite}
+@keyframes region-ripple{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.85);opacity:0}}
+@media(prefers-reduced-motion:reduce){.kakao-rank-marker.region-hovered::before,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before{animation:none;transform:scale(1.15);opacity:.65}}
+.rank-badge{position:relative;width:92px;display:grid;justify-items:center;filter:drop-shadow(0 3px 4px #35177a55);cursor:pointer}
+.rank-badge::before{content:"";position:absolute;top:18px;width:88px;height:58px;border-radius:50%;background:#7b4de360;z-index:-1}
+.badge-number{background:#fff;color:#6334cf;border:2px solid #6334cf;border-radius:3px;font-weight:800;font-size:16px;min-width:27px;text-align:center;padding:2px}
+.top-rank .badge-number{background:#ffe500;color:#5622b8;border-color:#5622b8}.top-rank::before{background:#8b65df80}
+.badge-name,.badge-value{display:block;max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;border-radius:5px;padding:3px 7px;font-size:12px;line-height:1.3}
+.badge-name{background:#6433d9;color:white;font-weight:700}.badge-value{background:white;color:#5d30cf;min-width:72px}.rank-badge.active .badge-name{background:#d92070}
+.region-card{position:absolute;z-index:420;right:24px;top:20px;width:min(800px,calc(100vw - 560px));height:calc(100% - 40px);background:#fff;border-top:5px solid #0879ce;box-shadow:0 6px 24px #0003;border-radius:5px;display:flex;flex-direction:column}
+.region-card[hidden]{display:none}.report-head{display:flex;justify-content:space-between;gap:12px;padding:18px 20px 8px}.report-head small{color:#0879ce}.report-head h2{font-size:21px;margin:7px 0}.report-head p{font-size:13px;color:#6236c8;font-weight:700}.report-actions{display:flex;align-items:flex-start;gap:8px;white-space:nowrap}.report-actions a,.report-actions button{border:1px solid #d9d2e8;background:white;border-radius:5px;color:#0879ce;padding:7px 9px;font-size:13px;text-decoration:none;cursor:pointer}.report-actions button{font-size:18px;padding:3px 8px}.report-tabs{display:flex;border-bottom:1px solid #ddd;overflow-x:auto;flex:none}.report-tabs button{flex:1;min-width:110px;background:#fff;border:0;border-bottom:3px solid transparent;padding:12px 4px;cursor:pointer;color:#667;font-weight:700}.report-tabs button.selected{color:#0879ce;border-bottom-color:#0879ce}.report-body{overflow:auto;padding:18px 20px;min-height:0}.report-page[hidden]{display:none}.analysis-box{background:#f3f8fe;border-left:4px solid #0879ce;padding:12px 15px;border-radius:4px}.analysis-box h3,.trend-card h3{margin:0 0 8px;font-size:15px}.analysis-box ul{padding-left:19px;margin:5px 0}.analysis-box li{font-size:13px;line-height:1.6;margin:5px 0}.analysis-box small{font-size:11px;color:#777}.report-metric-grid,.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.report-metric,.trend-card{border:1px solid #e4e1eb;border-radius:5px;padding:12px}.report-metric small,.report-metric strong,.report-metric span{display:block}.report-metric small{color:#0879ce}.report-metric strong{font-size:17px;margin:8px 0}.report-metric span{font-size:12px;color:#a53373}.report-source{font-size:11px;color:#777;line-height:1.5}.trend-card svg{display:block;width:100%;height:auto}.trend-card strong{color:#0879ce}.trend-labels{font-size:11px;color:#777;margin:5px 0}.history-table,.detail-table{width:100%;border-collapse:collapse;font-size:12px}.history-table th,.history-table td,.detail-table th,.detail-table td{border-bottom:1px solid #e5e5e5;padding:10px 5px;text-align:right;white-space:nowrap}.history-table th:first-child,.detail-table th:first-child{text-align:left}.history-table thead,.detail-table thead{background:#f4f7fa}.report-page:has(.history-table){overflow-x:auto}.report-block{padding:22px 18px;margin:0 0 16px;border:1px solid #e1e4e8;border-radius:5px;background:#fff}.report-block h3{font-size:16px;margin:0 0 10px}.report-caption{font-size:12px;color:#777}.report-highlight{font-size:20px;font-weight:700;color:#0879ce}.report-change{font-size:13px;color:#cb2672}.detail-chart svg{display:block;width:100%;height:auto}.detail-table{margin-top:10px}.report-unavailable{padding:16px;background:#f4f5f7;color:#666;font-size:13px}.report-section-title{font-size:17px;margin:28px 0 12px}.best-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.best-card{border:1px solid #e1e4e8;border-radius:5px;padding:13px;min-height:105px}.best-card small,.best-card strong,.best-card span{display:block}.best-card small{color:#666}.best-card strong{color:#0879ce;margin:10px 0}.best-card span{font-size:13px}
+.report-page{overflow:visible!important;padding:0 0 28px;margin:0 0 28px;border-bottom:8px solid #f2f3f7}.report-page:last-child{border-bottom:0}.report-chapter-title{font-size:19px;color:#0879ce;margin:0 0 18px}.report-page .history-table,.report-page .detail-table{display:block;overflow-x:auto}
+.analysis-box li{white-space:pre-line}
+.report-overview .analysis-box{background:#fafafa;border:1px solid #d9d9d9;border-radius:5px;padding:18px 20px}.report-overview .analysis-box ul{margin:0;padding-left:18px}.report-overview .analysis-box li{font-size:14px;line-height:1.65;margin:0 0 12px;color:#252525}.report-overview .analysis-box li:last-child{margin-bottom:0}.report-overview .analysis-box small{display:block;margin-top:12px;color:#777}.opinion-emphasis{color:#0879ce;font-weight:700}
+.report-overview .report-metric-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:24px}.report-summary-card{padding:18px;border:1px solid #dcdcdc;border-radius:6px}.report-summary-card h4{font-size:15px;line-height:1.4;margin:0 0 16px;min-height:42px}.report-summary-card .metric-delta,.report-summary-card .metric-current{border-radius:10px;text-align:center;padding:12px 8px;min-height:70px;margin-top:10px}.report-summary-card .metric-delta{background:#ec4d95;color:#fff}.report-summary-card .metric-delta.down{background:#278ce0}.report-summary-card .metric-delta.unknown{background:#929aa4}.report-summary-card .metric-current{background:#f5f5f5;color:#252525}.report-summary-card .metric-delta small,.report-summary-card .metric-current small{display:block;color:inherit;font-size:11px;font-weight:700}.report-summary-card .metric-delta strong,.report-summary-card .metric-current strong{display:block;color:inherit;font-size:17px;margin:4px 0 0;overflow-wrap:anywhere}.report-summary-card .metric-current strong{font-size:20px}
+@media(max-width:760px){.report-overview .report-metric-grid{grid-template-columns:1fr}.report-summary-card h4{min-height:0}}
+.map-legend{position:absolute;z-index:410;right:24px;bottom:24px;background:#fffffff2;padding:9px 12px;border-radius:4px;box-shadow:0 2px 8px #0002;font-size:11px;color:#555;max-width:310px}
+#ranking li{cursor:pointer}#ranking li:hover,#ranking li:focus{background:#f5efff;outline:none}
+#ranking li:nth-child(-n+3)>span:first-child{background:#ffe500;color:#5622b8;border:1px solid #7a58ce;border-radius:3px;font-weight:800;text-align:center}
+/* Keep the map visible between two panels docked to the viewport edges. */
+.sidebar{left:0;top:0;bottom:0;width:clamp(300px,22vw,360px);gap:0;background:#fff}
+.sidebar .panel{box-shadow:none;border-bottom:8px solid #f2f4f5}
+.rank-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#rank-metric{font-size:12px;font-weight:700;color:#0879ce;white-space:nowrap}
+.region-card{right:0;top:0;width:clamp(460px,35vw,650px);height:100%;border-radius:0}
+@media(max-width:760px){.sidebar{left:0;top:56px;bottom:0;width:min(320px,75vw)}.region-card{top:auto;bottom:0;right:0;width:100vw;height:min(600px,78%)}.map-legend{right:10px;bottom:10px;max-width:220px}.report-metric-grid,.trend-grid{grid-template-columns:1fr 1fr}.best-grid{grid-template-columns:1fr 1fr}}
+/* Leaflet's focus outline is a rectangular box around an SVG path. The selected polygon's stroke supplies the focus cue. */
+#map .leaflet-interactive:focus{outline:none}
+.report-overview .report-metric-grid{grid-template-columns:minmax(0,1fr)}
+.report-summary-card{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px}
+.report-summary-card h4{grid-column:1/-1;min-height:0;margin:0;line-height:1.35}
+.report-summary-card .metric-delta,.report-summary-card .metric-current{min-width:0;min-height:76px;margin:0;display:flex;flex-direction:column;justify-content:center;padding:10px 5px}
+.report-summary-card .metric-delta strong,.report-summary-card .metric-current strong{font-size:16px;overflow-wrap:normal;word-break:keep-all}
+@media(max-width:520px){.report-summary-card{grid-template-columns:1fr}.report-summary-card h4{grid-column:1}}
+.rank-badge{width:82px;height:82px;box-sizing:border-box;align-content:center;gap:2px;border-radius:50%;background:#8b65dfb8;border:2px solid #ffffffeb;box-shadow:0 2px 9px #32146b55;filter:none}
+.rank-badge::before{display:none}
+.rank-badge .badge-number{font-size:13px;line-height:17px;min-width:19px;padding:0 2px}
+.rank-badge .badge-name,.rank-badge .badge-value{max-width:76px;box-sizing:border-box;font-size:10px;line-height:1.2;padding:2px 4px}
+.rank-badge .badge-value{min-width:58px}
+.rank-badge.active{border-color:#0879ce;box-shadow:0 0 0 3px #0879ce,0 3px 10px #32146b55}
+.rank-badge.active .badge-name{background:#6433d9}
+.region-card{transition:transform .25s ease}
+.region-card.collapsed{transform:translateX(100%)}
+.region-card-toggle{position:absolute;left:-40px;top:44%;width:40px;height:52px;border:1px solid #d6e2ef;border-right:0;border-radius:6px 0 0 6px;background:#fff;color:#0879ce;font-size:22px;cursor:pointer;box-shadow:-3px 2px 8px #0002}
+.region-card-toggle:hover,.region-card-toggle:focus-visible{background:#edf6ff}
+@media(max-width:760px){.region-card{width:calc(100vw - 40px)}}
+/* Compact the two docked panels so more of the map and report fit above the fold. */
+.sidebar .panel-head{padding:13px 16px}
+.sidebar .panel h1{font-size:18px;margin:0 0 9px}
+.sidebar .panel label{font-size:12px}
+.sidebar .panel select{font-size:12px;margin-top:5px;padding:8px 9px}
+.sidebar .panel .check{margin-top:8px;font-size:12px}
+.sidebar .segmented{margin-top:10px}
+.sidebar .segmented button{padding:9px 5px;font-size:13px}
+.sidebar .metric,.sidebar .filter{border-top-width:4px}
+.sidebar .metric button{height:62px;font-size:12px}
+.sidebar .metric .icon{font-size:20px;margin-bottom:2px}
+.sidebar .filter button{height:36px;padding:0 16px;font-size:12px}
+.sidebar .rank-head{padding:11px 16px;font-size:13px}
+.sidebar .rank-meta{padding:9px 16px 4px;font-size:11px}
+.sidebar #status{padding:3px 16px;font-size:11px}
+.sidebar #ranking{padding:0 16px}
+.sidebar #ranking li{grid-template-columns:20px minmax(65px,1fr) auto 42px;gap:5px;min-height:32px;font-size:11px}
+.sidebar .source{font-size:10px;padding:8px 16px;line-height:1.4}
+.sidebar .panel{border-bottom-width:4px}
+.sidebar #filter-body{padding:0;background:#fff}
+.sidebar #quarter[hidden],.sidebar .filter-field[hidden]{display:none}
+.filter-scroll{max-height:340px;overflow-y:auto;padding:4px 16px 12px;scrollbar-width:thin}
+.filter-field{border:0;border-top:1px solid #e4e4e4;margin:0;padding:17px 0 12px;min-width:0}
+.filter-field legend{float:left;width:100%;font-size:13px;font-weight:700;margin-bottom:10px;color:#252525}
+.filter-field legend small{float:right;font-size:11px;font-weight:400;color:#8b8b8b}
+.filter-options{display:flex;clear:both;width:100%;border:1px solid #d8d8d8;border-radius:5px;overflow:hidden}
+.sidebar .filter .filter-options button{width:auto;min-width:0;flex:1;height:44px;padding:3px 2px;background:#fff;border:0;border-right:1px solid #ddd;color:#777;text-align:center;font-size:11px;line-height:1.25}
+.sidebar .filter .filter-options button:last-child{border-right:0}
+.sidebar .filter .filter-options button.selected{background:#087dd1;color:#fff;font-weight:700}
+.sidebar .filter .filter-options button:disabled{color:#b9bec3;background:#f7f7f7;cursor:not-allowed}
+.filter-quarters{flex-wrap:wrap}
+.sidebar .filter .filter-quarters button{flex:0 0 20%;min-height:54px}
+.sidebar .filter .filter-years button{min-height:54px}
+.sidebar .filter .filter-industries button{height:90px;min-height:90px;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 3px;font-size:12px;white-space:nowrap}
+.sidebar .filter .filter-industries button span{float:none;display:inline;font-size:12px;margin:0}
+.filter-industries button svg{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.filter-hint{font-size:11px;color:#777;margin:7px 0 0}
+.filter-actions{display:flex;gap:6px;padding:12px 16px 16px;background:#fff;border-top:1px solid #eee}
+.sidebar .filter .filter-actions button{width:50%;height:42px;padding:0;text-align:center;color:#fff;background:#858585;border-radius:5px;font-size:13px;font-weight:700}
+.sidebar .filter .filter-actions #filter-apply{background:#087dd1}
+.region-card .report-head{padding:12px 14px 5px}
+.region-card .report-head h2{font-size:17px;margin:4px 0}
+.region-card .report-head p{font-size:11px;margin:5px 0}
+.region-card .report-actions a,.region-card .report-actions button{font-size:11px;padding:5px 7px}
+.region-card .report-tabs{overflow-x:hidden}
+.region-card .report-tabs button{min-width:0;padding:8px 2px;font-size:11px;line-height:1.25;word-break:keep-all}
+.region-card .report-body{padding:12px 14px}
+.region-card .report-chapter-title{font-size:16px;margin-bottom:10px}
+.region-card .report-page{padding-bottom:18px;margin-bottom:18px;border-bottom-width:5px}
+.region-card .report-overview .analysis-box{padding:12px 14px}
+.region-card .report-overview .analysis-box li{font-size:12px;line-height:1.5;margin-bottom:8px}
+.region-card .report-overview .analysis-box small{font-size:10px;margin-top:8px}
+.region-card .report-overview .report-metric-grid{gap:8px;margin-top:12px}
+.region-card .report-summary-card{gap:6px;padding:10px}
+.region-card .report-summary-card h4{font-size:13px}
+.region-card .report-summary-card .metric-delta,.region-card .report-summary-card .metric-current{min-height:58px;padding:6px 3px}
+.region-card .report-summary-card .metric-delta small,.region-card .report-summary-card .metric-current small{font-size:10px}
+.region-card .report-summary-card .metric-delta strong,.region-card .report-summary-card .metric-current strong{font-size:14px;margin-top:2px}
+.region-card .report-block{padding:14px 12px;margin-bottom:10px}
+.region-card .report-block h3{font-size:14px}
+.region-card .detail-table,.region-card .history-table{font-size:11px}
+.region-card .detail-table th,.region-card .detail-table td,.region-card .history-table th,.region-card .history-table td{padding:6px 4px}
+.sidebar{transition:transform .25s ease}
+.sidebar.collapsed{transform:translateX(-100%)}
+.sidebar-toggle{position:absolute;z-index:421;left:clamp(300px,22vw,360px);top:44%;width:40px;height:52px;border:1px solid #d6e2ef;border-left:0;border-radius:0 6px 6px 0;background:#fff;color:#0879ce;font-size:22px;cursor:pointer;box-shadow:3px 2px 8px #0002;transition:left .25s ease}
+.sidebar-toggle.collapsed{left:0}
+.sidebar-toggle:hover,.sidebar-toggle:focus-visible{background:#edf6ff}
+@media(max-width:760px){.sidebar-toggle{left:min(320px,75vw)}.sidebar-toggle.collapsed{left:0}}
+.map-top{padding:5px 7px;gap:8px;font-size:12px;border-radius:5px}
+.map-top .map-pin{width:15px;height:15px}
+.map-top select{min-width:72px;padding:3px 2px;font-size:12px}
+.map-top #map-dong{min-width:90px;max-width:135px}
+.map-top-toggle{display:grid;place-items:center;flex:none;min-width:42px;height:26px;padding:0 6px;border:0;border-left:1px solid #dce4ea;background:#fff;color:#0879ce;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer}
+.map-top-toggle:hover,.map-top-toggle:focus-visible{background:#edf6ff}
+.map-top.collapsed>:not(.map-top-toggle){display:none}
+.map-top.collapsed{padding:4px}
+.map-top.collapsed .map-top-toggle{border-left:0}
+.kakao-rank-marker .rank-badge{width:74px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;background:transparent;border:0;box-shadow:none;overflow:visible}
+.kakao-rank-marker .rank-badge::before{content:"";display:block;position:absolute;top:11px;left:1px;width:72px;height:72px;border-radius:50%;background:#8b65dfaa;z-index:0}
+.kakao-rank-marker .rank-badge .badge-number{position:relative;z-index:1;display:grid;place-items:center;width:30px;height:32px;min-width:30px;padding:0;background:#fff;border:1px solid #6334cf;border-radius:2px;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%);color:#6334cf;font-size:14px;line-height:1;font-weight:800}
+.kakao-rank-marker .rank-badge.top-rank .badge-number{background:#ffe500}
+.kakao-rank-marker .rank-badge .badge-name,.kakao-rank-marker .rank-badge .badge-value{position:relative;z-index:1;width:68px;max-width:68px;margin-top:-1px;padding:2px 3px;font-size:10px}
+.kakao-rank-marker .rank-badge .badge-value{width:62px;margin-top:0;background:#fff}
+.kakao-rank-marker .rank-badge.active{box-shadow:none}
+.kakao-rank-marker:hover .rank-badge::before,.kakao-rank-marker.region-hovered .rank-badge::before{background:#f3ca36}

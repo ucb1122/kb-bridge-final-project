@@ -1,0 +1,49 @@
+/* Keep only the supplied yellow KB symbol beside the service name. */
+.kb-header .brand,
+.consult-header .brand {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: 10px;
+  text-decoration: none;
+}
+.kb-brand-image {
+  --kb-symbol-width: 58px;
+  position: relative;
+  display: block;
+  width: var(--kb-symbol-width);
+  height: calc(var(--kb-symbol-width) * 0.752688172);
+  overflow: hidden;
+  flex: none;
+}
+.kb-brand-image > .kb-brand-source {
+  position: absolute;
+  display: block;
+  max-width: none;
+  width: calc(var(--kb-symbol-width) * 5.376344086);
+  height: auto;
+  left: calc(var(--kb-symbol-width) * -0.731182796);
+  top: calc(var(--kb-symbol-width) * -1.419354839);
+}
+.kb-header .kb-product-name,
+.consult-header .kb-product-name {
+  padding: 0;
+  font: 700 30px/1.15 'Reference Noto', 'Malgun Gothic', sans-serif;
+  letter-spacing: -1.2px;
+  color: #101624;
+  white-space: nowrap;
+}
+@media (max-width: 1350px) {
+  .kb-brand-image { --kb-symbol-width: 52px; }
+  .kb-header .kb-product-name,
+  .consult-header .kb-product-name { font-size: 27px; }
+}
+@media (max-width: 760px) {
+  .kb-brand-image { --kb-symbol-width: 42px; }
+  .kb-header .brand,
+  .consult-header .brand { gap: 8px; }
+  .kb-header .kb-product-name,
+  .consult-header .kb-product-name { font-size: 23px; letter-spacing: -1px; }
+}
