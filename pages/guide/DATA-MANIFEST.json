@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-10-28",
+  "files": [
+    {
+      "path": "sources/current-catalog.csv",
+      "bytes": 48214,
+      "sha256": "211c103624a14b9a9d46a2c23fb4e3c60326eb363eae006e7aef002ca46ec6c0"
+    },
+    {
+      "path": "sources/official-source-index.json",
+      "bytes": 23328,
+      "sha256": "aef193d3570d248ec5663fbde2778553a263db4c41b609d7fc3ca98e9760ee9d"
+    },
+    {
+      "path": "sources/original-finance/00_파일목록.csv",
+      "bytes": 6018,
+      "sha256": "0149480e11a5146e93e9c381c59a8f455bf46f53c22c4821e8f32ada6c253f3b"
+    },
+    {
+      "path": "sources/original-finance/README.md",
+      "bytes": 2357,
+      "sha256": "883476404ee32769a1701020abd6db184cf1bdb1435ea330e16cb355818056c3"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/신용보증기금_보증비율별 보증부대출 금리 비교_20251231.csv",
+      "bytes": 1376,
+      "sha256": "32c31b87fa1a61e86a231e62e4b4423cdb3b8f4249b52cbdc290cb8995457c84"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/신용보증기금_보증비율별 보증부대출 금리 비교_20251231.csv.meta.json",
+      "bytes": 912,
+      "sha256": "72e804d71ec00ae0d79040b1f4f59fd9a72edfe7e033b12525c54bfd4d53225b"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/신용보증기금_보증심사등급별 보증료율_20210913.csv",
+      "bytes": 244,
+      "sha256": "22daa3bacb2f13806d533795f8fc0c3733f6aa9c54b0e56ca156471357025cba"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/신용보증기금_보증심사등급별 보증료율_20210913.csv.meta.json",
+      "bytes": 886,
+      "sha256": "3497ce3ebe3716b65592ea72ec901da8aadbcacad01528ecfac669f3cf1da970"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/중소벤처기업진흥공단_정책자금 업종별 융자제한 부채비율_20260101.csv",
+      "bytes": 1873,
+      "sha256": "c35aeceafde3b4d6f68c8cdfe4286f6f1f00887ef3e4192ac60dd7edb29ebef4"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/중소벤처기업진흥공단_정책자금 업종별 융자제한 부채비율_20260101.csv.meta.json",
+      "bytes": 1027,
+      "sha256": "2a93afb6720f28ea8f1f2c44c95ec02c5de7659c8e7c248e91d3355a67df1288"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/중소벤처기업진흥공단_정책자금 융자제외 대상업종_20260101.csv",
+      "bytes": 2217,
+      "sha256": "119758fd6c614d1789db144a830e2e7b1a0893f7b49cdd5c268e3cf6682f450c"
+    },
+    {
+      "path": "sources/original-finance/01_공공_정책금융/중소벤처기업진흥공단_정책자금 융자제외 대상업종_20260101.csv.meta.json",
+      "bytes": 1032,
+      "sha256": "54508aa3f41fa76117944674672f6eb7dc9c7aa8bba41a58600683199b864048"
+    },
+    {
+      "path": "sources/original-finance/02_KB_금융상품/KB_금융상품_8종.csv",
+      "bytes": 10508,
+      "sha256": "0c9dd874be01d6fdd1a92502db45daa83791ddddd1e2322b0451247d1ca987bf"
+    },
+    {
+      "path": "sources/original-finance/02_KB_금융상품/products.json",
+      "bytes": 15824,
+      "sha256": "bb0f4dfce12764ddb17ee4ed4ad0a9c847ea20aea0a24273127bdbbd43ab373f"
+    },
+    {
+      "path": "sources/original-finance/03_금융지원_후보/FINANCE-SUPPORT-SOURCES.md",
+      "bytes": 3480,
+      "sha256": "9251ea3436e0c837e1a96f0c6952f23fd5bb3d5599c3045e7157aea6be9dd51d"
+    },
+    {
+      "path": "sources/original-finance/03_금융지원_후보/finance-support.json",
+      "bytes": 6711,
+      "sha256": "efa710592f7ea487e97934a8ade8446eb54bc71c62a730bd8c595e5c185f43b2"
+    },
+    {
+      "path": "sources/original-finance/03_금융지원_후보/금융지원_후보_8종.csv",
+      "bytes": 4965,
+      "sha256": "9c6e330d88f2d46c3cb9c2a2e6e75dd140be53d801a277757de5a422b4d649ac"
+    },
+    {
+      "path": "sources/original-finance/04_KB_영업점/kb-branches.json",
+      "bytes": 104638,
+      "sha256": "12fab71ebd9e8815b9dd18469688e5e78da2e37d1c94e934aa2826da4b8d201c"
+    },
+    {
+      "path": "sources/original-finance/04_KB_영업점/KB_영업점_283곳.csv",
+      "bytes": 50716,
+      "sha256": "a5863cc1d056d3db0a36e9ec5705730bac57e9a5cc02515f3ce0d8f9451f3246"
+    },
+    {
+      "path": "assets/details-bank-a.json",
+      "bytes": 33604,
+      "sha256": "5acde9bfbde02bc294e0850c89180fb2a2422feafa9de883a9240c6b344d8df7"
+    },
+    {
+      "path": "assets/details-bank-b.json",
+      "bytes": 33128,
+      "sha256": "9e4d6c959b31081efcde7926c7beee31564c6e80be41d452d4add1e8c995ff98"
+    },
+    {
+      "path": "assets/details-policy.json",
+      "bytes": 37344,
+      "sha256": "61030c121b7ece83552ad9745a973d6f709e4137cfe4872c3ce6660831898e08"
+    },
+    {
+      "path": "assets/kb-branches.json",
+      "bytes": 104638,
+      "sha256": "12fab71ebd9e8815b9dd18469688e5e78da2e37d1c94e934aa2826da4b8d201c"
+    },
+    {
+      "path": "assets/products.json",
+      "bytes": 63097,
+      "sha256": "bec92e95866831c09df5a4c97580e20068002f70cfdd23073072151f99d49217"
+    }
+  ]
+}

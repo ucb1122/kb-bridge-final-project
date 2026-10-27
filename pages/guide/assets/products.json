@@ -1,0 +1,1348 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-26",
+  "notice": "KB 사업자·기업대출, 주택 외 개인 부동산 담보대출과 소상공인 정책자금의 공식 공개 조건을 모았습니다. 총 28개 안내 중 1개는 통합 안내이며, 27개는 개별 상품·자금입니다. 역할 구분은 정보 관련성이며 신청 자격·승인 판정이 아닙니다.",
+  "sourceNotice": "출처: KB국민은행 공식 상품 안내 / 중소벤처기업부 / 소상공인시장진흥공단 정책자금. 공개 안내 검토일 2026-10-26 · 실시간 개인금리·접수·예산 DB 아님",
+  "missingPolicyNotice": "소진공 공식 공통 안내는 부동산업 등을 제외업종으로 명시합니다. 부동산임대업 지원이 확인되지 않은 정책자금을 임대인에게 적용하지 않았습니다. KB 목록은 일반 사업자·기업 조건 확인용입니다.",
+  "products": [
+    {
+      "id": "kb-regional-guarantee",
+      "name": "KB소상공인 보증서대출(지역재단)",
+      "provider": "KB국민은행 · 지역신용보증재단",
+      "category": "business",
+      "roles": [
+        "tenant"
+      ],
+      "summary": "지역신용보증재단의 보증서를 바탕으로 사업 운영자금을 검토하는 대출입니다.",
+      "purposes": [
+        "운영자금",
+        "보증서대출"
+      ],
+      "eligibility": [
+        "사업자등록 후 영업 중인 개인사업자",
+        "신용보증재단의 보증 제한 사유에 해당하지 않아야 함",
+        "보증기관과 은행의 심사 필요"
+      ],
+      "rateText": "고객·보증상품·지역의 이차지원 협약에 따라 다릅니다. 현재 개인 적용금리는 공식 안내에서 확인하세요.",
+      "limitText": "최대 1억원 · 보증서 대출예정금액 범위 이내",
+      "termText": "최대 5년 이내 · 보증서 만기일까지",
+      "repaymentText": "만기일시상환 또는 원금균등분할상환 · 보증상품 등의 조건에 따름",
+      "documents": [],
+      "checks": [
+        "보증서 발급 여부와 보증 제한업종",
+        "지역별 이차지원 협약과 현재 취급 조건",
+        "공동사업자 등 제한 여부 및 별도 제출자료"
+      ],
+      "sourceUrl": "https://zloan.kbstar.com/quics?page=C109567",
+      "sourceTitle": "KB기업모바일브랜치 · KB소상공인 보증서대출(지역재단) 신청안내",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 안내 확인 · 보증·취급 조건 재확인",
+      "tags": [
+        "개인사업자",
+        "보증서",
+        "운영자금"
+      ],
+      "entryType": "product"
+    },
+    {
+      "id": "kb-soho-credit",
+      "name": "KB소상공인 신용대출",
+      "provider": "KB국민은행",
+      "category": "business",
+      "roles": [
+        "tenant",
+        "landlord"
+      ],
+      "summary": "담보 없이 사업기간·소득·신용등급을 바탕으로 한도를 심사하는 개인사업자 대출입니다.",
+      "purposes": [
+        "사업자금",
+        "운영자금"
+      ],
+      "eligibility": [
+        "현 사업기간 1년 이상인 개인사업자 · 공동사업자 제외",
+        "연소득금액 1천만원 이상",
+        "KB국민은행 신용등급 6등급 이상 등 공식 요건 확인",
+        "임대인에게는 일반 개인사업자 조건 확인용 정보이며 부동산임대업 취급을 확인한 것은 아님"
+      ],
+      "rateText": "기준금리와 가산금리로 산출하며 신용등급·기간·우대조건에 따라 달라집니다. 과거 공시 예시금리를 현재 개인금리로 표시하지 않습니다.",
+      "limitText": "최대 2억원 · 신용등급·소득 등에 따라 차등",
+      "termText": "일시상환 1년 · 연장 심사 별도 / 원금균등분할상환 최대 5년",
+      "repaymentText": "만기일시상환 또는 원금균등분할상환",
+      "documents": [],
+      "checks": [
+        "사업기간·소득금액·신용등급",
+        "자금용도 적정성과 현재 취급 가능 여부",
+        "공식 신청 과정에서 확인하는 인증서·세무정보",
+        "부동산임대업의 업종 제한과 허용 자금용도를 은행에 별도 확인"
+      ],
+      "sourceUrl": "https://obizapi.kbstar.com/quics?page=C100265",
+      "sourceTitle": "KB기업뱅킹 · KB소상공인 신용대출 상세안내",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 안내 확인 · 개인 조건 재확인",
+      "tags": [
+        "개인사업자",
+        "신용",
+        "운영자금"
+      ],
+      "entryType": "product",
+      "detailVerifiedAt": "2026-10-27",
+      "presentation": {
+        "limit": "최대 2억원",
+        "term": "일시 1년 · 분할 최대 5년",
+        "rate": "개인별 확인",
+        "audience": "사업 1년 이상 개인사업자"
+      },
+      "repaymentOptions": [
+        {
+          "name": "만기일시상환",
+          "plainText": "매월 이자를 내고, 만기에 원금을 한 번에 갚아요.",
+          "term": "1년",
+          "conditions": [
+            "일반적으로 1년 단위로 최대 5년까지 기한연장 심사를 받을 수 있습니다.",
+            "신용등급 BBB(소매형소호 3등급) 이상은 최대 10년 이내 기한연장이 가능합니다.",
+            "기한연장은 은행에서 정한 조건과 심사를 거쳐 결정됩니다."
+          ]
+        },
+        {
+          "name": "원금균등분할상환",
+          "plainText": "매월 같은 금액의 원금을 나눠 갚고, 남은 원금에 대한 이자를 함께 내요.",
+          "term": "최대 5년",
+          "conditions": [
+            "대출기간이 1년을 초과하면 총 대출기간의 3분의 1 범위에서 원금 상환을 미루고 이자만 내는 거치기간을 설정할 수 있습니다."
+          ]
+        }
+      ],
+      "rateExample": {
+        "label": "공식 안내의 과거 금리 예시",
+        "range": "연 3.63~5.64%",
+        "asOf": "2026-06-30",
+        "conditions": "소매형소호 1등급 · 대출기간 1년 · 일시상환 · 제조업",
+        "formula": "기준 연 2.92% + 가산 연 0.71~2.72%p",
+        "note": "현재 개인 적용금리가 아닙니다. 같은 공식 페이지 상단의 최저 연 3.31%(2026-08-19 기준)와도 기준일이 다릅니다. 서로 다른 시점의 금리를 합치지 않으며, 현재 조건은 공식 안내와 개별 심사에서 확인해야 합니다."
+      }
+    },
+    {
+      "id": "kb-owner-overdraft",
+      "name": "KB사장님+ 마이너스통장",
+      "provider": "KB국민은행",
+      "category": "business",
+      "roles": [
+        "tenant"
+      ],
+      "summary": "카드사 가맹대금을 KB계좌로 받는 개인사업자가 필요한 만큼 사용하는 한도대출입니다.",
+      "purposes": [
+        "운영자금",
+        "한도대출"
+      ],
+      "eligibility": [
+        "개인사업자 · 법인사업자 제외",
+        "최근 3개월 연속 카드매출",
+        "KB 카드가맹점 결제계좌 이용·신청 및 소매형SOHO 6C등급 이상 등 공식 조건"
+      ],
+      "rateText": "기준금리·가산금리·우대조건으로 결정합니다. 카드사와 입금 규모 등 조건별 현재 금리를 확인하세요.",
+      "limitText": "최대 1억원 · 신용등급·월평균 카드매출·업종 등에 따라 차등",
+      "termText": "1년 이내 · 기한연장 심사 시 최대 5년",
+      "repaymentText": "만기일시상환 · 사용 잔액에 대한 이자 납부",
+      "documents": [],
+      "checks": [
+        "KB국민카드 가맹대금 입금 필수 등 결제계좌 조건",
+        "계좌 변경 시 이용 제한 가능",
+        "신청 시 소득정보·인증 방법과 최신 상품 조건"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?page=C111884",
+      "sourceTitle": "KB기업뱅킹 · KB사장님+ 마이너스통장 상세안내",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 안내 확인 · 계좌·매출 조건 재확인",
+      "tags": [
+        "개인사업자",
+        "카드매출",
+        "한도대출"
+      ],
+      "entryType": "product"
+    },
+    {
+      "id": "kb-119plus",
+      "name": "KB 소상공인 119plus 장기분할상환 대출",
+      "provider": "KB국민은행",
+      "category": "business",
+      "roles": [
+        "tenant"
+      ],
+      "summary": "일시적 자금사정 악화로 기존 KB 기업대출의 상환이 어려워질 때 채무조정을 검토하는 상품입니다.",
+      "purposes": [
+        "기존 대출 상환부담",
+        "채무조정"
+      ],
+      "eligibility": [
+        "정상대출을 보유하나 일시적 유동성 부족으로 상환 곤란이 예상되는 개인·법인사업자 중 공식 대상",
+        "전년도 매출 20억원 미만·총자산 10억원 미만·당행 총여신 10억원 미만 등 요건",
+        "소상공인 정책자금 융자 제외대상 업종 미해당 등 추가 확인"
+      ],
+      "rateText": "12개월 주기 변동금리 구조입니다. 기존 대출금리 상한 관련 신청기한·세부조건은 공식 공시를 확인하세요.",
+      "limitText": "기존 대상 대출잔액 이내",
+      "termText": "담보 최대 10년 / 신용 최대 5년 · 거치 최대 3년",
+      "repaymentText": "원금균등분할상환",
+      "documents": [],
+      "checks": [
+        "기존 KB 기업대출의 지원·제외 여부",
+        "정책자금·보증서대출 등의 제한과 보증기관 동의 여부",
+        "신규 운영자금 공급 상품과 구분 · 총이자·상환기간 함께 확인"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001614",
+      "sourceTitle": "KB기업뱅킹 · KB 소상공인 119plus 장기분할상환 대출 상품공시",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "공시 유효기간 2025-04-18 ~ 2027-03-31",
+      "status": "공식 공시 확인 · 대상 대출 별도 심사",
+      "tags": [
+        "기존채무",
+        "분할상환",
+        "상환부담"
+      ],
+      "entryType": "product"
+    },
+    {
+      "id": "kb-soho-collateral",
+      "name": "KB 일사천리소호대출",
+      "provider": "KB국민은행",
+      "category": "business",
+      "roles": [
+        "tenant",
+        "landlord"
+      ],
+      "summary": "부동산을 담보로 제공하는 개인사업자가 운전·시설자금을 검토할 수 있는 상품입니다.",
+      "purposes": [
+        "운영자금",
+        "시설자금",
+        "부동산담보"
+      ],
+      "eligibility": [
+        "공식 신용등급 요건을 충족하는 개인사업자",
+        "배분담보가액이 대출금액의 80% 이상 등 담보 요건",
+        "부동산임대업의 취급 여부·허용 자금용도는 별도 확인"
+      ],
+      "rateText": "기준금리와 가산금리로 산출하며 신용등급·담보·거래조건에 따라 다릅니다. 현재 개인금리는 별도 확인하세요.",
+      "limitText": "총 소요자금 범위 내 최대 10억원 · 신용·사업소득 등에 따라 차등",
+      "termText": "분할상환 기준 운전 최대 5년 / 시설 최대 15년 · 일시상환 등 별도 조건",
+      "repaymentText": "일시상환·수시상환·분할상환 등 자금종류에 따른 공식 조건 확인",
+      "documents": [],
+      "checks": [
+        "임대인 표시가 임대업 전용상품 또는 신청 가능 판정을 뜻하지 않음",
+        "담보평가·사업소득·업종별 취급 제한",
+        "거치·중도상환수수료·담보 관련 비용"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25000068",
+      "sourceTitle": "KB기업뱅킹 · KB 일사천리소호대출 상품공시",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 공시 확인 · 업종·담보 조건 재확인",
+      "tags": [
+        "개인사업자",
+        "부동산담보",
+        "시설자금"
+      ],
+      "entryType": "product"
+    },
+    {
+      "id": "kb-general-working-capital",
+      "name": "일반운전자금대출",
+      "provider": "KB국민은행",
+      "category": "corporate",
+      "roles": [
+        "tenant",
+        "landlord"
+      ],
+      "summary": "기업의 원재료 구입·임금 지급 등 운영에 필요한 자금을 검토하는 일반 기업대출입니다.",
+      "purposes": [
+        "운영자금",
+        "기업자금"
+      ],
+      "eligibility": [
+        "개인사업자 또는 법인",
+        "업종·상환능력·자금용도·규모에 따른 은행 심사",
+        "임대업 고객은 업종 취급과 허용 자금용도 추가 확인"
+      ],
+      "rateText": "신용·담보·대출조건 등에 따른 금리를 공식 공시와 영업점에서 확인하세요.",
+      "limitText": "운전자금 한도 산정 범위 내 · 업종·상환능력·용도·규모에 따라 결정",
+      "termText": "일시상환 원칙 1년 이내 · 일정 요건에서 3년 또는 5년 / 분할상환 5년 이내",
+      "repaymentText": "일시상환 또는 분할상환 · 거치 등 약정조건 별도",
+      "documents": [],
+      "checks": [
+        "기업대출 분류는 법인만 신청한다는 의미가 아님",
+        "임대인 선택이 부동산임대업 대출 승인이나 한도 보장을 뜻하지 않음",
+        "필요 시 담보·보증과 중도상환수수료 확인"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25000004",
+      "sourceTitle": "KB기업뱅킹 · 일반운전자금대출 상품공시",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "공시 유효기간 2026-01-01 ~ 2027-12-31",
+      "status": "공식 공시 확인 · 업종·용도별 심사",
+      "tags": [
+        "개인·법인",
+        "운영자금",
+        "기업대출"
+      ],
+      "entryType": "product"
+    },
+    {
+      "id": "kb-growth-business",
+      "name": "KB 유망분야 성장기업 우대대출",
+      "provider": "KB국민은행",
+      "category": "corporate",
+      "roles": [
+        "tenant"
+      ],
+      "summary": "유망산업·기술평가 등 공식 요건을 충족하는 중소기업의 운전·시설자금을 검토하는 상품입니다.",
+      "purposes": [
+        "운영자금",
+        "시설자금",
+        "성장투자"
+      ],
+      "eligibility": [
+        "유망산업분야 영위 또는 혁신 프리미어 1000 선정 등 공식 요건",
+        "기업신용등급 BB+(소매형SOHO 5등급C) 이상 등 조건",
+        "기술평가 품목코드·기술신용등급 등 세부 요건은 유형별 상이"
+      ],
+      "rateText": "기준금리·가산금리·우대조건으로 결정합니다. 기술·신용·담보조건에 따른 현재 금리는 별도 확인하세요.",
+      "limitText": "총 소요자금 범위 내 · 신용등급·담보 등에 따라 차등",
+      "termText": "분할상환 기준 운전 최대 5년 / 시설 최대 15년 · 유형별 조건 상이",
+      "repaymentText": "일시상환 또는 원금균등분할상환 등 공식 조건 확인",
+      "documents": [],
+      "checks": [
+        "일반 가게 전체를 대상으로 하는 상품이 아님",
+        "표준산업분류·기술신용등급·선정 여부 확인",
+        "선택한 생활업종을 기술평가 업종코드로 자동 대응하지 않음"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25001291",
+      "sourceTitle": "KB기업뱅킹 · KB 유망분야 성장기업 우대대출 상품공시",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "공시 유효기간 2026-01-01 ~ 2027-12-31",
+      "status": "공식 공시 확인 · 산업·기술요건 추가 확인",
+      "tags": [
+        "중소기업",
+        "기술평가",
+        "시설자금"
+      ],
+      "entryType": "product"
+    },
+    {
+      "id": "semas-policy-2026",
+      "name": "2026 소상공인 정책자금 통합 안내",
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "summary": "전체 융자제도의 공통 조건과 변경 공고를 확인하는 안내입니다. 아래 개별 자금과 중복하여 별도 상품으로 세지 않습니다.",
+      "purposes": [
+        "운영자금",
+        "경영안정",
+        "성장투자"
+      ],
+      "eligibility": [
+        "세부 자금별 소상공인 요건과 제외업종 확인",
+        "소진공 공식 공통 안내는 부동산업 등을 제외업종으로 명시"
+      ],
+      "rateText": "세부 자금과 기준분기별로 다릅니다. 최신 회차 공고의 금리를 확인하세요.",
+      "limitText": "세부 자금별로 상이 · 해당 자금 공고 확인",
+      "termText": "세부 자금별로 상이 · 거치·상환기간 확인",
+      "repaymentText": "직접·대리대출 및 세부 자금별 상이",
+      "documents": [],
+      "checks": [
+        "통합 안내 1건이며 개별 대출상품 수에는 포함하지 않음",
+        "각 세부 자금의 회차·접수상태·예산을 신청 전에 다시 확인",
+        "소진공 기준을 중진공의 제외업종·부채비율 통계와 혼용하지 않음"
+      ],
+      "sourceUrl": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+      "sourceTitle": "중소벤처기업부 · 2026년 소상공인 정책자금 융자사업 변경 5차 공고",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "중기부 2026-10-01 변경 5차 공고 / 기업마당 등록 2026-10-02",
+      "status": "통합 공고 확인 · 현재 회차·예산 재확인",
+      "tags": [
+        "정책자금",
+        "소상공인",
+        "통합공고"
+      ],
+      "entryType": "overview",
+      "additionalSources": [
+        {
+          "title": "소진공 2026년 세부 자금별 요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        }
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 안내 확인 · 개인별 조건·현재 취급 재확인",
+      "entryType": "product",
+      "id": "kb-ontact",
+      "name": "KB소상공인 보증서대출(온택트)",
+      "category": "business",
+      "summary": "사업·매출 요건을 갖춘 개인사업자가 모바일로 보증과 운영자금 대출을 함께 신청하는 상품입니다.",
+      "purposes": [
+        "운영자금",
+        "보증서대출"
+      ],
+      "eligibility": [
+        "업력 1년 이상이며 지역신용보증재단의 보증서 발급이 가능한 개인사업자",
+        "최근 3개월 연속 매출 및 최근 7일 내 매출 발생 등 공식 요건",
+        "법인·공동대표·체납·연체·보증제한업종 등 제한 확인"
+      ],
+      "rateText": "3개월 변동금리 · 현재 적용금리와 별도 보증료를 확인하세요. 과거 화면의 최저금리를 현재 개인금리로 사용하지 않습니다.",
+      "limitText": "최대 3천만원 · 보증심사에 따라 결정",
+      "termText": "5년 · 1년 거치 포함",
+      "repaymentText": "1년 거치 후 4년 원금균등분할상환 · 중도상환수수료 면제 안내",
+      "checks": [
+        "지역재단 일반 보증서대출과 다른 비대면 상품 조건 확인",
+        "온라인 안내의 심의 유효기간이 지난 구간이 있어 최신 설명서·취급 여부 재확인",
+        "보증료는 대출이자와 별도"
+      ],
+      "sourceUrl": "https://zloan.kbstar.com/quics?CooperCD=&page=C109681",
+      "sourceTitle": "KB기업모바일브랜치 · KB온택트보증서대출 신청안내",
+      "tags": [
+        "개인사업자",
+        "보증서",
+        "비대면"
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 안내 확인 · 개인별 조건·현재 취급 재확인",
+      "entryType": "product",
+      "id": "kb-seller",
+      "name": "KB셀러론",
+      "category": "business",
+      "summary": "제휴 온라인 마켓·PG에서 받을 정산금을 미리 받고 정산일에 상환하는 판매자용 대출입니다.",
+      "purposes": [
+        "운영자금",
+        "매출정산"
+      ],
+      "eligibility": [
+        "KB 제휴 마켓·PG에서 판매하는 개인·법인사업자",
+        "제휴처 거래 3개월 이상 원칙 · 쿠팡 등 예외와 취급 범위 확인",
+        "공동대표·외국인·반품률 등 제한 및 KB 정산계좌 요건 확인"
+      ],
+      "rateText": "마켓별 제휴금리 적용 · 약정 중에도 바뀔 수 있습니다. 자동선정산 우대 여부와 현재 금리는 원문 확인",
+      "limitText": "개인 최대 5억원 / 법인 최대 20억원 · 건별 정산예정금의 70~95% 범위 등 마켓별 상이",
+      "termText": "약정 1년 · 연장 심사를 거쳐 최장 5년",
+      "repaymentText": "마켓 정산금 입금 시 대출금을 자동 상환하고 잔액을 지급",
+      "checks": [
+        "선정산은 지원금이 아닌 대출",
+        "쿠팡 로켓배송·로켓그로스 등 일반 셀러론 제외 매출 확인",
+        "마켓별 정산채권 양도와 선정산 비율 확인"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?page=C062645",
+      "sourceTitle": "KB기업뱅킹 · 선정산서비스(KB셀러론) 소개",
+      "tags": [
+        "개인·법인",
+        "온라인판매",
+        "매출정산"
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "2026-07-31 상품성 개선 / 공시 유효기간 2028-07-31까지",
+      "status": "공식 안내 확인 · 개인별 조건·현재 취급 재확인",
+      "entryType": "product",
+      "id": "kb-sunshine-119",
+      "name": "KB 햇살론 119",
+      "category": "business",
+      "summary": "119 채무조정 프로그램을 성실하게 이용 중인 개인사업자의 추가 사업자금을 보증으로 지원합니다.",
+      "purposes": [
+        "운영자금",
+        "기존 대출 상환부담"
+      ],
+      "eligibility": [
+        "최초대출: 개인사업자대출 119 또는 소상공인 119 Plus를 3개월 이상 이용 중이고 현재 연체가 없는 개인사업자",
+        "연매출 15억원 이하 · 만 34세 이하 청년사업자는 매출 요건 예외",
+        "서민금융진흥원 보증금지대상 미해당 · 추가대출은 6개월 경과·교육 등 별도 요건"
+      ],
+      "rateText": "12개월 변동금리 · 2026-07-31 개선 공시상 최종금리 상한 연 5.99%. 보증료·개인 적용금리는 별도 확인",
+      "limitText": "대출 합계 최대 3천만원 · 최대 2회, 보증심사에 따라 차등",
+      "termText": "60개월 · 1년 거치 포함",
+      "repaymentText": "1년 거치 후 4년 원금균등분할상환 · 중도상환수수료 면제 안내",
+      "checks": [
+        "채무조정 자체인 119plus와 추가 운영자금인 햇살론119를 구분",
+        "2026년 개선 전 한도 2천만원·매출 3억원 조건을 현재 조건으로 혼용하지 않음",
+        "보증기관 제한업종과 신청 회차별 요건 확인"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001590",
+      "sourceTitle": "KB기업뱅킹 · 햇살론 119 상품공시",
+      "tags": [
+        "개인사업자",
+        "채무조정이용자",
+        "보증서"
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "공시 유효기간 2025-04-18 ~ 2027-03-31",
+      "status": "공식 안내 확인 · 개인별 조건·현재 취급 재확인",
+      "entryType": "product",
+      "id": "kb-119plus-extension",
+      "name": "KB 소상공인 119plus 만기연장 대출",
+      "category": "business",
+      "summary": "일시적 유동성 부족이 예상되는 기존 기업대출을 일시상환 방식으로 재대출·대환하는 채무조정 상품입니다.",
+      "purposes": [
+        "기존 대출 상환부담",
+        "채무조정"
+      ],
+      "eligibility": [
+        "정상대출 보유 중 연체 우려 또는 휴업 등 재무곤란이 예상되는 개인·법인사업자",
+        "전년도 매출 20억원·총자산 10억원·당행 총여신 10억원 미만 등 요건",
+        "소상공인 정책자금 융자 제외대상 업종 미해당 및 은행 심사"
+      ],
+      "rateText": "기존 대출과 채무조정 약정에 따른 금리·변경 조건을 영업점에서 확인하세요.",
+      "limitText": "기존 대상 대출잔액 이내",
+      "termText": "1년",
+      "repaymentText": "만기일시상환 · 자동대출·한도대출 형식 불가",
+      "checks": [
+        "장기분할상환 상품과 다른 만기연장 방식",
+        "정책·협약·보증서대출 등 제외 대출과 보증기관 동의 예외 확인",
+        "신규 사업자금 공급으로 간주하지 않음"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001621",
+      "sourceTitle": "KB기업뱅킹 · 119plus 만기연장 대출 상품공시",
+      "tags": [
+        "기존채무",
+        "만기연장",
+        "상환부담"
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant",
+        "landlord"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 대상·한도 확인 · 사업장·업종·기간 조건 재확인",
+      "entryType": "product",
+      "id": "kb-office-interim",
+      "name": "KB 업무시설(오피스) 중도금대출",
+      "category": "corporate",
+      "summary": "은행 지원대상 업무시설의 분양계약과 납입 요건을 갖춘 기업이 중도금을 검토하는 상품입니다.",
+      "purposes": [
+        "시설자금",
+        "사업장 구입"
+      ],
+      "eligibility": [
+        "KB 지원대상 업무시설 분양계약을 체결하고 분양대금의 10% 이상 납입한 기업고객",
+        "신용등급 BB+(소매형SOHO 5등급C) 이상 원칙 · 신설기업은 별도 기준",
+        "임대인에게는 기업고객 조건 확인용 정보이며 부동산임대업 취급을 확인한 것은 아님"
+      ],
+      "rateText": "기준금리+가산금리 · 3·6·12개월 변동 또는 고정금리. 대출기간 1년 초과 시 고정금리 적용 불가 안내",
+      "limitText": "업무시설 분양가의 50% / 지원시설 40% 범위 · 사업장별 심사 조건 우선",
+      "termText": "분양 사업장별 협약·대출 약정에서 확인",
+      "repaymentText": "중도금 실행 일정·상환방식은 지원 사업장과 약정에서 확인",
+      "checks": [
+        "일반 임대수입 보전 대출이 아님 · 대상 분양 사업장 확인",
+        "부동산임대업의 실제 취급·자가사용 또는 임대 목적 허용 여부를 별도 확인",
+        "기존 건물 보유만으로 대상이 되지 않음"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?page=C016287&cc=b035269%3Ab035393&prcode=LN25001419&isNew=N",
+      "sourceTitle": "KB기업뱅킹 · KB 업무시설(오피스) 중도금대출 상세안내",
+      "tags": [
+        "개인·법인",
+        "업무시설",
+        "시설자금"
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "공식 페이지 금리 예시 기준 2026-01-15 · 현재 금리 별도 확인",
+      "status": "공식 안내 확인 · 개인별 조건·현재 취급 재확인",
+      "entryType": "product",
+      "id": "kb-mega-seller",
+      "name": "KB메가셀러론",
+      "category": "corporate",
+      "summary": "여러 온라인 마켓·PG의 정산금을 통합하여 먼저 대출받고 정산금으로 상환하는 판매자용 상품입니다.",
+      "purposes": [
+        "운영자금",
+        "매출정산"
+      ],
+      "eligibility": [
+        "기업신용평가 BB-등급 이상 등 은행 조건을 충족하는 셀러",
+        "마켓·PG 중 1개 이상과 6개월 이상 거래",
+        "KB셀러론·KB매출더하기론 이용 마켓과 중복 이용 제한"
+      ],
+      "rateText": "신용·매출·거래조건에 따라 결정 · 공식 페이지의 과거 예시금리는 현재 개인 적용금리가 아닙니다.",
+      "limitText": "총 소요자금·신용·매출 범위 내 약정한도 · 건별 정산예정금과 마켓별 선정산율 적용",
+      "termText": "약정 1년 · 최장 5년까지 1년 단위 연장 심사 / 건별 실행 3개월",
+      "repaymentText": "일시상환 · 정산금 입금 시 만기가 빠른 건별 대출부터 우선 상환",
+      "checks": [
+        "마켓별 데이터 수집·정산계좌·채권양도 요건",
+        "일반 셀러론과 신용·거래기간·한도체계가 다름",
+        "한도약정·미사용수수료 등 별도 비용 확인"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?page=C067219",
+      "sourceTitle": "KB기업뱅킹 · KB메가셀러론 안내",
+      "tags": [
+        "개인·법인",
+        "온라인판매",
+        "통합정산"
+      ]
+    },
+    {
+      "provider": "KB국민은행",
+      "roles": [
+        "tenant"
+      ],
+      "documents": [],
+      "verifiedAt": "2026-10-26",
+      "referenceDate": null,
+      "status": "공식 안내 확인 · 개인별 조건·현재 취급 재확인",
+      "entryType": "product",
+      "id": "kb-sales-plus",
+      "name": "KB매출더하기론",
+      "category": "corporate",
+      "summary": "온라인 판매자의 월평균 정산금 수준을 바탕으로 한도를 정하고 정산금으로 상환하는 대출입니다.",
+      "purposes": [
+        "운영자금",
+        "매출정산"
+      ],
+      "eligibility": [
+        "은행이 데이터를 수집할 수 있는 플랫폼·자사몰 등에서 판매하는 셀러",
+        "1개 이상 마켓·PG에서 12개월 이상 거래 및 기업신용등급 BB+ 이상 등 요건",
+        "다른 선정산서비스 이용 마켓과 중복 불가 · 정산금 수령계좌 KB 지정·변경 요건"
+      ],
+      "rateText": "기준금리+가산금리 · 고객별 현재 금리와 부대비용 확인",
+      "limitText": "총 판매금액 범위 내 · 신용평가등급·판매금액 등에 따라 차등",
+      "termText": "대출 한도약정 1년",
+      "repaymentText": "플랫폼·PG의 정산금 입금 시 대출금을 우선 상환하고 잔액을 지급",
+      "checks": [
+        "이용신청 시 정산예정금 보유 확인",
+        "KB셀러론·KB메가셀러론 또는 타기관 선정산과 동일 마켓 중복 제한",
+        "정산채권 담보·양도 및 판매 데이터 제공 조건 확인"
+      ],
+      "sourceUrl": "https://obiz.kbstar.com/quics?page=C101744",
+      "sourceTitle": "KB기업뱅킹 · KB매출더하기론 소개 및 안내",
+      "tags": [
+        "개인·법인",
+        "온라인판매",
+        "매출정산"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-general-2026",
+      "name": "일반경영안정자금",
+      "summary": "업력과 관계없이 소상공인의 사업 운영자금을 검토하는 대리대출 자금입니다.",
+      "purposes": [
+        "운영자금",
+        "경영안정"
+      ],
+      "eligibility": [
+        "업력 제한 없이 소상공인 대상",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 4.72% · 기준 4.12%+0.6%p, 분기별 변동·우대 별도",
+      "limitText": "최대 7천만원",
+      "termText": "5년 · 거치 2년 포함",
+      "repaymentText": "대리대출 · 은행 약정에 따른 분할상환",
+      "checks": [
+        "소진공 지원대상 확인 후 보증기관·은행의 별도 심사",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "대리대출",
+        "운영자금"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [
+        "지자체 발급 재해 중소기업(소상공인) 확인증"
+      ],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-disaster-2026",
+      "name": "긴급경영안정자금(재해피해)",
+      "summary": "재해 확인증을 발급받은 피해 소상공인의 경영안정을 지원하는 대리대출 자금입니다.",
+      "purposes": [
+        "경영안정",
+        "재해복구"
+      ],
+      "eligibility": [
+        "재해 피해를 입고 지자체의 재해 중소기업(소상공인) 확인증을 발급받은 소상공인",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "일반 재해피해 유형 연 2.0% 고정 · 특별재난지역 특례 별도",
+      "limitText": "일반 재해피해 유형 최대 1억원",
+      "termText": "5년 · 거치 2년 포함",
+      "repaymentText": "대리대출 · 은행 약정에 따른 분할상환",
+      "checks": [
+        "재해 발생·확인증 발급 및 신청기한 확인",
+        "거제·통영 등 특정 피해지역 특례 한도·금리를 일반 신청자에게 적용하지 않음",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "대리대출",
+        "재해피해"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [
+        "장애인복지카드·국가유공자 카드(증서) 또는 장애인기업확인서"
+      ],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-disabled-2026",
+      "name": "장애인기업지원자금",
+      "summary": "장애 관련 공식 증빙을 갖춘 소상공인이 사업자금을 검토하는 대리대출 자금입니다.",
+      "purposes": [
+        "운영자금",
+        "경영안정"
+      ],
+      "eligibility": [
+        "장애인복지카드·국가유공자 카드(증서) 또는 장애인기업확인서를 소지한 장애 소상공인",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "연 2.0% 고정 · 공식 적용·우대조건 확인",
+      "limitText": "최대 1억원",
+      "termText": "7년 · 거치 2년 포함",
+      "repaymentText": "대리대출 · 은행 약정에 따른 분할상환",
+      "checks": [
+        "증빙 인정범위와 해당 회차 접수 여부 확인",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "장애인기업",
+        "대리대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-youth-employment-2026",
+      "name": "청년고용연계자금",
+      "summary": "청년 대표 또는 청년 근로자 고용 요건에 해당하는 소상공인의 운영자금입니다.",
+      "purposes": [
+        "운영자금",
+        "경영안정"
+      ],
+      "eligibility": [
+        "업력 3년 미만·만 39세 이하 대표인 소상공인, 또는 청년 근로자가 과반수인 소상공인",
+        "또는 최근 1년 이내 청년 근로자 1인 이상을 고용하고 유지 중인 소상공인",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 4.12% · 기준금리+0.0%p, 분기별 변동·우대 별도",
+      "limitText": "최대 7천만원",
+      "termText": "5년 · 거치 2년 포함",
+      "repaymentText": "대리대출 · 은행 약정에 따른 분할상환",
+      "checks": [
+        "대표 연령·업력 또는 근로자 연령·고용 유지 요건 확인",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "청년",
+        "고용",
+        "대리대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-refinance-2026",
+      "name": "소상공인 대환대출",
+      "summary": "중·저신용 소상공인의 고금리 사업자대출 또는 만기연장 애로 대출을 바꾸는 자금입니다.",
+      "purposes": [
+        "기존 대출 상환부담",
+        "대환"
+      ],
+      "eligibility": [
+        "중·저신용 소상공인",
+        "보유한 은행·비은행 사업자대출 중 고금리 또는 만기연장 애로 등 세부 대상대출 요건 충족",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "연 4.5% 고정",
+      "limitText": "최대 5천만원 · 기존 대상대출 및 심사 범위",
+      "termText": "10년 · 비거치 또는 거치 2년",
+      "repaymentText": "대리대출 · 대상대출 대환 후 약정에 따른 분할상환",
+      "checks": [
+        "대상대출 취급일·금리·신용평점과 기존 지원 이력은 회차 안내에서 확인",
+        "신규 운영자금 추가 공급으로 간주하지 않음",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "대환",
+        "상환부담"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-small-manufacturer-2026",
+      "name": "소공인특화자금",
+      "summary": "제조업 소공인이 생산 운영과 시설자금을 검토하는 대리대출 자금입니다.",
+      "purposes": [
+        "운영자금",
+        "시설자금"
+      ],
+      "eligibility": [
+        "제조업을 영위하며 상시근로자 10인 미만인 소공인",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 4.72% · 기준 4.12%+0.6%p, 분기별 변동·우대 별도",
+      "limitText": "운전 최대 1억원 / 시설 최대 5억원",
+      "termText": "운전 5년(거치 2년) / 시설 8년(거치 3년)",
+      "repaymentText": "대리대출 · 자금 종류별 약정에 따른 분할상환",
+      "checks": [
+        "선택한 가게 이름만으로 제조업 소공인 자격을 자동 판정하지 않음",
+        "시설자금의 허용 설비·증빙과 대출방식 확인",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "제조업",
+        "소공인",
+        "시설자금",
+        "대리대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-innovation-2026",
+      "name": "혁신성장촉진자금",
+      "summary": "성장·혁신 요건을 갖춘 소상공인을 일반형과 혁신형으로 구분하여 지원하는 직접대출 자금입니다.",
+      "purposes": [
+        "운영자금",
+        "시설자금",
+        "성장투자"
+      ],
+      "eligibility": [
+        "혁신형: 수출·매출 성장·스마트공장·선정사업·졸업후보기업·성실상환 등 유형별 요건",
+        "일반형: 스마트기술·백년소상공인·사회연대경제조직·창업사관학교 수료 등 유형별 요건",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 4.52% · 기준 4.12%+0.4%p, 분기별 변동·우대 별도",
+      "limitText": "일반형 운전 1억원·시설 5억원 / 혁신형 운전 2억원·시설 10억원 이내",
+      "termText": "운전 5년(거치 2년 이내) / 시설 8년(거치 3년 이내) · 비거치 선택 가능",
+      "repaymentText": "직접대출 · 심사 유형별 약정에 따른 분할상환",
+      "checks": [
+        "명칭의 혁신만으로 대상이 되지 않음 · 선정·기술·매출 등 유형별 증빙 확인",
+        "일반 접수와 졸업후보기업·사회연대경제조직 등 별도 접수 상태 구분",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "혁신",
+        "시설자금",
+        "직접대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [
+        "소상공인 선투자 추천서"
+      ],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-private-match-2026",
+      "name": "민간투자연계형 매칭융자",
+      "summary": "주관기관의 선투자와 추천을 받은 소상공인이 성장에 필요한 자금을 검토하는 직접대출입니다.",
+      "purposes": [
+        "성장투자",
+        "운영자금",
+        "시설자금"
+      ],
+      "eligibility": [
+        "해당 사업 주관기관의 투자금을 지원받고 소상공인 선투자 추천서를 발급받은 소상공인",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 4.52% · 기준 4.12%+0.4%p, 분기별 변동·우대 별도",
+      "limitText": "최대 5억원 · 투자·추천 및 세부 심사 조건 확인",
+      "termText": "8년 · 비거치 또는 거치 3년 이내",
+      "repaymentText": "직접대출 · 약정에 따른 분할상환",
+      "checks": [
+        "일반 민간투자 유치만으로 대상이 되지 않음 · 지정 주관기관과 추천 요건 확인",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "민간투자",
+        "성장투자",
+        "직접대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-mutual-growth-2026",
+      "name": "상생성장지원자금",
+      "summary": "TOPS·상생 플랫폼·점프업 등 지정 사업과 연계된 소상공인의 성장자금입니다.",
+      "purposes": [
+        "운영자금",
+        "시설자금",
+        "성장투자"
+      ],
+      "eligibility": [
+        "일반형: TOPS 1단계 선정",
+        "성장형: TOPS 2단계 선정 또는 소진공 상생협약 온라인 플랫폼 입점",
+        "도약형: 브랜드 소상공인 점프업 사업 선정 등 세부 요건",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 4.52% · 기준 4.12%+0.4%p, 분기별 변동·우대 별도",
+      "limitText": "일반형 운전 7천만원 / 성장형 운전 1억원·시설 5억원 / 도약형 운전 2억원·시설 10억원 이내",
+      "termText": "운전 5년(거치 2년 이내) / 시설 8년(거치 3년 이내)",
+      "repaymentText": "직접대출 · 유형과 자금종류별 약정에 따른 분할상환",
+      "checks": [
+        "모든 온라인 판매자가 대상은 아님 · 지정 프로그램·협약 플랫폼 확인",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "온라인성장",
+        "시설자금",
+        "직접대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-temporary-difficulty-2026",
+      "name": "일시적경영애로자금(직접대출)",
+      "summary": "매출·업력과 일시적 경영애로 사유를 충족하는 소상공인의 운영자금입니다.",
+      "purposes": [
+        "운영자금",
+        "경영안정"
+      ],
+      "eligibility": [
+        "연매출 1억 4백만원 미만이고 업력 7년 미만인 소상공인",
+        "공식 지침의 일시적 경영애로 사유 충족",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "일반 유형 2026년 4분기 연 4.12% · 기준금리+0.0%p, 분기별 변동",
+      "limitText": "일반 유형 최대 7천만원",
+      "termText": "5년 · 거치 2년 포함",
+      "repaymentText": "직접대출 · 약정에 따른 분할상환",
+      "checks": [
+        "임대료 인상이나 매출 감소만 입력했다고 대상이 되지는 않음 · 인정 사유 확인",
+        "홈플러스 피해 등 별도 특례의 대상·한도·금리를 일반 유형과 혼용하지 않음",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "경영애로",
+        "직접대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-rechallenge-2026",
+      "name": "재도전특별자금",
+      "summary": "재창업·채무조정 성실상환·재기사업화 등 유형별 요건에 해당하는 소상공인을 위한 자금입니다.",
+      "purposes": [
+        "운영자금",
+        "재창업",
+        "경영안정"
+      ],
+      "eligibility": [
+        "일반형: 재창업 준비·초기 또는 채무조정 성실상환 등 공식 요건",
+        "희망형: 2025년 희망리턴패키지 재기사업화 완료 등 요건",
+        "도약형: 재창업 업력 2년 이상이며 성장하는 성실상환 소상공인 등 요건",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 일반형 연 5.72% / 희망형 4.72% / 도약형 4.52% · 분기별 변동·우대 별도",
+      "limitText": "일반형 7천만원 / 희망형 1억원 / 도약형 2억원 이내",
+      "termText": "5년 · 거치 2년 포함",
+      "repaymentText": "직접대출 · 유형별 약정에 따른 분할상환",
+      "checks": [
+        "재창업·교육·채무조정·성실상환 등 유형별 증빙 확인",
+        "다른 직접대출 신청이 진행 중일 때 접수 제한 여부 확인",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "재창업",
+        "성실상환",
+        "직접대출"
+      ]
+    },
+    {
+      "provider": "중소벤처기업부 · 소상공인시장진흥공단",
+      "category": "policy",
+      "roles": [
+        "tenant"
+      ],
+      "entryType": "fund",
+      "parentId": "semas-policy-2026",
+      "verifiedAt": "2026-10-26",
+      "documents": [],
+      "status": "2026년 공식 조건 확인 · 현재 회차·접수·잔여예산 재확인",
+      "referenceDate": "2026년 세부 요건 / 4분기 금리표 적용 시작일 2026-10-10",
+      "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+      "sourceTitle": "소진공 · 2026년 정책자금 세부 지원요건",
+      "additionalSources": [
+        {
+          "title": "2026년 4분기 자금별 금리",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+        },
+        {
+          "title": "현재 접수 안내",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do"
+        }
+      ],
+      "id": "semas-credit-vulnerable-2026",
+      "name": "신용취약소상공인자금",
+      "summary": "신용관리 교육을 이수한 중·저신용 소상공인의 운영자금을 검토하는 직접대출입니다.",
+      "purposes": [
+        "운영자금",
+        "경영안정"
+      ],
+      "eligibility": [
+        "NCB 개인신용평점 839점 이하 등 공식 중·저신용 요건",
+        "소상공인 지식배움터 신용관리 교육 사전 이수",
+        "소상공인 공통 요건 및 제외업종 적용 · 부동산업 등 제외"
+      ],
+      "rateText": "2026년 4분기 연 5.72% · 기준 4.12%+1.6%p, 분기별 변동·우대 별도",
+      "limitText": "최대 3천만원",
+      "termText": "5년 · 거치 2년 포함",
+      "repaymentText": "직접대출 · 약정에 따른 분할상환",
+      "checks": [
+        "다른 신용평가사의 점수로 기준을 임의 대체하지 않음",
+        "교육 이수가 대출 승인이나 현재 접수를 보장하지 않음",
+        "정책자금은 상환하는 융자이며 지원금이 아님",
+        "신청 접수·확인서 발급이 대출 실행을 보장하지 않음 · 예산 소진 및 기관 심사 확인"
+      ],
+      "tags": [
+        "소상공인",
+        "중저신용",
+        "신용교육",
+        "직접대출"
+      ]
+    },
+    {
+      "id": "kb-general-property-collateral",
+      "name": "KB 일반부동산 담보대출",
+      "provider": "KB국민은행",
+      "category": "property",
+      "roles": [
+        "landlord"
+      ],
+      "entryType": "product",
+      "summary": "상가·오피스텔·나대지 등 주택 외 부동산을 담보로 검토하는 개인 담보대출입니다. 개인뱅킹 상품으로, 기업 운영자금과 구분해 확인하세요.",
+      "purposes": [
+        "주택 외 부동산 담보",
+        "개인 자금"
+      ],
+      "eligibility": [
+        "일반부동산을 담보로 신청하는 개인 고객",
+        "담보가치·소득·소재지 및 은행 심사에 따라 취급 여부 결정"
+      ],
+      "rateText": "COFIX 등 기준금리에 고객별 가산·우대금리를 반영합니다. 2026-08-27 예시표를 현재 개인 적용금리로 사용하지 않습니다.",
+      "limitText": "담보조사가격·소득·지역에 따른 한도 · 통장자동대출은 최대 3억원",
+      "termText": "일시상환 1~5년(통장 1년) / 분할상환 1~35년(나대지·할부금고정은 최대 10년) / 혼합상환 1~20년",
+      "repaymentText": "일시·분할·혼합상환 중 약정 방식 · 거치는 전체 기간의 30% 이내, 최대 3년",
+      "documents": [
+        "본인확인 서류",
+        "담보 등기권리 및 인감·서명확인 서류",
+        "주민등록·대상물건 관련 서류",
+        "소득 증빙 · 추가 서류는 영업점 확인"
+      ],
+      "checks": [
+        "개인 담보대출 분류 · 사업자·법인 대출과 구분",
+        "상가 소유만으로 승인되지 않으며 기존 임차·담보 권리와 허용 자금용도 확인",
+        "대상 부동산 근저당 설정, 중도상환 수수료와 부대비용 확인",
+        "주택담보대출·임대업 전용 지원금으로 표시하지 않음"
+      ],
+      "sourceUrl": "https://obank.kbstar.com/quics?QSL=F&cc=b104363%3Ab104516&isNew=N&page=C103557&prcode=LN20001162",
+      "sourceTitle": "KB 개인뱅킹 · KB 일반부동산 담보대출 상품안내",
+      "verifiedAt": "2026-10-26",
+      "referenceDate": "상품 본문 확인 / 금리 예시 기준 2026-08-27",
+      "status": "공식 안내 확인 · 개인·담보·자금용도 심사 필요",
+      "tags": [
+        "개인 담보대출",
+        "상가",
+        "오피스텔",
+        "주택 제외"
+      ]
+    }
+  ],
+  "scope": {
+    "bankProducts": 15,
+    "policyFunds": 12,
+    "policyOverviews": 1,
+    "bankScope": "KB국민은행 사업자·기업대출 및 주택 외 개인 부동산 담보대출",
+    "automaticEligibility": false
+  }
+}

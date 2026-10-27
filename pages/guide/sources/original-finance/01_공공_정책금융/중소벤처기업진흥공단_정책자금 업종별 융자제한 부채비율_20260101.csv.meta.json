@@ -1,0 +1,20 @@
+{
+  "file": "중소벤처기업진흥공단_정책자금 업종별 융자제한 부채비율_20260101.csv",
+  "title": "중소벤처기업진흥공단_정책자금 업종별 융자제한 부채비율",
+  "description": "중진공 정책자금의 업종별 평균부채비율·제한부채비율·사업전환 기준(%)",
+  "period": "2026-01-01 기준",
+  "update_cycle": "연간",
+  "data_modified": "2026-03-17",
+  "provider": "중소벤처기업진흥공단",
+  "source_url": "https://www.data.go.kr/data/15069482/fileData.do",
+  "license": "이용허락범위 제한 없음(공공데이터포털 표기)",
+  "encoding": "cp949",
+  "bytes": 1873,
+  "sha256": "c35aeceafde3b4d6f68c8cdfe4286f6f1f00887ef3e4192ac60dd7edb29ebef4",
+  "lines_including_header": 42,
+  "expected_bytes": 1873,
+  "expected_lines": 42,
+  "match": true,
+  "note": "중진공 정책자금(중소기업 대상) 기준. 소진공 소상공인 정책자금의 제외업종과 같다고 확인되지 않음",
+  "downloaded_at": "2026-10-22T05:44:43+00:00"
+}
