@@ -1,0 +1,19 @@
+{
+  "file": "신용보증기금_보증심사등급별 보증료율_20210913.csv",
+  "title": "신용보증기금_보증심사등급별 보증료율",
+  "description": "신용보증기금 보증심사등급(K1~K15 등)별 보증료율",
+  "period": "2021-09-13 기준(1회성)",
+  "update_cycle": "수시(1회성)",
+  "data_modified": "2025-08-27",
+  "provider": "신용보증기금",
+  "source_url": "https://www.data.go.kr/data/15088409/fileData.do",
+  "license": "이용허락범위 제한 없음(공공데이터포털 표기)",
+  "encoding": "cp949",
+  "bytes": 244,
+  "sha256": "22daa3bacb2f13806d533795f8fc0c3733f6aa9c54b0e56ca156471357025cba",
+  "lines_including_header": 20,
+  "expected_lines_in_browser": 20,
+  "match": true,
+  "downloaded_at": "2026-10-22T05:43:44+00:00",
+  "download": "공공데이터포털 파일 내려받기(브라우저) → 바이트 그대로 저장"
+}

@@ -1,0 +1,601 @@
+[
+  {
+    "id": "kb-regional-guarantee",
+    "name": "KB소상공인 보증서대출(지역재단)",
+    "sourceUrl": "https://zloan.kbstar.com/quics?page=C109567",
+    "detailSources": [
+      {
+        "title": "지역재단 보증서대출 신청안내",
+        "url": "https://zloan.kbstar.com/quics?page=C109567",
+        "scope": "상품조건·금리 예시·준비사항·비용·공식 신청 순서"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-soho-credit",
+    "name": "KB소상공인 신용대출",
+    "sourceUrl": "https://obizapi.kbstar.com/quics?page=C100265",
+    "detailSources": [
+      {
+        "title": "KB소상공인 신용대출 상세안내",
+        "url": "https://obizapi.kbstar.com/quics?page=C100265",
+        "scope": "상품조건·금리 예시·인증서·비대면 신청·비용"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-owner-overdraft",
+    "name": "KB사장님+ 마이너스통장",
+    "sourceUrl": "https://obiz.kbstar.com/quics?page=C111884",
+    "detailSources": [
+      {
+        "title": "KB사장님+ 마이너스통장 상세안내",
+        "url": "https://obiz.kbstar.com/quics?page=C111884",
+        "scope": "금리 예시·인증과 소득자료·상환·비용·계좌 유지조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-119plus",
+    "name": "KB 소상공인 119plus 장기분할상환 대출",
+    "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001614",
+    "detailSources": [
+      {
+        "title": "119plus 장기분할상환 공식 공시",
+        "url": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001614",
+        "scope": "금리 예시·신청기한 조건·기존채무·상환·비용"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류",
+        "url": "https://obizapi.kbstar.com/quics?page=C016276",
+        "scope": "기업대출 공통 안내입니다. 개별 상품의 필수서류 목록으로 확정하지 않습니다."
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-soho-collateral",
+    "name": "KB 일사천리소호대출",
+    "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25000068",
+    "detailSources": [
+      {
+        "title": "KB 일사천리소호대출 공식 공시",
+        "url": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25000068",
+        "scope": "금리 예시·기간·상환·담보·비용"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류",
+        "url": "https://obizapi.kbstar.com/quics?page=C016276",
+        "scope": "기업대출 공통 안내입니다. 개별 상품의 필수서류 목록으로 확정하지 않습니다."
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-general-working-capital",
+    "name": "일반운전자금대출",
+    "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25000004",
+    "detailSources": [
+      {
+        "title": "일반운전자금대출 공식 상품 경로",
+        "url": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25000004",
+        "scope": "공식 검색 결과의 상품 공시 본문 확인 · 예시 기준 2025-12-31"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류",
+        "url": "https://obizapi.kbstar.com/quics?page=C016276",
+        "scope": "기업대출 공통 안내입니다. 개별 상품의 필수서류 목록으로 확정하지 않습니다."
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-growth-business",
+    "name": "KB 유망분야 성장기업 우대대출",
+    "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25001291",
+    "detailSources": [
+      {
+        "title": "유망분야 성장기업 우대대출 공식 공시",
+        "url": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=N&page=C016280&prcode=LN25001291",
+        "scope": "금리 예시·기술 조건·기간·상환·비용"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류",
+        "url": "https://obizapi.kbstar.com/quics?page=C016276",
+        "scope": "기업대출 공통 안내입니다. 개별 상품의 필수서류 목록으로 확정하지 않습니다."
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-policy-2026",
+    "name": "2026 소상공인 정책자금 통합 안내",
+    "sourceUrl": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-ontact",
+    "name": "KB소상공인 보증서대출(온택트)",
+    "sourceUrl": "https://zloan.kbstar.com/quics?CooperCD=&page=C109681",
+    "detailSources": [
+      {
+        "title": "KB기업모바일브랜치 · KB온택트보증서대출 신청안내",
+        "url": "https://zloan.kbstar.com/quics?CooperCD=&page=C109681",
+        "scope": "공식 상품 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-seller",
+    "name": "KB셀러론",
+    "sourceUrl": "https://obiz.kbstar.com/quics?page=C062645",
+    "detailSources": [
+      {
+        "title": "KB기업뱅킹 · 선정산서비스(KB셀러론) 소개",
+        "url": "https://obiz.kbstar.com/quics?page=C062645",
+        "scope": "공식 상품 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-sunshine-119",
+    "name": "KB 햇살론 119",
+    "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001590",
+    "detailSources": [
+      {
+        "title": "KB기업뱅킹 · 햇살론 119 상품공시",
+        "url": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001590",
+        "scope": "공식 상품 조건"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류 공통 안내",
+        "url": "https://obiz.kbstar.com/quics?page=C016276",
+        "scope": "상품별 확정 서류가 아닌 기업대출 공통 확인목록"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-119plus-extension",
+    "name": "KB 소상공인 119plus 만기연장 대출",
+    "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001621",
+    "detailSources": [
+      {
+        "title": "KB기업뱅킹 · 119plus 만기연장 대출 상품공시",
+        "url": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001621",
+        "scope": "공식 상품 조건"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류 공통 안내",
+        "url": "https://obiz.kbstar.com/quics?page=C016276",
+        "scope": "상품별 확정 서류가 아닌 기업대출 공통 확인목록"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-office-interim",
+    "name": "KB 업무시설(오피스) 중도금대출",
+    "sourceUrl": "https://obiz.kbstar.com/quics?page=C016287&cc=b035269%3Ab035393&prcode=LN25001419&isNew=N",
+    "detailSources": [
+      {
+        "title": "KB기업뱅킹 · KB 업무시설(오피스) 중도금대출 상세안내",
+        "url": "https://obiz.kbstar.com/quics?page=C016287&cc=b035269%3Ab035393&prcode=LN25001419&isNew=N",
+        "scope": "공식 상품 조건"
+      },
+      {
+        "title": "KB기업뱅킹 신청절차·필요서류 공통 안내",
+        "url": "https://obiz.kbstar.com/quics?page=C016276",
+        "scope": "상품별 확정 서류가 아닌 기업대출 공통 확인목록"
+      }
+    ],
+    "confirmedAt": "2026-10-26"
+  },
+  {
+    "id": "kb-mega-seller",
+    "name": "KB메가셀러론",
+    "sourceUrl": "https://obiz.kbstar.com/quics?page=C067219",
+    "detailSources": [
+      {
+        "title": "KB기업뱅킹 · KB메가셀러론 안내",
+        "url": "https://obiz.kbstar.com/quics?page=C067219",
+        "scope": "공식 상품 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-sales-plus",
+    "name": "KB매출더하기론",
+    "sourceUrl": "https://obiz.kbstar.com/quics?page=C101744",
+    "detailSources": [
+      {
+        "title": "KB기업뱅킹 · KB매출더하기론 소개 및 안내",
+        "url": "https://obiz.kbstar.com/quics?page=C101744",
+        "scope": "공식 상품 조건"
+      },
+      {
+        "title": "KB매출더하기론 이용절차",
+        "url": "https://obiz.kbstar.com/quics?page=C101745",
+        "scope": "인증서·계좌·전자약정 준비"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-general-2026",
+    "name": "일반경영안정자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-disaster-2026",
+    "name": "긴급경영안정자금(재해피해)",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-disabled-2026",
+    "name": "장애인기업지원자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-youth-employment-2026",
+    "name": "청년고용연계자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-refinance-2026",
+    "name": "소상공인 대환대출",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-small-manufacturer-2026",
+    "name": "소공인특화자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-innovation-2026",
+    "name": "혁신성장촉진자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-private-match-2026",
+    "name": "민간투자연계형 매칭융자",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-mutual-growth-2026",
+    "name": "상생성장지원자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-temporary-difficulty-2026",
+    "name": "일시적경영애로자금(직접대출)",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-rechallenge-2026",
+    "name": "재도전특별자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "semas-credit-vulnerable-2026",
+    "name": "신용취약소상공인자금",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+    "detailSources": [
+      {
+        "title": "소진공 자금별 지원요건",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+        "scope": "유형·기간·추가 증빙 요건"
+      },
+      {
+        "title": "소진공 2026년 4분기 금리표",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+        "scope": "2026-10-10 적용 표"
+      },
+      {
+        "title": "소진공 공통 FAQ",
+        "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+        "scope": "서류·심사·상환·수수료의 공통 안내"
+      },
+      {
+        "title": "중기부 2026년 융자사업 변경 5차 공고",
+        "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+        "scope": "직접·대리 경로와 자금별 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  },
+  {
+    "id": "kb-general-property-collateral",
+    "name": "KB 일반부동산 담보대출",
+    "sourceUrl": "https://obank.kbstar.com/quics?QSL=F&cc=b104363%3Ab104516&isNew=N&page=C103557&prcode=LN20001162",
+    "detailSources": [
+      {
+        "title": "KB 개인뱅킹 · KB 일반부동산 담보대출 상품안내",
+        "url": "https://obank.kbstar.com/quics?QSL=F&cc=b104363%3Ab104516&isNew=N&page=C103557&prcode=LN20001162",
+        "scope": "공식 상품 조건"
+      }
+    ],
+    "confirmedAt": "2026-10-27"
+  }
+]

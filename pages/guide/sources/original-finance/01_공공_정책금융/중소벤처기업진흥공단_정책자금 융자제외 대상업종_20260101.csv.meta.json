@@ -1,0 +1,20 @@
+{
+  "file": "중소벤처기업진흥공단_정책자금 융자제외 대상업종_20260101.csv",
+  "title": "중소벤처기업진흥공단_정책자금 융자제외 대상 업종",
+  "description": "중진공 정책자금(중소기업 대상)의 융자제외 업종: 업종 분류, 산업분류코드, 융자 제외 업종",
+  "period": "2026-01-01 기준",
+  "update_cycle": "연간",
+  "data_modified": "2026-03-19",
+  "provider": "중소벤처기업진흥공단",
+  "source_url": "https://www.data.go.kr/data/3060406/fileData.do",
+  "license": "이용허락범위 제한 없음(공공데이터포털 표기)",
+  "encoding": "cp949",
+  "bytes": 2217,
+  "sha256": "119758fd6c614d1789db144a830e2e7b1a0893f7b49cdd5c268e3cf6682f450c",
+  "lines_including_header": 34,
+  "expected_bytes": 2217,
+  "expected_lines": 34,
+  "match": true,
+  "note": "중진공 정책자금(중소기업 대상) 기준. 소진공 소상공인 정책자금의 제외업종과 같다고 확인되지 않음",
+  "downloaded_at": "2026-10-22T05:44:42+00:00"
+}
