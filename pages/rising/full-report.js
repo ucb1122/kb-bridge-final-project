@@ -127,15 +127,21 @@ function ownerOverview(report){
     const currentValue=observation(report.quarter,key)??report.metrics[key]?.value;
     const card=make('article','owner-overview-card');
     let displayed='자료 없음';
+    let note='';
     if(key==='stores'&&currentValue!=null)displayed=`${number(currentValue)}개`;
     if(key==='sales'){
       const monthly=report.officialReportSales?.current;
       const stores=observation(report.quarter,'stores')??report.metrics.stores?.value;
       if(monthly!=null)displayed=`${number(monthly)}만 원`;
-      else if(currentValue!=null&&stores>0)displayed=`${number(Math.round(currentValue/3/stores/1e4))}만 원`;
+      else if(currentValue!=null&&stores>0){
+        const coveredStores=(report.industries||[]).reduce((sum,row)=>sum+(row.sales!=null?(row.stores||0):0),0);
+        if(coveredStores>=stores)displayed=`${number(Math.round(currentValue/3/stores/1e4))}만 원`;
+        else {displayed='자료 부족';note='일부 업종의 매출만 제공되어 산정할 수 없습니다.'}
+      }
     }
     if(key==='footfall'&&currentValue!=null&&report.analysisAreaM2>0)displayed=`${number(Math.round(currentValue/(report.analysisAreaM2/10000)))}명/ha`;
     card.append(make('span','owner-card-title',title),make('small','owner-card-quarter',quarter(report.quarter)),make('strong','owner-card-value',displayed));
+    if(note)card.append(make('small','owner-card-note',note));
     cards.append(card);
   }
   content.append(cards);
