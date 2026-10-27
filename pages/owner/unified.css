@@ -117,3 +117,27 @@
 .owner-unified .owner-overview>.report-block>h3{margin:0 0 14px;font-size:16px;line-height:1.4;font-weight:700}
 .owner-unified .owner-evidence summary{min-height:54px;box-sizing:border-box;line-height:1.4;align-items:center}
 .owner-unified .owner-overview .owner-evidence>h4{margin:20px 18px 10px;font-size:14px;line-height:1.4;font-weight:700}
+.owner-unified .owner-tab-title{margin:0 0 16px;font-size:17px;line-height:1.4;color:#172236}
+.owner-unified .owner-tab .owner-overview-cards{gap:8px;margin-bottom:18px}
+.owner-unified .owner-tab .owner-overview-card{min-height:98px;padding:13px 10px}
+.owner-unified .owner-tab .owner-card-value{margin-top:8px;font-size:clamp(15px,1.2vw,21px);white-space:normal;overflow-wrap:normal;word-break:keep-all}
+.owner-unified .owner-tab .owner-card-change,.owner-unified .owner-tab .owner-card-note{margin-top:7px;color:#65748b;font-size:10px;line-height:1.35;word-break:keep-all}
+.owner-unified .owner-tab .report-block{border:0;padding:12px 0 18px;margin:0 0 4px;box-shadow:none}
+.owner-unified .owner-tab .report-block>h3{margin:0 0 14px;font-size:15px}
+.owner-unified .owner-tab .detail-chart{margin:4px 0 0}
+.owner-unified .owner-tab .detail-chart svg{display:block;width:100%;height:auto;max-height:235px}
+.owner-unified .owner-bar-list{display:grid;gap:12px}
+.owner-unified .owner-bar-row{display:grid;grid-template-columns:minmax(92px,1fr) minmax(100px,2fr) auto;gap:9px;align-items:center;min-width:0;font-size:12px}
+.owner-unified .owner-bar-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.owner-unified .owner-bar-track{display:block;height:9px;border-radius:8px;background:#edf0f4;overflow:hidden}
+.owner-unified .owner-bar-fill{display:block;height:100%;border-radius:8px;background:#e4a900}
+.owner-unified .owner-bar-value{font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.owner-unified .owner-extra{margin:10px 0;border:1px solid #e5e9ef;border-radius:9px;background:#f7f9fb;overflow:hidden}
+.owner-unified .owner-extra>summary{padding:13px 15px;cursor:pointer;list-style:none;font-size:13px;font-weight:700}
+.owner-unified .owner-extra>summary::-webkit-details-marker{display:none}
+.owner-unified .owner-extra>summary::before{content:'▸';margin-right:7px}
+.owner-unified .owner-extra[open]>summary::before{content:'▾'}
+.owner-unified .owner-extra[open]>summary{border-bottom:1px solid #e5e9ef}
+.owner-unified .owner-extra>.report-block,.owner-unified .owner-extra>.report-caption{margin:0 14px}
+.owner-unified .owner-extra>.detail-table{width:calc(100% - 28px);margin:14px;font-size:11px}
+.owner-unified .owner-tab>.report-source{font-size:11px;color:#69778e}
