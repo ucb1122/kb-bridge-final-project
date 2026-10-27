@@ -99,7 +99,15 @@
 .owner-evidence summary::after{content:"";width:8px;height:8px;border-right:2px solid #344054;border-bottom:2px solid #344054;transform:rotate(45deg)}
 .owner-evidence[open] summary::after{transform:rotate(225deg)}
 .owner-evidence[open] summary{border-bottom:1px solid #e1e4e8}
-.owner-evidence>h4,.owner-evidence>.detail-table,.owner-evidence>.report-source{margin-left:18px;margin-right:18px}
+.owner-evidence>h4{margin:18px 18px 8px}
+.owner-unified .owner-evidence .detail-table{display:table!important;width:calc(100% - 36px)!important;margin:0 18px 16px!important;table-layout:fixed;border-collapse:collapse;overflow:visible;font-size:11px;font-variant-numeric:tabular-nums}
+.owner-unified .owner-evidence .detail-table th,.owner-unified .owner-evidence .detail-table td{box-sizing:border-box;padding:9px 6px;overflow-wrap:normal;white-space:nowrap;border-bottom:1px solid #e5e9ef}
+.owner-unified .owner-evidence .detail-table thead th{background:#f3f5f8;color:#44516a;font-weight:700}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(1){width:26%}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(2){width:16%}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(3){width:33%}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(4){width:25%}
+.owner-unified .owner-evidence .owner-condition-table th:first-child{width:38%}
 .owner-unified .region-card .report-tabs{display:flex}
 .owner-unified .owner-overview-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:12px}
 .owner-unified .owner-overview-card{min-height:105px;padding:12px 9px}
