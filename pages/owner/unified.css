@@ -141,3 +141,21 @@
 .owner-unified .owner-extra>.report-block,.owner-unified .owner-extra>.report-caption{margin:0 14px}
 .owner-unified .owner-extra>.detail-table{width:calc(100% - 28px);margin:14px;font-size:11px}
 .owner-unified .owner-tab>.report-source{font-size:11px;color:#69778e}
+.owner-unified .owner-tab .owner-extra[open]{background:#fff}
+.owner-unified .owner-tab .owner-extra>.report-block{box-sizing:border-box;width:calc(100% - 28px);margin:14px;padding:14px;overflow:hidden}
+.owner-unified .owner-tab .owner-extra>.report-block+.report-block{margin-top:0}
+.owner-unified .owner-tab .owner-extra .detail-table{display:table!important;box-sizing:border-box;width:100%!important;margin:12px 0 0!important;table-layout:fixed;border-collapse:collapse;overflow:visible;font-size:11px;font-variant-numeric:tabular-nums}
+.owner-unified .owner-tab .owner-extra>.detail-table{width:calc(100% - 28px)!important;margin:14px!important}
+.owner-unified .owner-tab .owner-extra .detail-table th,.owner-unified .owner-tab .owner-extra .detail-table td{box-sizing:border-box;padding:10px 7px;border-bottom:1px solid #e2e7ee;line-height:1.45;vertical-align:middle;white-space:normal;overflow-wrap:anywhere}
+.owner-unified .owner-tab .owner-extra .detail-table thead th{background:#f3f5f8;color:#44516a;font-weight:700}
+.owner-unified .owner-tab .owner-extra .detail-table th:first-child{text-align:left}
+.owner-unified .owner-tab .owner-extra .detail-table th:not(:first-child),.owner-unified .owner-tab .owner-extra .detail-table td{text-align:right}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(1){width:26%}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(2){width:16%}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(3){width:33%}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(4){width:25%}
+.owner-unified .owner-tab .owner-extra .owner-condition-table th:first-child,.owner-unified .owner-tab .owner-extra .owner-basis-table th:first-child{width:30%}
+.owner-unified .owner-tab .owner-extra .owner-condition-table td,.owner-unified .owner-tab .owner-extra .owner-basis-table td{text-align:left;line-height:1.6}
+.owner-unified .owner-tab .owner-extra .owner-basis-table{table-layout:auto}
+.owner-unified .owner-tab .owner-extra .owner-evidence-heading{margin:18px 14px 6px;font-size:14px;line-height:1.4}
+.owner-unified .owner-tab .owner-extra .owner-evidence-heading+.detail-table{margin-top:8px!important}
