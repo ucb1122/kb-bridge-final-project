@@ -77,7 +77,8 @@
 .owner-overview .detail-table{width:100%;table-layout:auto;white-space:normal}
 .owner-overview .detail-table th,.owner-overview .detail-table td{overflow-wrap:anywhere}
 @media(max-width:720px){.owner-overview-cards{grid-template-columns:1fr}.owner-overview-card{min-height:0}}
-.owner-unified .region-card #region-rank,.owner-unified .region-card #region-pdf,.owner-unified .region-card #region-type{display:none}
+.owner-unified .region-card #region-pdf{display:none}
+.owner-unified .region-card #region-rank{color:#69778e;font-size:11px;font-weight:400;line-height:1.4}
 .owner-unified .owner-overview-card{min-height:120px}
 .owner-unified .owner-card-quarter{margin-top:12px}
 .owner-unified .owner-card-value{margin-top:6px}

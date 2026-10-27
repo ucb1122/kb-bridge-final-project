@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js';
+import {renderReportTab} from './full-report.js?v=2';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
@@ -85,6 +85,12 @@ $('region-card-close').onclick=()=>{$('region-card').hidden=true;selectedCode=nu
 document.querySelectorAll('[data-report-tab]').forEach(button=>button.onclick=()=>{
   document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.classList.toggle('selected',tab===button));
   const body=$('report-body'),section=$('report-'+button.dataset.reportTab);
+  if(ownerMode){
+    document.querySelectorAll('.report-page').forEach(page=>{page.hidden=page!==section});
+    document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));
+    body.scrollTop=0;
+    return;
+  }
   body.scrollTo({top:body.scrollTop+section.getBoundingClientRect().top-body.getBoundingClientRect().top,behavior:'smooth'});
 });
 function syncDistrict(name){
@@ -240,21 +246,25 @@ function focusRegion(row){
 }
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
-  if(selectedCode!==row.code){$('report-body').scrollTop=0;document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.classList.toggle('selected',tab.dataset.reportTab==='overview'))}
+  if(selectedCode!==row.code){
+    $('report-body').scrollTop=0;
+    document.querySelectorAll('[data-report-tab]').forEach(tab=>{const selected=tab.dataset.reportTab==='overview';tab.classList.toggle('selected',selected);if(ownerMode)tab.setAttribute('aria-selected',String(selected))});
+    if(ownerMode)document.querySelectorAll('.report-page').forEach(page=>{page.hidden=page.id!=='report-overview'});
+  }
   selectedCode=row.code;$('region-card').hidden=false;
   updateBoundaryStyles();
   $('region-type').textContent=ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
   $('region-title').textContent=`${row.district} ${row.name}`;
-  $('region-rank').textContent=`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
+  $('region-rank').textContent=ownerMode?`${row.district} · ${kind==='dong'?'행정동 전체':'공식 상권'} · ${$('owner-industry').selectedOptions[0].textContent} · ${$('quarter').selectedOptions[0].textContent}`:`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
   $('report-overview').textContent='지역 데이터를 불러오는 중…';
-  if(!ownerMode)for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
+  for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
   const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
   try{
     let summary=summaryCache.get(key);
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
-    for(const tab of ownerMode?['overview']:['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
+    for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
     if(clicked&&!ownerMode){
       try{const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis)}
       catch(error){if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[],note:error.message})}
