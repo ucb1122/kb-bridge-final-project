@@ -224,17 +224,17 @@ function ownerTab(report,tab){
     const extra=ownerDetail('매출 세부 자료 더 보기');extra.append(topIndustries(report,'sales','추정매출 상위 업종','원'),breakdown(report,'성별 매출','sales',['male','female'],['남성','여성'],'원'));content.append(extra);
   }
   if(tab==='population'){
-    const workers=now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null;
+    const workers=now.workers?.total??(now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null);
     content.append(ownerCards([['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change],['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':'']]));
     content.append(ownerBars('시간대별 유동인구',hours.map((label,i)=>({label,n:now.footfall?.[`hour_${i}`]})),'명'));
     content.append(ownerBars('연령대별 유동인구',ages.map((label,i)=>({label,n:now.footfall?.[`age_${i===5?60:(i+1)*10}`]})),'명'));
-    const workerHistory=Object.keys(report.details||{}).sort().filter(q=>qs.includes(q)).map(q=>({q,n:report.details[q]?.workers?.male!=null&&report.details[q]?.workers?.female!=null?report.details[q].workers.male+report.details[q].workers.female:null}));
+    const workerHistory=Object.keys(report.details||{}).sort().filter(q=>qs.includes(q)).map(q=>({q,n:report.details[q]?.workers?.total??(report.details[q]?.workers?.male!=null&&report.details[q]?.workers?.female!=null?report.details[q].workers.male+report.details[q].workers.female:null)}));
     if(workerHistory.some(x=>x.n!=null))content.append(ownerLine(report,'직장인구 추이',workerHistory));
     else content.append(ownerDetail('직장인구 추이 · 행정동 자료 미제공','현재 원본에는 공식 상권별 직장인구만 있어 행정동 추이를 표시할 수 없습니다.'));
     const extra=ownerDetail('인구 세부 자료 더 보기');extra.append(ownerLine(report,'유동인구 추이',history('footfall')),ownerLine(report,'상주인구 추이',history('residents')));content.append(extra);
   }
   if(tab==='hinterland'){
-    const workers=now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null;
+    const workers=now.workers?.total??(now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null);
     content.append(ownerCards([['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':''],['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change]]));
     if(now.facilities?.subway!=null||now.facilities?.bus!=null)content.append(ownerBars('집객시설 현황',[['지하철역',now.facilities?.subway],['버스 정류소',now.facilities?.bus]].map(([label,n])=>({label,n})),'개','원본 CSV에 제공된 시설 수이며 지도 기준점 반경 집계와 다릅니다.'));
     else content.append(ownerDetail('집객시설 현황 · 행정동 자료 미제공','현재 원본의 시설 수는 공식 상권 기준으로만 제공됩니다. 행정동 전체의 시설 수나 지도 기준점 반경 수치로 바꿔 표시하지 않습니다.'));
