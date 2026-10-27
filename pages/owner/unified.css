@@ -156,6 +156,7 @@
 .owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(3){width:33%}
 .owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(4){width:25%}
 .owner-unified .owner-tab .owner-extra .owner-condition-table th:first-child,.owner-unified .owner-tab .owner-extra .owner-basis-table th:first-child{width:30%}
+.owner-unified .owner-tab .owner-extra .owner-condition-table thead th:nth-child(2),.owner-unified .owner-tab .owner-extra .owner-basis-table thead th:nth-child(2){text-align:left}
 .owner-unified .owner-tab .owner-extra .owner-condition-table td,.owner-unified .owner-tab .owner-extra .owner-basis-table td{text-align:left;line-height:1.6}
 .owner-unified .owner-tab .owner-extra .owner-basis-table{table-layout:auto}
 .owner-unified .owner-tab .owner-extra .owner-evidence-heading{margin:18px 14px 6px;font-size:14px;line-height:1.4}
