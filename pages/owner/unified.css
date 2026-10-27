@@ -99,7 +99,6 @@
 .owner-evidence summary::after{content:"";width:8px;height:8px;border-right:2px solid #344054;border-bottom:2px solid #344054;transform:rotate(45deg)}
 .owner-evidence[open] summary::after{transform:rotate(225deg)}
 .owner-evidence[open] summary{border-bottom:1px solid #e1e4e8}
-.owner-evidence>h4{margin:18px 18px 8px}
 .owner-unified .owner-evidence .detail-table{display:table!important;width:calc(100% - 36px)!important;margin:0 18px 16px!important;table-layout:fixed;border-collapse:collapse;overflow:visible;font-size:11px;font-variant-numeric:tabular-nums}
 .owner-unified .owner-evidence .detail-table th,.owner-unified .owner-evidence .detail-table td{box-sizing:border-box;padding:9px 6px;overflow-wrap:normal;white-space:nowrap;border-bottom:1px solid #e5e9ef}
 .owner-unified .owner-evidence .detail-table thead th{background:#f3f5f8;color:#44516a;font-weight:700}
@@ -117,4 +116,4 @@
 .owner-unified .owner-overview>.report-source{margin:12px 2px;color:#69778e;font-size:11px}
 .owner-unified .owner-overview>.report-block>h3{margin:0 0 14px;font-size:16px;line-height:1.4;font-weight:700}
 .owner-unified .owner-evidence summary{min-height:54px;box-sizing:border-box;line-height:1.4;align-items:center}
-.owner-unified .owner-evidence>h4{font-size:14px;line-height:1.4;font-weight:700}
+.owner-unified .owner-overview .owner-evidence>h4{margin:20px 18px 10px;font-size:14px;line-height:1.4;font-weight:700}
