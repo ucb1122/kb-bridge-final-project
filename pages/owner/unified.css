@@ -106,7 +106,8 @@
 .owner-unified .owner-evidence .owner-raw-table th:nth-child(2){width:16%}
 .owner-unified .owner-evidence .owner-raw-table th:nth-child(3){width:33%}
 .owner-unified .owner-evidence .owner-raw-table th:nth-child(4){width:25%}
-.owner-unified .owner-evidence .owner-condition-table th:first-child{width:38%}
+.owner-unified .owner-evidence .owner-condition-table th:first-child{width:30%}
+.owner-unified .owner-evidence .owner-condition-table th:nth-child(2),.owner-unified .owner-evidence .owner-condition-table td{text-align:left}
 .owner-unified .region-card .report-tabs{display:flex}
 .owner-unified .owner-overview-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:12px}
 .owner-unified .owner-overview-card{min-height:105px;padding:12px 9px}
@@ -159,3 +160,9 @@
 .owner-unified .owner-tab .owner-extra .owner-basis-table{table-layout:auto}
 .owner-unified .owner-tab .owner-extra .owner-evidence-heading{margin:18px 14px 6px;font-size:14px;line-height:1.4}
 .owner-unified .owner-tab .owner-extra .owner-evidence-heading+.detail-table{margin-top:8px!important}
+.owner-unified .owner-overview .owner-overview-cards{align-items:stretch}
+.owner-unified .owner-overview .owner-overview-card{box-sizing:border-box;min-width:0;height:100%;padding:12px 10px}
+.owner-unified .owner-overview .owner-card-title{min-height:20px;line-height:20px}
+.owner-unified .owner-overview .owner-card-quarter{min-height:18px;line-height:18px;margin-top:6px}
+.owner-unified .owner-overview .owner-card-value{margin-top:7px;font-size:clamp(13px,1.05vw,20px);line-height:1.25;white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
+.owner-unified .owner-overview .owner-card-note{margin-top:7px;font-size:10px;line-height:1.45;word-break:keep-all;color:#65748b}
