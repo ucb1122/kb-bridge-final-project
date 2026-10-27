@@ -130,7 +130,7 @@
 .owner-unified .owner-bar-row{display:grid;grid-template-columns:minmax(92px,1fr) minmax(100px,2fr) auto;gap:9px;align-items:center;min-width:0;font-size:12px}
 .owner-unified .owner-bar-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .owner-unified .owner-bar-track{display:block;height:9px;border-radius:8px;background:#edf0f4;overflow:hidden}
-.owner-unified .owner-bar-fill{display:block;height:100%;border-radius:8px;background:#e4a900}
+.owner-unified .owner-bar-fill{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#c8e1ff 0%,#77b2ff 48%,#428cf2 100%)}
 .owner-unified .owner-bar-value{font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .owner-unified .owner-extra{margin:10px 0;border:1px solid #e5e9ef;border-radius:9px;background:#f7f9fb;overflow:hidden}
 .owner-unified .owner-extra>summary{padding:13px 15px;cursor:pointer;list-style:none;font-size:13px;font-weight:700}
