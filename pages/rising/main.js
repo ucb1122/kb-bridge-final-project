@@ -247,14 +247,14 @@ async function showSummary(row,rank,clicked=false){
   $('region-title').textContent=`${row.district} ${row.name}`;
   $('region-rank').textContent=`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
   $('report-overview').textContent='지역 데이터를 불러오는 중…';
-  for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
+  if(!ownerMode)for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
   const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
   try{
     let summary=summaryCache.get(key);
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
-    for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
+    for(const tab of ownerMode?['overview']:['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
     if(clicked&&!ownerMode){
       try{const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis)}
       catch(error){if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[],note:error.message})}
