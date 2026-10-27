@@ -55,7 +55,8 @@ function metricTrend(report,key){
 function breakdown(report,title,group,keys,names,unit='명',description=''){
   const box=panel(title,description),source=current(report)[group];
   if(!source||!keys.some(k=>source[k]!=null)){box.append(unavailable('이 지역·분기의 세부 자료가 원본 CSV에 없습니다.'));return box}
-  const data=keys.map((key,i)=>({name:names[i],n:source[key]||0})),total=data.reduce((sum,x)=>sum+x.n,0),top=data.reduce((a,b)=>a.n>=b.n?a:b);
+  const data=keys.map((key,i)=>({name:names[i],n:source[key]})).filter(x=>x.n!=null),total=data.reduce((sum,x)=>sum+x.n,0),top=data.reduce((a,b)=>a.n>=b.n?a:b);
+  if(data.length<keys.length)box.append(make('p','report-caption','일부 항목의 원본 값이 없어 비율은 값이 제공된 항목 사이에서만 계산했습니다.'));
   box.append(make('p','report-highlight',`${top.name} 비중이 가장 높습니다 (${total?((top.n/total)*100).toFixed(1):'0.0'}%).`));
   const visual=data.length>10?[...data].sort((a,b)=>b.n-a.n).slice(0,8):data;
   box.append(chart(visual.map(x=>x.n),visual.map(x=>x.name)));
@@ -197,6 +198,20 @@ function ownerBars(title,entries,unit='개',description=''){
   section.append(list);return section;
 }
 function ownerDetail(title,description=''){const box=make('details','owner-extra');box.append(make('summary','',title));if(description)box.append(make('p','report-caption',description));return box}
+function ownerBasis(report,tab,now){
+  const box=ownerDetail('분석 설명·집계 기준');
+  const scope=report.kind==='dong'?'행정동 전체':'공식 상권';
+  const rows=[['공간·업종 범위',`${scope} · ${{all:'전체 업종',CS1:'외식업',CS2:'서비스업',CS3:'소매업'}[report.scopeIndustry||'all']||report.scopeIndustry}`],['기준 시점',quarter(report.quarter)]];
+  if(tab==='industry')rows.push(['점포수·개폐업','선택 지역·업종의 분기별 공개 원본 점포 수와 개업·폐업 점포 수입니다.'],['상위 업종','현재 분기 업종 코드별 점포 수를 내림차순으로 정렬했습니다.']);
+  if(tab==='sales'){
+    const stores=report.metrics.stores?.value,covered=(report.industries||[]).reduce((n,x)=>n+(x.sales!=null?(x.stores||0):0),0);
+    rows.push(['분기 추정매출',report.officialSalesEok!=null?'서울시 순위 화면의 분기 표시값을 우선 사용합니다. 그래프·원본 표는 공개 CSV 집계값입니다.':'공개 CSV의 선택 지역·업종 분기 추정매출 집계값입니다.'],['점포당 월평균',report.officialReportSales?.current!=null?'서울시 공식 화면의 월평균 표시값입니다.':report.officialSalesEok!=null?'서울시 순위 분기 매출액 ÷ 3개월 ÷ 선택 업종 점포 수로 계산한 참고값입니다.':stores>0&&covered>=stores?'공개 CSV의 분기 추정매출 ÷ 3개월 ÷ 점포 수로 계산한 참고값입니다.':`매출 제공 업종의 점포 ${number(covered)}개 / 전체 ${number(stores??0)}개로 범위가 일치하지 않아 계산하지 않습니다.`],['요일·시간대·성별','공개 CSV에 매출이 제공된 업종의 추정매출을 해당 항목별로 합산했습니다. 실제 개별 점포 매출은 아닙니다.']);
+  }
+  if(tab==='population'||tab==='hinterland')rows.push(['유동인구','공개 원본의 해당 분기 지역 전체 유동인구 합계입니다. 같은 사람의 반복 관측이 포함될 수 있습니다.'],['상주인구','공개 원본의 해당 분기 지역 상주인구입니다. 동일 값이 여러 분기에 제공될 수 있습니다.'],['직장인구',report.kind==='dong'?'서울 열린데이터광장의 행정동별 직장인구 원본을 지역 코드·분기로 결합했습니다. 같은 값이 연속 분기에 나타나면 원본 제공값의 반복이며 실제 인구가 변하지 않았다는 뜻은 아닙니다.':'공식 상권 기준 직장인구 원본입니다.']);
+  if(tab==='hinterland')rows.push(['집객시설',now.facilities?.subway!=null||now.facilities?.bus!=null?'원본에 제공된 시설 유형별 수치이며 지도 중심 반경 집계가 아닙니다.':'현재 적재된 집객시설 원본은 공식 상권 단위입니다. 행정동 전체 시설 수로 환산할 근거가 없어 표시하지 않습니다.']);
+  rows.push(['해석 주의','행정동 전체와 공식 상권은 범위가 다릅니다. 추정매출은 실제 점포 매출과 다를 수 있습니다.']);
+  const t=table(['항목','집계 기준·계산 방법'],rows);t.classList.add('owner-basis-table');box.append(t);return box;
+}
 function ownerTab(report,tab){
   const content=make('div','full-report owner-overview owner-tab'),now=current(report),qs=[...new Set(report.history.map(x=>x.quarter))].sort().filter(q=>q<=report.quarter).slice(-5);
   const metric=k=>report.metrics[k]?.value;
@@ -240,8 +255,10 @@ function ownerTab(report,tab){
     else content.append(ownerDetail('집객시설 현황 · 행정동 자료 미제공','현재 원본의 시설 수는 공식 상권 기준으로만 제공됩니다. 행정동 전체의 시설 수나 지도 기준점 반경 수치로 바꿔 표시하지 않습니다.'));
     const extra=ownerDetail('그래프 더 보기');extra.append(ownerLine(report,'상주인구 추이',history('residents')),ownerLine(report,'유동인구 추이',history('footfall')));content.append(extra);
   }
-  const basis=ownerDetail('분석 설명·집계 기준');basis.append(make('p','report-caption','행정동 전체와 공식 상권의 범위는 다릅니다. 매출은 공개 원본의 추정치이며 실제 점포 매출과 다를 수 있습니다.'));content.append(basis);
-  const evidence=ownerDetail('원본 수치·계산 근거');evidence.append(table(['분기','점포수','분기 추정매출','유동인구 집계'],qs.map(q=>{const get=k=>report.history.find(x=>x.quarter===q&&x.metric===k)?.value;return [quarter(q),amount(get('stores')),get('sales')==null?'자료 없음':`${number(get('sales'))}원`,amount(get('footfall'),'명')]})));content.append(evidence);
+  content.append(ownerBasis(report,tab,now));
+  const evidence=ownerDetail('원본 수치·계산 근거');evidence.append(make('h4','owner-evidence-heading','최근 분기 원본 수치'));
+  const raw=table(['분기','점포수','분기 추정매출','유동인구 집계'],qs.map(q=>{const get=k=>report.history.find(x=>x.quarter===q&&x.metric===k)?.value;return [quarter(q),amount(get('stores')),get('sales')==null?'자료 없음':`${number(get('sales'))}원`,amount(get('footfall'),'명')]}));raw.classList.add('owner-raw-table');evidence.append(raw);
+  const condition=table(['항목','내용'],[['지역',report.name],['공간 기준',report.kind==='dong'?'행정동 전체':'공식 상권'],['업종',report.scopeIndustry||'전체 업종'],['분석 분기',quarter(report.quarter)],['비교 분기',qs.length>1?quarter(qs.at(-2)):'자료 없음']]);condition.classList.add('owner-condition-table');evidence.append(make('h4','owner-evidence-heading','분석 조건'),condition);content.append(evidence);
   source();return content;
 }
 export function renderReportTab(target,report,tab,analysis){
