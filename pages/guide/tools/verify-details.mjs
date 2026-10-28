@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const read=name=>JSON.parse(fs.readFileSync(new URL('../assets/'+name,import.meta.url),'utf8'));
+const read=name=>JSON.parse(fs.readFileSync(new URL('../../../shared/finance/'+name,import.meta.url),'utf8'));
 const base=read('products.json'),files=['details-bank-a.json','details-bank-b.json','details-policy.json'].map(read),items=files.flatMap(file=>file.products);
 test('every catalog item has one local detailed record including rates repayment documents and process',()=>{
  assert.equal(new Set(items.map(item=>item.id)).size,items.length);

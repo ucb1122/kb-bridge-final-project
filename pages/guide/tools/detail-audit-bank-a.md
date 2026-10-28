@@ -1,6 +1,6 @@
 # KB 최초 7개 상품의 추가 공개정보 확인
 
-확인일: 2026-10-27. 산출물은 `assets/details-bank-a.json`이며 기존 `products.json`과 공유 원본은 수정하지 않았다.
+확인일: 2026-10-27. 산출물은 `shared/finance/details-bank-a.json`이며 기존 `products.json`과 공유 원본은 수정하지 않았다.
 
 ## 확인 범위
 
