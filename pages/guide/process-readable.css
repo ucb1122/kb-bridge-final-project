@@ -11,3 +11,5 @@
 .catalog-side .empty-state{padding:12px 12px 20px}
 .catalog-side .empty-state-kobi{width:clamp(110px,24%,145px);margin-bottom:8px}
 .catalog-side .empty-state button{margin-top:14px}
+
+.rate-comparison .rate-terms{font-size:16px;line-height:1.5;letter-spacing:-.02em;white-space:normal;overflow-wrap:anywhere}

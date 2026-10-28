@@ -113,8 +113,8 @@
     },
     {
       "path": "../../shared/finance/kb-branches.json",
-      "bytes": 104638,
-      "sha256": "12fab71ebd9e8815b9dd18469688e5e78da2e37d1c94e934aa2826da4b8d201c"
+      "bytes": 108046,
+      "sha256": "e7d7e15c654b7cae5f51b5d904ac56cd224d637f39c0fc20b8fa9f538eb085df"
     },
     {
       "path": "../../shared/finance/products.json",

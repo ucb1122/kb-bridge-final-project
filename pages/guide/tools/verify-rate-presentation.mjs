@@ -16,6 +16,16 @@ test('missing before/after never inferred from published loan range and maximum 
  const p=model('kb-soho-credit');assert.equal(p.kind,'published');assert.equal(p.range,'연 3.63~5.64%');assert.equal(p.before,undefined);assert.equal(p.benefit.headline,'최대 연 2.60%p');
  assert.equal(model('kb-sales-plus').range,'연 4.91~6.32%');assert.equal(model('kb-office-interim').range,'연 5.99%');assert.equal(model('semas-policy-2026').range,'연 1.40~5.72%');
 });
+test('rate details show the published product terms instead of a generic preference placeholder',()=>{
+ for(const product of catalog){
+  const html=productInformationSections(product,details.get(product.id),'tenant')[1].html;
+  assert.doesNotMatch(html,/상품별 확인|미공시 수치를 임의로 계산하지 않아요/,product.id);
+ }
+ const product=catalog.find(p=>p.id==='kb-sales-plus');
+ const html=productInformationSections(product,details.get(product.id),'tenant')[1].html;
+ assert.match(html,/금리 산정·우대 조건/);
+ assert.match(html,/기준금리|가산금리|우대조건/);
+});
 test('fee exemption and unknown fees stay distinct; stamp tax is numeric and bounded',()=>{
  assert.equal(feeHeadline({text:'공식 안내상 면제입니다.'}),'0원');assert.equal(feeHeadline({text:'추가 확인 필요'}),'조건별 확인');
  assert.equal(details.get('kb-soho-credit').fees.find(f=>f.label==='인지세').headline,'0~7만5천원');
