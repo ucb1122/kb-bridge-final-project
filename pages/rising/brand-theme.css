@@ -20,3 +20,5 @@
 #rank-metric,.region-card .report-head p{color:var(--kb-accent-ink)}
 .rank-badge.active{border-color:var(--kb-accent-ink);box-shadow:0 0 0 3px var(--kb-accent),0 3px 10px #40302030}
 .region-card .report-overview .analysis-box{background:var(--kb-accent-soft);border:1px solid var(--kb-line);border-left:4px solid var(--kb-accent)}
+
+.region-card .report-tabs button:not(.selected):hover,.region-card .report-tabs button:not(.selected):focus-visible{background:#fff1bd;color:#101624}

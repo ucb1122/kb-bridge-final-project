@@ -34,3 +34,5 @@
 .simple-product-rate{box-sizing:border-box;min-height:148px;padding:15px 20px;display:grid;grid-template-rows:auto 1fr auto;align-items:center}
 .simple-product-rate>strong,.simple-product-rate>strong.long-rate{font-size:21px;line-height:1.4;letter-spacing:-.5px;overflow-wrap:anywhere}
 @media(max-width:650px){.simple-product-rate{min-height:136px;padding:14px 16px}.simple-product-rate>strong,.simple-product-rate>strong.long-rate{font-size:18px}}
+
+.detail-panel .detail-tabs button:not([aria-selected="true"]):hover,.detail-panel .detail-tabs button:not([aria-selected="true"]):focus-visible{background:#fff1bd;color:#101624}
