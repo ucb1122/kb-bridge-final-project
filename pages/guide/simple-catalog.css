@@ -21,3 +21,11 @@
 .catalog-side .results-heading {
   position: static;
 }
+
+/* Product facts use a clamped text box, so flex gap alone does not separate the label. */
+.catalog-side .card-facts {
+  column-gap: 18px;
+}
+.catalog-side .card-facts small {
+  margin-right: 7px;
+}
