@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js?v=4';
+import {renderReportTab} from './full-report.js?v=23';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
@@ -167,8 +167,8 @@ function updateBoundaryStyles(){
       strokeWeight:active?2:hovered?1.5:1,
       strokeStyle:active?'shortdash':'solid',
       strokeOpacity:active||hovered?.9:.001,
-      fillColor:active?'#7950dc':hovered?'#8c68e8':'#ae94e9',
-      fillOpacity:active?.36:hovered?.22:.001
+      fillColor:ownerMode?(active?'#ffbf00':hovered?'#ffd447':'#ffcf59'):(active?'#7950dc':hovered?'#8c68e8':'#ae94e9'),
+      fillOpacity:ownerMode?(active?.5:hovered?.38:.001):(active?.36:hovered?.22:.001)
     });
     polygon.setZIndex(active?3:hovered?2:0);
   }
@@ -242,7 +242,19 @@ function focusRegion(row){
   if(Number.isFinite(row.lat)&&Number.isFinite(row.lng)){
     if(provider==='kakao'){map.setCenter(new kakao.maps.LatLng(row.lat,row.lng));map.setLevel(4)}
     else map.setView([row.lat,row.lng],16);
+    if(ownerMode)centerRegionInVisibleMap();
   }
+}
+function centerRegionInVisibleMap(){
+  const mapRect=$('map').getBoundingClientRect();
+  const sidebarRect=sidebar.getBoundingClientRect();
+  const reportRect=$('region-card').getBoundingClientRect();
+  const visibleLeft=sidebar.classList.contains('collapsed')?mapRect.left:Math.max(mapRect.left,sidebarRect.right);
+  const visibleRight=$('region-card').classList.contains('collapsed')?mapRect.right:Math.min(mapRect.right,reportRect.left);
+  if(visibleRight-visibleLeft<120)return;
+  const offset=mapRect.left+mapRect.width/2-(visibleLeft+visibleRight)/2;
+  if(provider==='kakao')map.panBy(offset,0);
+  else map.panBy([offset,0],{animate:false});
 }
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
