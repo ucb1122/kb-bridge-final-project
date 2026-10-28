@@ -1,0 +1,19 @@
+{
+  "file": "신용보증기금_보증비율별 보증부대출 금리 비교_20251231.csv",
+  "title": "신용보증기금_보증부 대출 금리",
+  "description": "신용보증기금 보증부 대출의 은행별·보증비율(85/90/95/100%)별 평균·최대 대출금리",
+  "period": "2025-12-31 기준",
+  "update_cycle": "연간",
+  "data_modified": "2026-04-27",
+  "provider": "신용보증기금",
+  "source_url": "https://www.data.go.kr/data/15059831/fileData.do",
+  "license": "이용허락범위 제한 없음(공공데이터포털 표기)",
+  "encoding": "utf-8",
+  "bytes": 1376,
+  "sha256": "32c31b87fa1a61e86a231e62e4b4423cdb3b8f4249b52cbdc290cb8995457c84",
+  "lines_including_header": 19,
+  "expected_lines_in_browser": 19,
+  "match": true,
+  "downloaded_at": "2026-10-22T05:43:44+00:00",
+  "download": "공공데이터포털 파일 내려받기(브라우저) → 바이트 그대로 저장"
+}

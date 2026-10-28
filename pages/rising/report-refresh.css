@@ -1,0 +1,40 @@
+/* Match the rising-area ranking and report visuals to the owner report. */
+.sidebar #ranking li{grid-template-columns:24px minmax(0,1fr) minmax(65px,auto) minmax(50px,auto);gap:8px;min-height:53px;align-items:center}
+.sidebar #ranking li>span:first-child,.sidebar #ranking li:nth-child(-n+3)>span:first-child{box-sizing:border-box;width:24px;padding:0;border:0;border-radius:0;background:transparent;color:#151923;font-weight:400;text-align:left}
+.sidebar #ranking li strong{white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}
+.sidebar #ranking li .change{white-space:nowrap;font-variant-numeric:tabular-nums}
+.region-card .report-body{padding:16px 18px}
+.region-card .report-page{padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #e2e7ee}
+.region-card .report-block,.region-card .trend-card{box-sizing:border-box;border:1px solid #e1e5ea;border-radius:8px;background:#fff;padding:16px;margin:0 0 14px}
+.region-card .report-block h3,.region-card .trend-card h3{font-size:15px;line-height:1.4;margin:0 0 12px}
+.region-card .report-highlight,.region-card .trend-card strong{color:#172236}
+.region-card .detail-chart{width:100%;margin:8px 0}
+.region-card .detail-chart svg{display:block;width:100%;height:auto;max-height:none}
+.region-card .detail-chart svg text{font-size:12px}
+.region-card .trend-grid{grid-template-columns:1fr;gap:14px}
+.region-card .trend-card{min-width:0;margin:0}
+.region-card .trend-card svg{display:block;width:100%;height:auto}
+.region-card .history-table,.region-card .detail-table{display:table;width:100%;margin:12px 0 0;border-collapse:collapse;table-layout:fixed;font-size:12px;font-variant-numeric:tabular-nums}
+.region-card .history-table th,.region-card .history-table td,.region-card .detail-table th,.region-card .detail-table td{padding:10px 8px;border-bottom:1px solid #e2e7ee;white-space:normal;overflow-wrap:anywhere;vertical-align:middle}
+.region-card .history-table thead th,.region-card .detail-table thead th{background:#f3f5f8;color:#44516a;font-weight:700}
+.region-card .history-table th:first-child,.region-card .detail-table th:first-child{text-align:left}
+.region-card .history-table th:not(:first-child),.region-card .history-table td,.region-card .detail-table th:not(:first-child),.region-card .detail-table td{text-align:right}
+.region-card .owner-top-industries-table th:first-child{width:12%}
+.region-card .owner-top-industries-table th:nth-child(2){width:56%}
+.region-card .owner-top-industries-table th:nth-child(3){width:32%}
+.region-card .owner-top-industries-table th:nth-child(2),.region-card .owner-top-industries-table td:nth-child(2){text-align:left}
+.region-card .owner-detail-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+.region-card .owner-detail-split>*{min-width:0}
+.region-card .owner-industry-trends{display:grid;grid-template-columns:1fr;gap:14px}
+.region-card .owner-mini-trend{min-width:0}
+.region-card .owner-mini-trend:last-child{grid-column:1/-1}
+.region-card .owner-mini-trend h4{margin:0 0 6px;font-size:13px}
+.region-card .owner-gender-visual{width:min(100%,540px);margin:8px auto}
+.region-card .owner-gender-image{display:block;width:100%;height:auto;filter:brightness(1.05)}
+.region-card .owner-gender-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;width:70%;margin:8px auto 0;text-align:center}
+.region-card .owner-gender-stat{display:grid;justify-items:center;gap:4px;min-width:0}
+.region-card .owner-gender-name{font-size:15px;font-weight:700;color:#344054}
+.region-card .owner-gender-percent{font-size:clamp(24px,2vw,34px);line-height:1.1;color:#172236}
+.region-card .owner-gender-amount{font-size:13px;color:#65748b}
+.kakao-rank-marker .rank-badge .badge-number,.kakao-rank-marker .rank-badge .badge-name,.kakao-rank-marker .rank-badge .badge-value{color:#111;font-weight:800}
+@media(max-width:760px){.region-card .trend-grid,.region-card .owner-detail-split,.region-card .owner-industry-trends{grid-template-columns:1fr}.region-card .owner-mini-trend:last-child{grid-column:auto}}

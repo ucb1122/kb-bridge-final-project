@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js';
+import {renderReportTab} from './full-report.js?v=23';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
@@ -85,6 +85,12 @@ $('region-card-close').onclick=()=>{$('region-card').hidden=true;selectedCode=nu
 document.querySelectorAll('[data-report-tab]').forEach(button=>button.onclick=()=>{
   document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.classList.toggle('selected',tab===button));
   const body=$('report-body'),section=$('report-'+button.dataset.reportTab);
+  if(ownerMode){
+    document.querySelectorAll('.report-page').forEach(page=>{page.hidden=page!==section});
+    document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));
+    body.scrollTop=0;
+    return;
+  }
   body.scrollTo({top:body.scrollTop+section.getBoundingClientRect().top-body.getBoundingClientRect().top,behavior:'smooth'});
 });
 function syncDistrict(name){
@@ -161,8 +167,8 @@ function updateBoundaryStyles(){
       strokeWeight:active?2:hovered?1.5:1,
       strokeStyle:active?'shortdash':'solid',
       strokeOpacity:active||hovered?.9:.001,
-      fillColor:active?'#7950dc':hovered?'#8c68e8':'#ae94e9',
-      fillOpacity:active?.36:hovered?.22:.001
+      fillColor:ownerMode?(active?'#ffbf00':hovered?'#ffd447':'#ffcf59'):(active?'#7950dc':hovered?'#8c68e8':'#ae94e9'),
+      fillOpacity:ownerMode?(active?.5:hovered?.38:.001):(active?.36:hovered?.22:.001)
     });
     polygon.setZIndex(active?3:hovered?2:0);
   }
@@ -236,16 +242,32 @@ function focusRegion(row){
   if(Number.isFinite(row.lat)&&Number.isFinite(row.lng)){
     if(provider==='kakao'){map.setCenter(new kakao.maps.LatLng(row.lat,row.lng));map.setLevel(4)}
     else map.setView([row.lat,row.lng],16);
+    if(ownerMode)centerRegionInVisibleMap();
   }
+}
+function centerRegionInVisibleMap(){
+  const mapRect=$('map').getBoundingClientRect();
+  const sidebarRect=sidebar.getBoundingClientRect();
+  const reportRect=$('region-card').getBoundingClientRect();
+  const visibleLeft=sidebar.classList.contains('collapsed')?mapRect.left:Math.max(mapRect.left,sidebarRect.right);
+  const visibleRight=$('region-card').classList.contains('collapsed')?mapRect.right:Math.min(mapRect.right,reportRect.left);
+  if(visibleRight-visibleLeft<120)return;
+  const offset=mapRect.left+mapRect.width/2-(visibleLeft+visibleRight)/2;
+  if(provider==='kakao')map.panBy(offset,0);
+  else map.panBy([offset,0],{animate:false});
 }
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
-  if(selectedCode!==row.code){$('report-body').scrollTop=0;document.querySelectorAll('[data-report-tab]').forEach(tab=>tab.classList.toggle('selected',tab.dataset.reportTab==='overview'))}
+  if(selectedCode!==row.code){
+    $('report-body').scrollTop=0;
+    document.querySelectorAll('[data-report-tab]').forEach(tab=>{const selected=tab.dataset.reportTab==='overview';tab.classList.toggle('selected',selected);if(ownerMode)tab.setAttribute('aria-selected',String(selected))});
+    if(ownerMode)document.querySelectorAll('.report-page').forEach(page=>{page.hidden=page.id!=='report-overview'});
+  }
   selectedCode=row.code;$('region-card').hidden=false;
   updateBoundaryStyles();
   $('region-type').textContent=ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
   $('region-title').textContent=`${row.district} ${row.name}`;
-  $('region-rank').textContent=`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
+  $('region-rank').textContent=ownerMode?`${row.district} · ${kind==='dong'?'행정동 전체':'공식 상권'} · ${$('owner-industry').selectedOptions[0].textContent} · ${$('quarter').selectedOptions[0].textContent}`:`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
   $('report-overview').textContent='지역 데이터를 불러오는 중…';
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
