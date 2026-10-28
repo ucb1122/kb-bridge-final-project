@@ -62,8 +62,13 @@ export function renderTrends(target,report){
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 360 145');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${label} 분기별 추이`);
     for(const y of [24,65,106]){const line=document.createElementNS(svg.namespaceURI,'line');for(const [name,v] of Object.entries({x1:16,x2:344,y1:y,y2:y}))line.setAttribute(name,v);line.setAttribute('stroke','#e6e8f0');svg.append(line)}
     const coords=points.map((p,i)=>[20+(320*i/Math.max(points.length-1,1)),112-(p.value-min)/span*78]);
-    const poly=document.createElementNS(svg.namespaceURI,'polyline');poly.setAttribute('points',coords.map(p=>p.join(',')).join(' '));poly.setAttribute('fill','none');poly.setAttribute('stroke','#6637cb');poly.setAttribute('stroke-width','3');svg.append(poly);
-    coords.forEach(([x,y])=>{const dot=document.createElementNS(svg.namespaceURI,'circle');dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.setAttribute('r','4');dot.setAttribute('fill','#6637cb');svg.append(dot)});
+    const gradientId=`rising-trend-${key}`;
+    const defs=document.createElementNS(svg.namespaceURI,'defs'),gradient=document.createElementNS(svg.namespaceURI,'linearGradient');
+    gradient.setAttribute('id',gradientId);gradient.setAttribute('x1','0%');gradient.setAttribute('x2','100%');
+    for(const [offset,color] of [['0%','#428cf2'],['50%','#a8ceff'],['100%','#428cf2']]){const stop=document.createElementNS(svg.namespaceURI,'stop');stop.setAttribute('offset',offset);stop.setAttribute('stop-color',color);gradient.append(stop)}
+    defs.append(gradient);svg.append(defs);
+    const poly=document.createElementNS(svg.namespaceURI,'polyline');poly.setAttribute('points',coords.map(p=>p.join(',')).join(' '));poly.setAttribute('fill','none');poly.setAttribute('stroke',`url(#${gradientId})`);poly.setAttribute('stroke-width','3');svg.append(poly);
+    coords.forEach(([x,y])=>{const dot=document.createElementNS(svg.namespaceURI,'circle');dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.setAttribute('r','4');dot.setAttribute('fill','#428cf2');svg.append(dot)});
     card.append(svg,el('div','trend-labels',`${quarter(points[0].quarter)} → ${quarter(points.at(-1).quarter)}`),el('strong','',value(points.at(-1).value,key)));wrap.append(card);
   }
   target.replaceChildren(wrap);
