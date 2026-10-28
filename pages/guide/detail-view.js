@@ -28,7 +28,7 @@ function overview(product, detail, role) {
  const eligibility=product.eligibility.filter(v=>role==='landlord'||!v.startsWith('임대인에게는'));
  const p=ratePresentation(product,detail);
  const rate=p.kind==='comparison'?`${esc(p.after)} <small>우대·이자지원 반영 예시</small>`:`${p.range}`;
- return `<div class="simple-product-rate"><span>공시 금리 ${p.kind==='comparison'?'· 적용 예시':'예시'}</span><strong class="${String(p.range||p.after).length>25?'long-rate':''}">${p.kind==='comparison'?rate:esc(rate)}</strong><small>${esc(p.asOf||'자료 기준은 금리 탭에서 확인')} · 개인 적용금리가 아닙니다.</small></div><div class="simple-product-facts"><div><span>한도</span><strong>${esc(product.presentation?.limit||short(product.limitText))}</strong></div><div><span>기간</span><strong>${esc(product.presentation?.term||short(product.termText))}</strong></div></div><p class="simple-product-audience">${esc(audience)}</p><p class="simple-product-next">우대 전후·수수료는 <button type="button" data-open-info="rates">금리·비용</button>에서 확인하세요.</p><details class="plain-disclosure"><summary>상세 대상·한도 조건</summary>${list(eligibility)}<p>${esc(product.limitText)}</p><p>${esc(product.termText)}</p></details>`;
+ return `<div class="simple-product-rate"><span>공시 금리 ${p.kind==='comparison'?'· 적용 예시':'예시'}</span><strong >${p.kind==='comparison'?rate:esc(rate)}</strong><small>${esc(p.asOf||'자료 기준은 금리 탭에서 확인')} · 개인 적용금리가 아닙니다.</small></div><div class="simple-product-facts"><div><span>한도</span><strong>${esc(product.presentation?.limit||short(product.limitText))}</strong></div><div><span>기간</span><strong>${esc(product.presentation?.term||short(product.termText))}</strong></div></div><p class="simple-product-audience">${esc(audience)}</p><p class="simple-product-next">우대 전후·수수료는 <button type="button" data-open-info="rates">금리·비용</button>에서 확인하세요.</p><details class="plain-disclosure"><summary>상세 대상·한도 조건</summary>${list(eligibility)}<p>${esc(product.limitText)}</p><p>${esc(product.termText)}</p></details>`;
 }
 
 function rates(product, detail) {
@@ -85,4 +85,10 @@ export function renderProductDetails({element,product,detail,role}) {
  function selectTab(button){for(const tab of tabs){const active=tab===button;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;element.querySelector('#product-section-'+tab.dataset.infoTab).hidden=!active;}element.querySelector('#detail-content').scrollTop=0;}
  element.querySelectorAll('[data-open-info]').forEach(button=>button.addEventListener('click',()=>{const tab=tabs.find(t=>t.dataset.infoTab===button.dataset.openInfo);if(tab){selectTab(tab);tab.focus();}}));
  for(const button of tabs){button.addEventListener('click',()=>selectTab(button));button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const i=tabs.indexOf(button);const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(i+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[next]);tabs[next].focus();});}
+ const sourceDetails=element.querySelector('.information-sources');
+ sourceDetails?.addEventListener('toggle',()=>{
+  const icon=sourceDetails.querySelector('summary span');
+  if(icon)icon.textContent=sourceDetails.open?'－':'＋';
+  if(sourceDetails.open)requestAnimationFrame(()=>{const body=element.querySelector('#detail-content');if(body.scrollHeight>body.clientHeight)body.scrollTop+=sourceDetails.getBoundingClientRect().top-body.getBoundingClientRect().top;else sourceDetails.scrollIntoView({block:'nearest'});});
+ });
 }
