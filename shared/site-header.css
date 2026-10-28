@@ -38,7 +38,7 @@ body > header.kb-header nav a {
 }
 body > header.kb-header nav a { text-align: center; }
 body:has(> header.kb-header) .sidebar .panel-head > h1,
-body:has(> header.kb-header) .catalog-side .hero > h1 { text-align: center; }
+body:has(> header.kb-header) .catalog-side .hero > h1 { text-align: left; }
 body > header.kb-header nav a { transition: background-color .16s ease, color .16s ease; }
 body > header.kb-header nav a:hover { background-color: #fff5d6; color: #7a5500!important; }
 body > header.kb-header nav a:focus-visible { background-color: #fff5d6; outline: 2px solid #e5a800; outline-offset: -2px; }

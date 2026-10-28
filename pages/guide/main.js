@@ -104,9 +104,9 @@ function renderResults() {
   $('#catalog-results').setAttribute('aria-busy', 'false');
   if (!shown.length) {
     const emptyMessage = state.role === 'landlord' && state.category === 'policy'
-      ? text(catalog?.missingPolicyNotice, '부동산임대업에 적용할 수 있는 정책자금을 현재 목록에서 확인하지 못했습니다. 최신 공식 공고에서 업종 조건을 확인하세요.')
+      ? ''
       : '검색어나 상세 조건을 바꿔보세요. 목록에 없다는 이유로 지원 대상이 아닌 것은 아닙니다.';
-    $('#product-list').innerHTML = `<div class="empty-state"><strong>확인된 상품이 없어요.</strong>${escapeHTML(emptyMessage)}<br><button type="button" class="button button-outline" id="clear-results">조건 다시 설정하기</button></div>`;
+    $('#product-list').innerHTML = `<div class="empty-state"><img class="empty-state-kobi" src="/shared/characters/kobi-magnifying-glass.png" alt="돋보기로 상품을 찾는 코비"><strong>확인된 상품이 없어요.</strong>${emptyMessage ? `<p>${escapeHTML(emptyMessage)}</p>` : ''}<button type="button" class="button button-outline" id="clear-results">조건 다시 설정하기</button></div>`;
     $('#clear-results').addEventListener('click', resetFilters);
   } else {
     $('#product-list').innerHTML = shown.map((product) => {
@@ -200,9 +200,6 @@ async function init() {
         financeDetails.set(detail.id,{...detail,documents});
       }
     }
-    if (typeof catalog.notice === 'string') $('#catalog-notice').textContent = catalog.notice;
-    if (typeof catalog.sourceNotice === 'string') $('#catalog-source').textContent = catalog.sourceNotice;
-    else $('#catalog-source').textContent = `출처: 상품별 공식 안내 · 출처 확인 ${text(catalog.verifiedAt, '확인 필요')}`;
     populateFilters(); renderResults();
   } catch (error) {
     console.error('[금융상품 안내] 상품정보 로딩 실패', error);
@@ -210,7 +207,6 @@ async function init() {
     $('#result-count').textContent = '연결 확인 필요';
     $('#product-list').innerHTML = '<div class="empty-state" role="alert"><strong>상품정보를 불러오지 못했어요.</strong>잠시 후 다시 확인해 주세요.<br><button id="retry-load" type="button" class="button button-outline">다시 불러오기</button></div>';
     $('#retry-load').addEventListener('click', () => location.reload());
-    $('#catalog-source').textContent = '공식 상품정보 파일 연결을 확인해야 합니다.';
   }
 }
 
