@@ -31,6 +31,6 @@
 }
 
 /* Keep every product rate summary the same size, including long policy-rate text. */
-.simple-product-rate{box-sizing:border-box;min-height:190px;display:grid;grid-template-rows:auto 1fr auto;align-items:center}
+.simple-product-rate{box-sizing:border-box;min-height:148px;padding:15px 20px;display:grid;grid-template-rows:auto 1fr auto;align-items:center}
 .simple-product-rate>strong,.simple-product-rate>strong.long-rate{font-size:21px;line-height:1.4;letter-spacing:-.5px;overflow-wrap:anywhere}
-@media(max-width:650px){.simple-product-rate{min-height:168px}.simple-product-rate>strong,.simple-product-rate>strong.long-rate{font-size:18px}}
+@media(max-width:650px){.simple-product-rate{min-height:136px;padding:14px 16px}.simple-product-rate>strong,.simple-product-rate>strong.long-rate{font-size:18px}}
