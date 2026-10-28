@@ -1,2 +1,13 @@
 .process-intro{padding:22px 24px;background:#fff9df;border:1px solid #efdc8c;border-radius:14px;margin-bottom:24px}.process-intro>span{font-size:15px;color:#846b20}.process-intro h3{font-size:27px!important;line-height:1.5;margin:6px 0!important;color:#243850}.process-intro p{font-size:16px;line-height:1.8;color:#66778c;margin:6px 0 0}.readable-process{list-style:none!important;counter-reset:none!important;margin:0!important;padding:0!important;display:grid!important;gap:16px!important}.readable-process>li{display:flex!important;align-items:flex-start!important;gap:18px!important;padding:22px!important;border:1px solid #dfe5ed!important;border-radius:12px!important;background:#fff!important;min-height:100px!important;font-size:19px!important;line-height:1.8!important;box-shadow:none!important}.readable-process>li:before,.readable-process>li:after{display:none!important;content:none!important}.readable-process .process-number{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border-radius:50%;background:#ffcd32;color:#3c321a;font-size:22px;font-weight:800}.readable-process .process-step-label{font-size:13px!important;letter-spacing:1px;color:#8b7860;display:block;margin-bottom:5px}.readable-process h4{font-size:20px!important;line-height:1.8!important;word-break:keep-all;color:#263c58;margin:0!important;font-weight:700}.process-checks{margin-top:24px!important}.process-checks>summary{font-size:18px!important;padding:15px 0}.process-checks li{font-size:16px!important;line-height:1.9!important;margin:10px 0}
 @media(max-width:700px){.readable-process>li{padding:18px!important;gap:13px!important}.readable-process h4{font-size:18px!important}.process-intro h3{font-size:24px!important}}
+
+/* Center each customer type's icon and label as a single group. */
+.audience-switch .audience-button{justify-content:center;text-align:center}
+
+.empty-state-kobi{display:block;width:clamp(120px,28%,180px);height:auto;margin:0 auto 16px;object-fit:contain}
+.empty-state p{max-width:48ch;margin:0 auto;overflow-wrap:break-word}
+
+.catalog-side .results-panel:has(.empty-state){min-height:0;padding-bottom:16px}
+.catalog-side .empty-state{padding:12px 12px 20px}
+.catalog-side .empty-state-kobi{width:clamp(110px,24%,145px);margin-bottom:8px}
+.catalog-side .empty-state button{margin-top:14px}
