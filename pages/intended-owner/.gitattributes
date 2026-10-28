@@ -1,0 +1,11 @@
+* -text
+/*.js text eol=lf
+/*.mjs text eol=lf
+/*.html text eol=lf
+/*.css text eol=lf
+/*.md text eol=lf
+/tools/*.js text eol=lf
+/tools/*.mjs text eol=lf
+/tools/*.py text eol=lf
+/tools/*.txt text eol=lf
+/tools/*.md text eol=lf

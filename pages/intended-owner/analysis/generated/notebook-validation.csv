@@ -1,0 +1,3 @@
+﻿horizonYears,precision,recall,baseline,targetYears,selectedCount,method
+1,0.5129032258064516,0.20463320463320464,0.2501609787508049,"[2024, 2025]",310,past-input-years-only; top 10%; no retraining on heldout rows
+2,0.49032258064516127,0.1958762886597938,0.25,[2025],155,past-input-years-only; top 10%; no retraining on heldout rows
