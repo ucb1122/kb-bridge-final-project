@@ -10,7 +10,7 @@
 | 지도 경계 | `data/commerce.geojson`, `data/commerce-dong.geojson` | 상권·행정동 코드와 경계. 생성 파일, Git 제외 |
 | 공식 기본 순위 | `data/official-rankings-20262.json` | 확인된 2026년 2분기 기본 조건의 순서·표시값 |
 | 공식 보고서 매출 | `data/official-report-sales-20262.json` | 실제 화면에서 확인된 일부 지역·분기의 표시값 |
-| 사업자 화면 자료 | `pages/owner/assets/` | 위치·인허가 관측·지역 자료의 정적 스냅샷 |
+| 사업자 화면 자료 | `frontend/pages/owner/assets/` | 위치·인허가 관측·지역 자료의 정적 스냅샷 |
 
 공식 화면 확인값은 확인된 분기·지역·조건에만 적용합니다. 다른 조건을 공식값으로 꾸며 채우지 않습니다. 같은 단위라도 공개 원본과 공식 보고서 표시값은 일부 다를 수 있으므로 출처를 구분합니다.
 

@@ -5,7 +5,7 @@ import argparse, hashlib, json
 def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--project',default=str(Path(__file__).resolve().parents[3]))
+    parser.add_argument('--project',default=str(Path(__file__).resolve().parents[4]))
     parser.add_argument('--public-data',default=str(Path(__file__).resolve().parents[1]/'analysis/public-boundaries'))
     parser.add_argument('--source-assets',help='unified-regions.json, unified-boundaries.json, neighborhood-places.json이 있는 가공 스냅샷 폴더')
     args=parser.parse_args()

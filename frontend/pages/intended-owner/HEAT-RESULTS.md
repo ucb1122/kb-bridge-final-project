@@ -8,7 +8,7 @@
 
 1. 팀원이 코랩·Python에서 정해진 기준에 따라 지역별 결과를 만든다.
 2. 계산 과정·기간·분류 기준·결측과 지역 매핑을 팀에서 검토한다.
-3. 아래 형식의 작은 JSON 파일을 `pages/intended-owner/assets/` 안에 저장한다. 원본 개인정보·개별 차주의 상환내역은 넣지 않는다.
+3. 아래 형식의 작은 JSON 파일을 `frontend/pages/intended-owner/assets/` 안에 저장한다. 원본 개인정보·개별 차주의 상환내역은 넣지 않는다.
 4. `assets/heat-connection.json`의 `resultFile`을 파일명으로 바꾼다. 예: `"resultFile": "heat-results-20261026.json"`. 파일 이름에 폴더 경로나 외부 URL을 넣지 않는다.
 5. Node.js는 파일을 제공하고 브라우저의 `heat-adapter.js`가 형식을 검사한다. 상권코드로 기존 공식 지도 경계와 연결한다. Python에서 지도를 이미지로 저장하거나 분석 코드를 JavaScript로 다시 작성할 필요는 없다.
 
@@ -81,7 +81,7 @@ with output.open("w", encoding="utf-8") as file:
 
 ## 실행 검증
 
-프로젝트 루트에서 `node --test pages/intended-owner/tools/verify-heat.mjs`를 실행한다. 테스트는 미연결 상태, 검토 정보, 관측/예측 구분, 코드·기간·날짜, 중복, 근거, 자료 부족, 잘못된 중첩 입력을 확인한다. 실제 분류 성능을 검증하는 테스트는 아니다.
+프로젝트 루트에서 `node --test frontend/pages/intended-owner/tools/verify-heat.mjs`를 실행한다. 테스트는 미연결 상태, 검토 정보, 관측/예측 구분, 코드·기간·날짜, 중복, 근거, 자료 부족, 잘못된 중첩 입력을 확인한다. 실제 분류 성능을 검증하는 테스트는 아니다.
 
 
 ## CSV로 받은 Python 결과 내보내기
@@ -89,7 +89,7 @@ with output.open("w", encoding="utf-8") as file:
 저장소 루트에서 실행한다. CSV는 UTF-8이며 regionCode, classification, reason, evidence 열을 사용한다. evidence 셀은 위 계약의 JSON 배열이다. metadata 파일은 위 표의 실제 분석 메타정보 객체만 담는다. 이 도구가 분류나 검토 승인을 대신 만들지 않는다.
 
 ```powershell
-python pages/intended-owner/tools/export_heat_results.py --csv 팀결과.csv --metadata 팀검토메타.json --output pages/intended-owner/assets/heat-results.json
+python frontend/pages/intended-owner/tools/export_heat_results.py --csv 팀결과.csv --metadata 팀검토메타.json --output frontend/pages/intended-owner/assets/heat-results.json
 ```
 
 팀 검토를 거쳐 지도 연결까지 하려면 --activate를 추가한다. 기존 결과 파일을 교체할 때만 --overwrite를 명시한다. 검토 미승인, 중복/미일치 상권코드, 숫자 근거 누락, 잘못된 날짜는 연결하지 않는다. 원본 CSV와 메타정보는 변경하지 않는다. Python 실행기는 설치된 Python 3를 사용한다.

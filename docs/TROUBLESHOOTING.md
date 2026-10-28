@@ -4,16 +4,16 @@
 
 | 직면한 문제 | Streamlit에서 구현하며 겪은 점 | Node.js에서 직접 구현한 방식 | 현재 결정 |
 | --- | --- | --- | --- |
-| 지도 위 좌우 패널과 글자 크기 | 지도 캔버스와 두 패널을 맞추기 위해 Streamlit 내부 요소 선택자·고정 위치 CSS를 광범위하게 작성. 두 화면 간 폭·높이·글자 굵기 차이를 반복 수정 | `pages/`의 HTML 구조와 CSS에서 지도·패널 크기, 스크롤 영역, 반응형 배치를 직접 정의 | 브라우저 화면 코드를 직접 관리 |
+| 지도 위 좌우 패널과 글자 크기 | 지도 캔버스와 두 패널을 맞추기 위해 Streamlit 내부 요소 선택자·고정 위치 CSS를 광범위하게 작성. 두 화면 간 폭·높이·글자 굵기 차이를 반복 수정 | `frontend/pages/`의 HTML 구조와 CSS에서 지도·패널 크기, 스크롤 영역, 반응형 배치를 직접 정의 | 브라우저 화면 코드를 직접 관리 |
 | 복합 필터의 적용 시점 | 선택값·지도 상태·보고서 열림 여부를 `st.session_state`로 관리하고 지도 선택 뒤 `st.rerun()`으로 다시 렌더링 | JavaScript에서 임시 조건과 적용 조건을 분리하고 **적용/취소** 후 필요한 API만 다시 요청 | 필터 변경과 조회 시점을 명시 |
 | 지도 클릭과 보고서 연동 | 별도 Streamlit 지도 컴포넌트와 Python 페이지 사이에 선택 지역 코드를 전달하고 재실행 순서를 맞춤 | 지도 이벤트에서 지역 코드로 `/api/rising/report`를 조회하고 보고서 DOM을 갱신 | 지도 이벤트를 브라우저에서 처리 |
 | 순위·지도·보고서 값 불일치 | 행정동 원본과 상권 집계를 분리하고 같은 코드·분기를 사용하도록 수정 | 공식 기본 순위 스냅샷과 공개 원본 계산을 범위별로 나누고, 매출·유동인구 단위를 환산 | 계산 규칙·출처 구분을 유지 |
-| 실행 명령 혼동 | Python 프로젝트에는 `package.json`이 없어 `npm run dev`가 실패 | 저장소 루트에 `package.json`·`server.js`를 두고 `npm run dev`로 실행 | README·협업 문서의 실행 명령 통일 |
+| 실행 명령 혼동 | Python 프로젝트에는 `package.json`이 없어 `npm run dev`가 실패 | 저장소 루트 `package.json`에서 `backend/server.js`를 실행 | README·협업 문서의 실행 명령 통일 |
 
 ## 구체적인 코드 근거
 
-- Node.js: `server.js`가 API와 정적 화면을 제공하고 `pages/rising/main.js`가 조건 적용·지도 클릭·보고서 API 요청을 관리합니다.
-- 자료: `server/data.js`가 SQLite와 `data/official-*.json`을 읽어 지표별 적용 범위를 구분합니다.
+- Node.js: `backend/server.js`가 API와 정적 화면을 제공하고 `frontend/pages/rising/main.js`가 조건 적용·지도 클릭·보고서 API 요청을 관리합니다.
+- 자료: `backend/server/data.js`가 SQLite와 `data/official-*.json`을 읽어 지표별 적용 범위를 구분합니다.
 - 이전 Streamlit 구현에서는 `app_pages/`의 `session_state`·`st.rerun()`, `kb_bridge/ui/`의 패널 CSS·지도 컴포넌트를 사용했습니다. 해당 코드는 사용자가 보관한 이전 버전에 남아 있으며 현행 실행 경로에서는 제외했습니다.
 
 ## 남은 검증
