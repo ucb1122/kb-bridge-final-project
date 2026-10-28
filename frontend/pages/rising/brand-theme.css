@@ -1,0 +1,24 @@
+/* 공통 KB 색상: 뜨는 상권과 내 상권 보고서의 오래된 파란색 규칙을 덮는다. */
+:root{--kb-accent:#ffbc00;--kb-accent-ink:#745400;--kb-accent-soft:#fff8e4;--kb-line:#e9e2d2}
+.sidebar .filter .filter-options button.selected,.sidebar .filter .filter-actions #filter-apply{background:var(--kb-accent);color:#101624}
+.sidebar .filter .filter-options button.selected svg{stroke:#101624}
+.map-top .map-pin{fill:var(--kb-accent-ink)}
+.map-top span,.map-top-toggle{color:var(--kb-accent-ink)}
+.sidebar-toggle,.region-card-toggle{color:var(--kb-accent-ink);border-color:var(--kb-line)}
+.sidebar-toggle:hover,.sidebar-toggle:focus-visible,.region-card-toggle:hover,.region-card-toggle:focus-visible{background:var(--kb-accent-soft)}
+.region-card{border-top-color:var(--kb-accent)}
+.region-card .report-head small,.region-card .report-actions a,.region-card .report-actions button{color:var(--kb-accent-ink)}
+.region-card .report-actions a,.region-card .report-actions button{border-color:var(--kb-line)}
+.region-card .report-tabs button.selected{color:var(--kb-accent-ink);border-bottom-color:var(--kb-accent)}
+.region-card .report-chapter-title,.region-card .report-highlight,.region-card .trend-card strong,.region-card .best-card strong,.region-card .report-metric small,.region-card .opinion-emphasis{color:var(--kb-accent-ink)}
+.region-card .analysis-box,.region-card .report-overview .analysis-box{background:var(--kb-accent-soft);border-color:var(--kb-line);border-left:4px solid var(--kb-accent)}
+.kakao-rank-marker.region-hovered::before,.kakao-rank-marker:hover::before,.kakao-rank-marker:focus-visible::before{border-color:var(--kb-accent-ink)}
+.boundary-hover-label{border-color:var(--kb-accent);color:#101624}
+@media print{.region-card{border-top-color:var(--kb-accent)}}
+
+/* 세부 순위와 보고서에도 같은 강조색을 적용한다. */
+#rank-metric,.region-card .report-head p{color:var(--kb-accent-ink)}
+.rank-badge.active{border-color:var(--kb-accent-ink);box-shadow:0 0 0 3px var(--kb-accent),0 3px 10px #40302030}
+.region-card .report-overview .analysis-box{background:var(--kb-accent-soft);border:1px solid var(--kb-line);border-left:4px solid var(--kb-accent)}
+
+.region-card .report-tabs button:not(.selected):hover,.region-card .report-tabs button:not(.selected):focus-visible{background:#fff1bd;color:#101624}

@@ -3,14 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch server.js",
-    "start": "node server.js",
-    "test": "node --test tests/rankings.test.js",
-    "import:csv": "node scripts/import-csv.js",
-    "fetch:dong": "python scripts/fetch-dong.py",
-    "import:raw": "python scripts/import-raw.py",
-    "import:details": "python scripts/import-details.py",
-    "sync:rankings": "node scripts/sync-official-rankings.js"
+    "dev": "node --watch backend/server.js",
+    "start": "node backend/server.js",
+    "test": "node --test tests/*.test.js",
+    "import:csv": "node backend/scripts/import-csv.js",
+    "fetch:dong": "python backend/scripts/fetch-dong.py",
+    "import:raw": "python backend/scripts/import-raw.py",
+    "import:details": "python backend/scripts/import-details.py",
+    "sync:rankings": "node backend/scripts/sync-official-rankings.js"
   },
   "engines": {
     "node": ">=22.13"

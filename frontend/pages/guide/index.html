@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <link rel="icon" type="image/png" href="/shared/kb-favicon.png?v=4">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffbc00">
+  <meta name="description" content="사업자대출, 기업대출, 정책자금의 공식 정보를 한곳에서 확인하세요.">
+  <title>금융상품 안내 | 상권브릿지</title>
+  <link rel="stylesheet" href="./styles.css?v=20261028-selected">
+  <link rel="stylesheet" href="./complete-info.css?v=20261027-3">
+  <link rel="stylesheet" href="./catalog-compact.css?v=20261028-selected">
+  <link rel="stylesheet" href="./product-range.css?v=20261027-1">
+<link rel="stylesheet" href="./simple-catalog.css?v=20261028-card-hover">
+<link rel="stylesheet" href="./process-readable.css?v=20261028-kobi-compact">
+  <link rel="preload" href="/shared/fonts/NotoSansKR-Bold.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/shared/site-header.css?v=13">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+  <header class="site-header kb-header"><a class="brand" href="/pages/rising/" aria-label="KB 상권브릿지"><span class="kb-brand-image" aria-hidden="true"><img src="/shared/kb-bank-brand-source.png" alt=""></span><span>상권브릿지</span></a><nav aria-label="주 메뉴"><a href="/pages/rising/">뜨는 상권</a><a href="/pages/owner/">내 상권 분석</a><a href="/pages/intended-owner/" >우리 가게 회복 플래너</a><a href="/pages/guide/" class="active" aria-current="page">금융상품 안내</a></nav><div class="header-actions"><a class="header-end" href="/pages/guide/">이용안내</a><button class="header-login" type="button" disabled title="로그인 기능 준비 중">로그인</button></div></header>
+
+  <main id="main" class="page-shell">
+    <div class="workspace">
+      <section class="catalog-side" aria-labelledby="page-title">
+        <div class="hero">
+          <p class="eyebrow">금융상품 안내 서비스</p>
+          <h1 id="page-title">금융상품 한눈에 보기</h1>
+          <p class="hero-description">KB대출·정책자금의 대상과 조건을 비교해보세요.</p>
+        </div>
+
+        <div class="audience-switch" aria-label="고객 유형">
+          <button type="button" class="audience-button active" data-role="tenant" aria-pressed="true">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 21h34v22H7zM5 21l5-14h28l5 14M5 21c0 6 8 6 8 0 0 6 8 6 8 0 0 6 8 6 8 0 0 6 8 6 8 0 0 6 6 6 6 0M19 43V29h10v14"/></svg>
+            <span><strong>임차인<span class="role-description">(개인사업자)</span></strong><small>사업 운영에 필요한 금융정보</small></span>
+            <span class="role-arrow" aria-hidden="true">›</span>
+          </button>
+          <button type="button" class="audience-button" data-role="landlord" aria-pressed="false">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 43V5h24v38M31 19h10v24M3 43h42M15 13h3m5 0h1m-9 8h3m5 0h1m-9 8h3m5 0h1M17 43v-7h7v7M35 26h1m-1 8h1"/></svg>
+            <span><strong>임대인<span class="role-description">(건물주)</span></strong><small>임대사업 관련 금융정보</small></span>
+            <span class="role-arrow" aria-hidden="true">›</span>
+          </button>
+        </div>
+
+        <form id="search-form" class="search-form" role="search">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg>
+            <label class="sr-only" for="keyword">상품명 또는 키워드 검색</label>
+            <input id="keyword" name="q" type="search" placeholder="상품명이나 키워드를 검색하세요" autocomplete="off" maxlength="120">
+          </div>
+          <button type="submit" class="button button-primary search-submit">검색</button>
+        </form>
+
+        <div class="category-tabs" role="tablist" aria-label="상품 종류">
+          <button type="button" role="tab" id="category-all" aria-selected="true" aria-controls="catalog-results" tabindex="0" data-category="all">전체</button>
+          <button type="button" role="tab" id="category-business" aria-selected="false" aria-controls="catalog-results" tabindex="-1" data-category="business">사업자대출</button>
+          <button type="button" role="tab" id="category-corporate" aria-selected="false" aria-controls="catalog-results" tabindex="-1" data-category="corporate">기업대출</button>
+          <button type="button" role="tab" id="category-property" aria-selected="false" aria-controls="catalog-results" tabindex="-1" data-category="property">부동산담보</button>
+          <button type="button" role="tab" id="category-policy" aria-selected="false" aria-controls="catalog-results" tabindex="-1" data-category="policy">정책자금</button>
+        </div>
+
+        <p id="role-note" class="role-note">선택한 고객 유형과 관련된 정보를 모았습니다. 신청 가능 여부는 상품별로 확인하세요.</p>
+
+        <div class="results-layout">
+          <details class="filter-panel" aria-labelledby="filter-heading">
+            <summary>용도·기관으로 더 좁혀보기 <span aria-hidden="true">＋</span></summary>
+            <div class="filter-body">
+            <div class="panel-heading"><h2 id="filter-heading">상세 조건</h2><button id="reset-filters" type="button" class="text-button">초기화</button></div>
+            <form id="filter-form">
+              <label for="purpose">자금 용도</label>
+              <select id="purpose" name="purpose"><option value="">전체</option></select>
+              <label for="provider">제공기관</label>
+              <select id="provider" name="provider"><option value="">전체</option></select>
+              <button type="submit" class="button button-outline filter-submit">조건 적용</button>
+            </form>
+            <div class="filter-tip"><span aria-hidden="true">ⓘ</span><p>지역 통계로 개인의 대출 가능 여부를 판단하지 않습니다.</p></div>
+            </div>
+          </details>
+
+          <section id="catalog-results" class="results-panel" role="tabpanel" aria-labelledby="category-all" aria-busy="true" tabindex="-1">
+            <div class="panel-heading results-heading"><h2>상품·정책자금 목록</h2><span id="result-count" aria-live="polite">불러오는 중</span></div>
+            <div id="product-list" class="product-list"><div class="loading-state" role="status"><span class="loading-dot" aria-hidden="true"></span>공식 상품정보를 불러오고 있어요.</div></div>
+          </section>
+        </div>
+      </section>
+
+      <aside id="product-detail" class="detail-panel" aria-labelledby="detail-heading" tabindex="-1">
+        <div class="detail-empty"><span class="detail-empty-icon" aria-hidden="true">☷</span><h2 id="detail-heading">상품 상세정보</h2><p>목록에서 상품을 선택하면<br>공식 조건과 확인할 내용을 볼 수 있어요.</p></div>
+      </aside>
+    </div>
+
+  </main>
+  <noscript><p class="noscript">이 페이지에서 상품을 검색하려면 JavaScript를 켜주세요.</p></noscript>
+  <script type="module" src="./main.js?v=20261028-kobi-compact"></script>
+</body>
+</html>
