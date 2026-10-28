@@ -1,6 +1,6 @@
 # 금융 안내의 출처·확보 자료·집계 범위
 
-검토일: 2026-10-26 (한국시간). 화면 파일: `shared/finance/products.json`.
+검토일: 2026-10-26 (한국시간). 화면 파일: `frontend/shared/finance/products.json`.
 
 ## 현재 연결한 항목
 

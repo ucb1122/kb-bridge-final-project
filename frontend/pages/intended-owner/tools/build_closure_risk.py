@@ -7,7 +7,7 @@ import argparse, datetime, hashlib, json, math, re
 import numpy as np
 import pandas as pd
 
-ROOT=Path(__file__).resolve().parents[3]
+ROOT=Path(__file__).resolve().parents[4]
 PAGE=Path(__file__).resolve().parents[1]
 def digest(p):
     h=hashlib.sha256()
@@ -107,4 +107,4 @@ def build(data_dir, notebook_path, output):
     print(pd.DataFrame(rows).dropna(subset=['rank']).sort_values('rank').head(10)[['rank','name','predictedClosureRate','currentClosureRate']].to_string(index=False))
 
 if __name__=='__main__':
-    ap=argparse.ArgumentParser();ap.add_argument('--data-dir',type=Path,default=PAGE/'analysis/raw');ap.add_argument('--notebook',type=Path,default=PAGE/'analysis/sources/의사결정.ipynb');ap.add_argument('--output',type=Path,default=ROOT/'pages/intended-owner/assets/closure-risk.json');args=ap.parse_args();build(args.data_dir,args.notebook,args.output)
+    ap=argparse.ArgumentParser();ap.add_argument('--data-dir',type=Path,default=PAGE/'analysis/raw');ap.add_argument('--notebook',type=Path,default=PAGE/'analysis/sources/의사결정.ipynb');ap.add_argument('--output',type=Path,default=PAGE/'assets/closure-risk.json');args=ap.parse_args();build(args.data_dir,args.notebook,args.output)

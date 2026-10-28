@@ -5,7 +5,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "data/raw/dong"
 SHEET = "https://datafile.seoul.go.kr/bigfile/iot/sheet/csv/download.do"
 DATASETS = {

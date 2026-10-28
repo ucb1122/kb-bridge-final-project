@@ -99,4 +99,4 @@
 
 반환: `status`, `errors`, `missing`, `assumptions`, `rentAmount`, `scenarioRent`, `rentChangeAmount`, `monthlyInterestChange`, `annualVacancyLoss`, `monthlyDifference`, `annualDifference`, `currentMonthlyCashflow`, `scenarioMonthlyCashflow`, `annualRentBefore`, `annualRentAfter`, `monthlyRentAfterVacancy`, `rentOnlyBreakEvenLossPercent` 등. 필수 누락 시 incomplete, 잘못된 값·범위 초과·오버플로 시 invalid이며 계산 결과는 null이다.
 
-검증: `node --test pages/intended-owner/tools/verify-impact.mjs`.
+검증: `node --test frontend/pages/intended-owner/tools/verify-impact.mjs`.

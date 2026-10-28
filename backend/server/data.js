@@ -2,7 +2,7 @@ import {DatabaseSync} from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const kinds=new Set(['dong','area']),metrics=new Set(['stores','sales','salesPerStore','footfall','residents']);
 const criteria=new Set(['growth','highest','absolute','decline']),comparisons=new Set(['previous','same']),industries=new Set(['all','CS1','CS2','CS3']);
 function open(){const dbPath=path.resolve(root,process.env.DB_PATH||'data/commerce.sqlite');return fs.existsSync(dbPath)?new DatabaseSync(dbPath,{readOnly:true}):null}
