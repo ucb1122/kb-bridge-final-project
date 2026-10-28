@@ -31,7 +31,7 @@ body > header.kb-header nav a {
   position: relative; width: 100%; min-width: 0; height: 100%; padding: 0 8px!important;
   border: 0; border-bottom: 4px solid transparent!important;
   color: #121827!important; font: 700 17px/1.3 'KB Shared Header','Malgun Gothic',sans-serif!important;
-  white-space: nowrap; text-decoration: none;
+  letter-spacing: 0!important; font-synthesis: none; white-space: nowrap; text-decoration: none;
 }
 body > header.kb-header nav a.active, body > header.kb-header nav a[aria-current=page] {
   border-bottom-color: #ffbc00!important;
