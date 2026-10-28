@@ -1,0 +1,98 @@
+{
+  "file": "seoul_trdar_boundary.geojson",
+  "description": "서울시 상권분석서비스에서 사용 중인 상권영역 정보 (명세: 좌표계 EPSG:5181, 행정동 코드는 행정안전부 주민등록 행정기관코드)",
+  "source_file": "서울시 상권분석서비스(영역-상권).zip",
+  "source_entries": [
+    "서울시 상권분석서비스(영역-상권).shp",
+    "서울시 상권분석서비스(영역-상권).dbf",
+    "서울시 상권분석서비스(영역-상권).prj",
+    "서울시 상권분석서비스(영역-상권).cpg"
+  ],
+  "source_crs": ".prj 파라미터",
+  "source_prj": "PROJCS[\"Korea_2000_Korea_Central_Belt\",GEOGCS[\"GCS_Korea_2000\",DATUM[\"D_Korea_2000\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",200000.0],PARAMETER[\"False_Northing\",500000.0],PARAMETER[\"Central_Meridian\",127.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",38.0],UNIT[\"Meter\",1.0]]",
+  "target_crs": "WGS84 (EPSG:4326, RFC 7946 경도·위도 순서)",
+  "dbf_encoding": "utf-8",
+  "properties": [
+    {
+      "name": "TRDAR_SE_CD",
+      "dbf_field": "TRDAR_SE_C",
+      "dbf_type": "C"
+    },
+    {
+      "name": "TRDAR_SE_CD_NM",
+      "dbf_field": "TRDAR_SE_1",
+      "dbf_type": "C"
+    },
+    {
+      "name": "TRDAR_CD",
+      "dbf_field": "TRDAR_CD",
+      "dbf_type": "C"
+    },
+    {
+      "name": "TRDAR_CD_NM",
+      "dbf_field": "TRDAR_CD_N",
+      "dbf_type": "C"
+    },
+    {
+      "name": "XCNTS_VALUE",
+      "dbf_field": "XCNTS_VALU",
+      "dbf_type": "N"
+    },
+    {
+      "name": "YDNTS_VALUE",
+      "dbf_field": "YDNTS_VALU",
+      "dbf_type": "N"
+    },
+    {
+      "name": "SIGNGU_CD",
+      "dbf_field": "SIGNGU_CD",
+      "dbf_type": "C"
+    },
+    {
+      "name": "SIGNGU_CD_NM",
+      "dbf_field": "SIGNGU_CD_",
+      "dbf_type": "C"
+    },
+    {
+      "name": "ADSTRD_CD",
+      "dbf_field": "ADSTRD_CD",
+      "dbf_type": "C"
+    },
+    {
+      "name": "ADSTRD_CD_NM",
+      "dbf_field": "ADSTRD_CD_",
+      "dbf_type": "C"
+    },
+    {
+      "name": "RELM_AR",
+      "dbf_field": "RELM_AR",
+      "dbf_type": "N"
+    }
+  ],
+  "property_rename_note": "DBF 10자 제한으로 잘린 필드명을 카탈로그 컬럼명으로 복원(필드 수·순서 일치 확인 후)",
+  "features": 1650,
+  "coordinate_precision": 6,
+  "generated_at": "2026-10-21T08:38:01.451Z",
+  "key": "trdar_area",
+  "oa_id": "OA-15560",
+  "title": "서울시 상권분석서비스(영역-상권)",
+  "source_url": "https://data.seoul.go.kr/dataList/OA-15560/S/1/datasetView.do",
+  "api_doc_url": "https://data.seoul.go.kr/dataList/OA-15560/A/1/datasetView.do",
+  "service": "TbgisTrdarRelm",
+  "data_kind": "area",
+  "update_cycle": "비정기",
+  "data_updated": "2026-09-11",
+  "meta_updated": "2026-02-27",
+  "license": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)",
+  "copyright": "서울특별시",
+  "provider": "서울신용보증재단 (데이터분석팀)",
+  "period_note": "영역(공간) 정보로 기준분기 없음",
+  "join_keys": [
+    "TRDAR_CD"
+  ],
+  "notes": [
+    "API는 상권별 대표 좌표(X/Y)와 면적만 제공합니다. 경계 폴리곤은 파일(zip)로 제공되며, 파일 수정일은 2023-10-23입니다.",
+    "API 총 1,650건(2026-10-21). 골목상권 서비스 출처표의 상권 수 합계(1,090+249+326+6=1,671)와 다릅니다 → 차이 원인 확인 필요."
+  ],
+  "attribution": "출처: 서울특별시 서울 열린데이터광장, 서울시 상권분석서비스 (공공누리 1유형)"
+}
