@@ -12,7 +12,10 @@ function json(res,status,data){res.writeHead(status,{'Content-Type':'application
 http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,'http://localhost');
-    if(url.pathname==='/api/rising/map-config')return json(res,200,{kakaoJavaScriptKey:process.env.KAKAO_MAP_JAVASCRIPT_KEY||''});
+    if(url.pathname==='/api/rising/map-config'){
+      loadEnv(root);
+      return json(res,200,{kakaoJavaScriptKey:process.env.KAKAO_MAP_JAVASCRIPT_KEY||''});
+    }
     if(url.pathname==='/api/rankings')return json(res,200,getRankings(Object.fromEntries(url.searchParams)));
     if(url.pathname==='/api/filters')return json(res,200,getFilters());
     if(url.pathname==='/api/rising/summary')return json(res,200,getRegionSummary(Object.fromEntries(url.searchParams)));
