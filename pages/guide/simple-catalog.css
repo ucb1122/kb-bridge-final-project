@@ -36,3 +36,5 @@
 @media(max-width:650px){.simple-product-rate{min-height:136px;padding:14px 16px}.simple-product-rate>strong,.simple-product-rate>strong.long-rate{font-size:18px}}
 
 .detail-panel .detail-tabs button:not([aria-selected="true"]):hover,.detail-panel .detail-tabs button:not([aria-selected="true"]):focus-visible{background:#fff1bd;color:#101624}
+
+.catalog-side .product-select:not([aria-pressed="true"]):hover,.catalog-side .product-select:not([aria-pressed="true"]):focus-visible{background:#fff1bd;border-color:#e6c664}
