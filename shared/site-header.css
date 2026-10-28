@@ -48,12 +48,9 @@ body > header.kb-header .header-login {
 }
 @media(max-width:1300px) {
   body > header.kb-header, body > header.site-header.kb-header { padding: 0 22px; gap: 22px; }
-  body > header.kb-header .brand { font-size: 24px; }
-  body > header.kb-header .kb-brand-image { --kb-symbol-width: 48px; }
-  body > header.kb-header nav { grid-template-columns: 112px 140px 190px 145px; }
-  body > header.kb-header nav a { font-size: 14px!important; }
+  body > header.kb-header nav { min-width: 0; flex: 1; }
 }
-@media(max-width:900px) { body > header.kb-header .header-actions { display: none; } }
+@media(max-width:1100px) { body > header.kb-header .header-actions { display: none; } }
 @media(max-width:760px) {
   body > header.kb-header, body > header.site-header.kb-header { height: 70px; min-height: 70px; padding: 0 14px; gap: 15px; }
   body > header.kb-header .brand { font-size: 20px; }
