@@ -79,19 +79,17 @@ Node.js 내장 HTTP 서버와 SQLite 모듈이 API·정적 파일을 제공합�
 
 ```text
 kb-bridge-final-project/
-├── package.json, server.js       ① npm 명령과 Node.js HTTP 서버
-├── server/                       ② 지역 지표 조회·분석 API, 환경 설정
-├── pages/                        ③ 브라우저 화면
-│   ├── rising/                      뜨는 상권·보고서
-│   ├── owner/                       현재 사업자 분석·행정동 원본 조회·상담 준비
-│   ├── intended-owner/              예비 창업자 분석
-│   ├── warning/, products/          개발 중인 기능 안내
-│   └── guide/, area-status/         안내·보조 화면
-├── shared/, styles.css           ④ 공용 지도·화면 코드와 스타일
-├── data/                         ⑤ 공개 원본, 생성 SQLite·경계, 공식 확인값
-├── scripts/                      ⑥ Python 원본 적재·Node.js 순위 동기화
-├── tests/                        ⑦ Node.js 데이터·순위 회귀 검사
-└── docs/                         ⑧ 설계·트러블슈팅·발표 이미지
+├── package.json                  ① 실행·검증 명령
+├── backend/                      ② Node.js API·정적 파일 서버
+│   ├── server/                      데이터 조회·분석·환경 설정
+│   └── scripts/                     Python 원본 적재·공식 순위 동기화
+├── frontend/                     ③ 브라우저 화면과 공용 자산
+│   ├── pages/                       뜨는 상권·내 상권·회복 플래너·금융상품 안내
+│   ├── shared/                      지도·금융 데이터·폰트·브랜드 자산
+│   └── styles.css                   공용 화면 스타일
+├── data/                         ④ 공개 원본, 생성 SQLite·경계, 공식 확인값
+├── tests/                        ⑤ API 데이터·공개 경로 회귀 검사
+└── docs/                         ⑥ 설계·트러블슈팅·발표 이미지
 ```
 
 생성 DB와 원본 ZIP·CSV, `.env`는 Git에 올리지 않습니다. 화면·API·자료 흐름은 [아키텍처](docs/ARCHITECTURE.md)에 정리했습니다.
@@ -105,7 +103,7 @@ Copy-Item .env.example .env
 npm run dev
 ```
 
-브라우저에서 `http://localhost:5173`을 엽니다. 개발 서버는 `node --watch server.js`로 실행되며, 한 번만 실행할 때는 `npm start`를 사용합니다. 이 프로젝트 루트에는 `package.json`이 있으므로 이 위치에서 명령을 실행하세요.
+브라우저에서 `http://localhost:5173`을 엽니다. 개발 서버는 `node --watch backend/server.js`로 실행되며, 한 번만 실행할 때는 `npm start`를 사용합니다. 브라우저 주소 `/pages/`와 `/shared/`는 유지됩니다. 이 프로젝트 루트에는 `package.json`이 있으므로 이 위치에서 명령을 실행하세요.
 
 로컬 DB `data/commerce.sqlite`가 없는 새 복제본에서는 원본 ZIP을 `data/raw/seoul_public_data.zip`에 놓고 행정동 CSV·경계를 `data/raw/dong/`에 준비한 뒤 다음 명령으로 적재합니다. 원본 수집 조건은 [데이터 안내](data/README.md)를 확인하세요.
 
@@ -133,7 +131,7 @@ npm test
 | 지도와 좌우 패널 배치 | Streamlit 컨테이너와 내부 요소에 별도 CSS를 적용해 크기·고정 위치를 맞춤 | HTML 구조와 CSS에서 지도·패널 위치를 직접 정의 |
 | 필터·지도·보고서 상태 | `session_state`의 임시 선택값과 `st.rerun()`으로 갱신 순서를 조정 | JavaScript에서 임시/적용 조건을 나누고 필요한 시점에 API 요청 |
 | 지도 클릭 후 보고서 열기 | 사용자 지도 컴포넌트의 선택값을 Python 페이지 상태로 전달 | 브라우저의 지도 이벤트에서 지역 코드로 보고서 API 호출 |
-| 실행 명령 | `python -m streamlit run app.py`; `package.json`이 없어 `npm run dev` 실패 | `package.json`과 `server.js`가 있어 저장소 루트에서 `npm run dev` 실행 |
+| 실행 명령 | `python -m streamlit run app.py`; `package.json`이 없어 `npm run dev` 실패 | 루트 `package.json`이 `backend/server.js`를 실행하므로 저장소 루트에서 `npm run dev` 실행 |
 
 데이터 단위·공간 범위가 다른 문제는 프레임워크를 바꿔도 그대로 중요합니다. 자세한 증상, 코드 근거와 남은 검증 항목은 [기술 전환 기록](docs/TROUBLESHOOTING.md)에 있습니다.
 

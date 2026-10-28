@@ -5,12 +5,12 @@
 저장소 루트에서 Python 환경에 `tools/requirements-closure.txt`의 라이브러리를 준비한 뒤 실행합니다.
 
 ```powershell
-python pages/intended-owner/tools/build_closure_risk.py
-node --test pages/intended-owner/tools/verify-closure-risk.mjs
+python frontend/pages/intended-owner/tools/build_closure_risk.py
+node --test frontend/pages/intended-owner/tools/verify-closure-risk.mjs
 ```
 
 기본 입력은 `data/의사결정.ipynb`와 `data/의사결정 지원/`입니다. 원본을 수정하지 않습니다.
-화면이 읽는 계산 결과는 `pages/intended-owner/assets/closure-risk.json`입니다.
+화면이 읽는 계산 결과는 `frontend/pages/intended-owner/assets/closure-risk.json`입니다.
 별도 확인용 CSV는 `data/local/decision-risk/`에 생성됩니다. 원본 CSV·노트북·DB를 Git에 추가하지 않습니다.
 이미 결과 JSON이 있으면 웹 화면에는 Python 서버가 필요하지 않습니다. 재계산 뒤 브라우저를 새로고침합니다.
 

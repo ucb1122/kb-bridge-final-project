@@ -4,11 +4,11 @@
 
 | 이전 구현 | 현재 화면 | 옮긴 데이터·동작 |
 | --- | --- | --- |
-| `app_pages/rising.py`, `kb_bridge/ui/rising_layout.py` | `pages/rising/` | 뜨는 동네·상권 전환, 점포수·매출·인구 지표, 상세조건, 순위 TOP 10, 지도 선택 |
-| `kb_bridge/ui/rising_report.py` | `pages/rising/full-report.js`, `server/data.js` | 선택 지역의 다섯 항목 보고서와 분기별 원본 수치. 오른쪽 보고서 본문은 화면 디자인 수정 중에도 유지 |
-| `app_pages/my_market.py` | `pages/owner/`, `pages/owner/dong.html` | 현재 사업자의 위치·업종·분석영역 선택, 행정동 전체 원본 집계 구분 |
-| 예비 창업자 화면 | `pages/intended-owner/` | 후보 상권과 업종 선택, 순위·보고서·상담 준비 흐름. 상단 메뉴에서는 내 상권 분석 안의 링크로 이동 |
-| `app_pages/warning.py`, `app_pages/products.py` | `pages/warning/`, `pages/products/` | 이전에도 준비 중 화면이었다. 위험 예측과 실제 상품 추천은 아직 연결되지 않았다. |
+| `app_pages/rising.py`, `kb_bridge/ui/rising_layout.py` | `frontend/pages/rising/` | 뜨는 동네·상권 전환, 점포수·매출·인구 지표, 상세조건, 순위 TOP 10, 지도 선택 |
+| `kb_bridge/ui/rising_report.py` | `frontend/pages/rising/full-report.js`, `backend/server/data.js` | 선택 지역의 다섯 항목 보고서와 분기별 원본 수치. 오른쪽 보고서 본문은 화면 디자인 수정 중에도 유지 |
+| `app_pages/my_market.py` | `frontend/pages/owner/`, `frontend/pages/owner/dong.html` | 현재 사업자의 위치·업종·분석영역 선택, 행정동 전체 원본 집계 구분 |
+| 예비 창업자 화면 | `frontend/pages/intended-owner/` | 후보 상권과 업종 선택, 순위·보고서·상담 준비 흐름. 상단 메뉴에서는 내 상권 분석 안의 링크로 이동 |
+| `app_pages/warning.py`, `app_pages/products.py` | `frontend/pages/warning/`, `frontend/pages/products/` | 이전에도 준비 중 화면이었다. 위험 예측과 실제 상품 추천은 아직 연결되지 않았다. |
 
 ## 지도 구현
 

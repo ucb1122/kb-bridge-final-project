@@ -1,11 +1,11 @@
 # 4번째 화면 — 금융상품 안내
 
-최종 인계: 2026-10-28. 화면과 검증 도구는 이 폴더에, 여러 화면에서 읽는 금융상품·영업점 데이터와 브랜드 자산은 `shared/`에 둡니다. 원 자료와 출처 기록은 기존 위치에 보존합니다.
+최종 인계: 2026-10-28. 화면과 검증 도구는 이 폴더에, 여러 화면에서 읽는 금융상품·영업점 데이터와 브랜드 자산은 `frontend/shared/`에 둡니다. 원 자료와 출처 기록은 기존 위치에 보존합니다.
 
 ## 실행
 
 ```powershell
-node pages/guide/serve.mjs
+node backend/preview-server.mjs
 ```
 
 http://localhost:5174/pages/guide/ 에서 확인합니다. Node.js 22.13 이상만 필요합니다. Python·DB·API 키·개발자 PC 외부 폴더는 필요 없습니다. 이미 5174가 실행 중이면 기존 주소를 확인하거나 PORT 환경변수로 포트를 바꾸세요. 3번째 화면과 같은 정적 실행 서버이며 두 폴더를 함께 제공합니다.
@@ -14,17 +14,17 @@ http://localhost:5174/pages/guide/ 에서 확인합니다. Node.js 22.13 이상�
 
 | 파일 | 어떻게 사용하나요? |
 |---|---|
-| `shared/finance/products.json` | 목록·상품 고유 ID·분류·임차인/임대인 관련성·검색·금리/한도/기간 기본 요약 |
-| `shared/finance/details-bank-a.json`, `details-bank-b.json` | KB 상품의 금리·수수료·상환·서류·신청 절차·공식 근거 URL |
-| `shared/finance/details-policy.json` | 소진공 자금별 대상·금리 구조·한도·서류·절차·공고 출처 |
-| `shared/finance/kb-branches.json` | 회복 플래너와 공유하는 공식 지점 스냅샷. 현재 4번째 화면은 상담 기능을 제공하지 않음 |
+| `frontend/shared/finance/products.json` | 목록·상품 고유 ID·분류·임차인/임대인 관련성·검색·금리/한도/기간 기본 요약 |
+| `frontend/shared/finance/details-bank-a.json`, `details-bank-b.json` | KB 상품의 금리·수수료·상환·서류·신청 절차·공식 근거 URL |
+| `frontend/shared/finance/details-policy.json` | 소진공 자금별 대상·금리 구조·한도·서류·절차·공고 출처 |
+| `frontend/shared/finance/kb-branches.json` | 회복 플래너와 공유하는 공식 지점 스냅샷. 현재 4번째 화면은 상담 기능을 제공하지 않음 |
 | `sources/current-catalog.csv` | 현재 28개 안내를 팀원이 표로 볼 수 있도록 위 JSON을 펼친 파일. 화면은 JSON을 직접 읽음 |
 | `sources/official-source-index.json` | 상품 ID별 공식 출처와 상세 근거 URL. 정적 스냅샷의 재검토 시작점 |
 | `sources/original-finance/` | 사용자가 확보한 원 금융 자료 17개: KB 8종 CSV·JSON, 지원 후보, 정책금융 CSV 4종+메타, 영업점 자료, 기존 수집 README |
 | `catalog-sources.md`, `tools/*audit*.md` | 최초 수집 및 상세 조건·금리 범위 보완 과정의 근거 기록 |
 | `rate-model.js` | 동일 공시 조건의 우대 전후 범위·수수료 숫자 표현. 없는 금리는 역산하지 않음 |
 | `detail-view.js`, `process-readable.css` | 요약/금리·비용/상환/서류/절차 탭. 절차는 큰 번호·단계별 카드로 표시 |
-| `vendor/`, `shared/kb-bank-brand-source.png`, `shared/kb-favicon.png` | 폰트·공용 브랜드 자산 및 라이선스 |
+| `vendor/`, `frontend/shared/kb-bank-brand-source.png`, `frontend/shared/kb-favicon.png` | 폰트·공용 브랜드 자산 및 라이선스 |
 | `DATA-MANIFEST.json` | 원본·화면용 자료의 상대 경로·용량·SHA-256 |
 
 ## 상품 개수와 원 자료의 차이
@@ -44,8 +44,8 @@ http://localhost:5174/pages/guide/ 에서 확인합니다. Node.js 22.13 이상�
 5. 아래 검증을 실행한 후 `DATA-MANIFEST.json`의 해시도 갱신합니다. 자동 외부 수집이 아닌 검토된 스냅샷입니다.
 
 ```powershell
-node --test pages/guide/tools/verify-catalog.mjs pages/guide/tools/verify-details.mjs pages/guide/tools/verify-information-ui.mjs pages/guide/tools/verify-rate-presentation.mjs
-node pages/guide/tools/verify-package.mjs
+node --test frontend/pages/guide/tools/verify-catalog.mjs frontend/pages/guide/tools/verify-details.mjs frontend/pages/guide/tools/verify-information-ui.mjs frontend/pages/guide/tools/verify-rate-presentation.mjs
+node frontend/pages/guide/tools/verify-package.mjs
 ```
 
 현재 화면은 정보 열람 전용입니다. 상담 신청·연락처 입력·은행 전송을 4번째 페이지에 추가하지 않았습니다. 공식 상품 사이트를 방문하지 않아도 동봉된 상세 정보를 볼 수 있으며, 출처 URL은 데이터 검토용으로 보존합니다.

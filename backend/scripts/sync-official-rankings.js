@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const db=new DatabaseSync(path.join(root,'data/commerce.sqlite'),{readOnly:true});
 const quarter=process.argv[2]||db.prepare('SELECT MAX(quarter) AS quarter FROM observations').get().quarter;
 const latest=db.prepare('SELECT MAX(quarter) AS quarter FROM observations').get().quarter;

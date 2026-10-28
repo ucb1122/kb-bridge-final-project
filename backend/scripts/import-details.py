@@ -8,7 +8,7 @@ import zipfile
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.stdout.reconfigure(encoding="utf-8")
 DB = ROOT / "data/commerce.sqlite"
 ZIP = ROOT / "data/raw/seoul_public_data.zip"
