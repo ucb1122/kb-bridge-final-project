@@ -97,27 +97,27 @@
       "sha256": "a5863cc1d056d3db0a36e9ec5705730bac57e9a5cc02515f3ce0d8f9451f3246"
     },
     {
-      "path": "assets/details-bank-a.json",
+      "path": "../../shared/finance/details-bank-a.json",
       "bytes": 33604,
       "sha256": "5acde9bfbde02bc294e0850c89180fb2a2422feafa9de883a9240c6b344d8df7"
     },
     {
-      "path": "assets/details-bank-b.json",
+      "path": "../../shared/finance/details-bank-b.json",
       "bytes": 33128,
       "sha256": "9e4d6c959b31081efcde7926c7beee31564c6e80be41d452d4add1e8c995ff98"
     },
     {
-      "path": "assets/details-policy.json",
+      "path": "../../shared/finance/details-policy.json",
       "bytes": 37344,
       "sha256": "61030c121b7ece83552ad9745a973d6f709e4137cfe4872c3ce6660831898e08"
     },
     {
-      "path": "assets/kb-branches.json",
+      "path": "../../shared/finance/kb-branches.json",
       "bytes": 104638,
       "sha256": "12fab71ebd9e8815b9dd18469688e5e78da2e37d1c94e934aa2826da4b8d201c"
     },
     {
-      "path": "assets/products.json",
+      "path": "../../shared/finance/products.json",
       "bytes": 63097,
       "sha256": "bec92e95866831c09df5a4c97580e20068002f70cfdd23073072151f99d49217"
     }

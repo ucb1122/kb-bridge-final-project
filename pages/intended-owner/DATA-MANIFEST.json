@@ -157,12 +157,12 @@
       "sha256": "fce618c69993127b758eb6717eca438e5fb0c37017fab6df89a270e6eddde38b"
     },
     {
-      "path": "assets/kb-bank-brand-source.png",
+      "path": "../../shared/kb-bank-brand-source.png",
       "bytes": 113210,
       "sha256": "e942c732ff1d65bc94ef3cc339c9fa9d02f33375964bb338c90ffbba432c4a57"
     },
     {
-      "path": "assets/kb-branches.json",
+      "path": "../../shared/finance/kb-branches.json",
       "bytes": 104638,
       "sha256": "12fab71ebd9e8815b9dd18469688e5e78da2e37d1c94e934aa2826da4b8d201c"
     },

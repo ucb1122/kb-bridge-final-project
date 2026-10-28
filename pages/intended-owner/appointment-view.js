@@ -21,7 +21,7 @@ export async function reviewRequest(){
  catch(error){if(current===generation&&status)status.textContent='PDF를 만들지 못했어요. 입력 내용은 유지됩니다. 다시 시도해 주세요.';console.error('상담서 PDF 생성 실패',error);}
 }
 export function initAppointment(getContext,regionProvider){context=getContext;getRegion=regionProvider||(()=>null);loading=true;
- fetch(new URL('./assets/kb-branches.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('영업점 목록 오류');return r.json();}).then(data=>{branches=data.branches.sort((a,b)=>a.name.localeCompare(b.name,'ko'));loading=false;refresh();}).catch(()=>{loading=false;loadError='영업점 목록을 불러오지 못했어요. 새로고침 후 다시 확인해 주세요.';refresh();});
+ fetch(new URL('/shared/finance/kb-branches.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('영업점 목록 오류');return r.json();}).then(data=>{branches=data.branches.sort((a,b)=>a.name.localeCompare(b.name,'ko'));loading=false;refresh();}).catch(()=>{loading=false;loadError='영업점 목록을 불러오지 못했어요. 새로고침 후 다시 확인해 주세요.';refresh();});
  const panel=document.getElementById('recovery-panel');
  panel.addEventListener('input',event=>{if(event.target.id==='branch-search'){const el=panel.querySelector('[data-request="branch"]');if(el)el.innerHTML=branchOptions(event.target.value.trim());return;}const key=event.target.dataset.request;if(key){form[key]=key==='consent'?event.target.checked:event.target.value;invalidateRequest();}});
  panel.addEventListener('change',event=>{const key=event.target.dataset.request;if(key){form[key]=key==='consent'?event.target.checked:event.target.value;invalidateRequest();if(key==='branch'){if(!selected()?.visitConsultation)form.channel='phone';refresh();}}});

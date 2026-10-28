@@ -170,7 +170,7 @@ function bindEvents() {
 async function init() {
   bindEvents(); renderControls();
   try {
-    const response = await fetch('./assets/products.json', { cache: 'no-cache' });
+    const response = await fetch('/shared/finance/products.json', { cache: 'no-cache' });
     if (!response.ok) throw new Error(`상품정보 응답 오류: ${response.status}`);
     catalog = await response.json();
     if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.products)) throw new Error('상품정보 파일 형식을 확인하세요.');
@@ -182,7 +182,7 @@ async function init() {
     if (catalog.products.length && !products.length) throw new Error('표시할 수 있는 상품정보가 없습니다.');
     const detailFiles = ['details-bank-a.json','details-bank-b.json','details-policy.json'];
     const detailResults = await Promise.allSettled(detailFiles.map(async file => {
-      const result = await fetch('./assets/'+file, {cache:'no-cache'});
+      const result = await fetch('/shared/finance/'+file, {cache:'no-cache'});
       if (!result.ok) throw new Error('상세자료 연결 확인 필요');
       const data = await result.json();
       if (!Array.isArray(data.products)) throw new Error('상세자료 형식 확인 필요');
