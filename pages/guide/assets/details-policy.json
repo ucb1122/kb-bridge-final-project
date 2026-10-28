@@ -1,0 +1,1003 @@
+{
+  "verifiedAt": "2026-10-27",
+  "consultation": {
+    "name": "소상공인 통합콜센터",
+    "phone": "1533-0100",
+    "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN010M/page.do",
+    "verifiedAt": "2026-10-27",
+    "note": "연결 후 1번 정책자금. 중소기업 통합콜센터 1357도 안내되어 있습니다. 상담시간은 이 자료에서 확인하지 못했습니다."
+  },
+  "documentGuides": [
+    {
+      "id": "semas-common-2026",
+      "title": "기관 공통 서류 안내",
+      "summary": "소진공 공통 FAQ 기준입니다. 실제 제출 범위는 자금·신청형태별로 달라집니다.",
+      "items": [
+        {
+          "name": "사업자등록증명",
+          "note": "동의 후 공공마이데이터 확인 대상입니다.",
+          "requirement": "electronic"
+        },
+        {
+          "name": "매출·재무자료",
+          "note": "표준재무제표, 부가가치세 과세·면세 매출 증명 등을 확인합니다.",
+          "requirement": "electronic"
+        },
+        {
+          "name": "국세·지방세 납세증명",
+          "note": "공공마이데이터 확인 가능 자료입니다.",
+          "requirement": "electronic"
+        },
+        {
+          "name": "건강보험·소상공인 확인자료",
+          "note": "근로자·소상공인 요건에 따라 확인합니다.",
+          "requirement": "electronic"
+        },
+        {
+          "name": "신분증·기업현황 및 사업계획서",
+          "note": "별도 제출 범위를 확인합니다.",
+          "requirement": "confirm"
+        },
+        {
+          "name": "사업장·거주주택 계약·등기",
+          "note": "임대차계약서·등기사항증명 등 해당 형태를 확인합니다.",
+          "requirement": "conditional"
+        },
+        {
+          "name": "법인 추가자료",
+          "note": "법인인감·등기·주주자료, 보험료 완납증명 등이 추가됩니다.",
+          "requirement": "conditional"
+        },
+        {
+          "name": "시설자금 추가자료",
+          "note": "시설투자계획서, 견적서 또는 매매계약서 등이 필요합니다.",
+          "requirement": "conditional"
+        },
+        {
+          "name": "우대·자금별 증빙",
+          "note": "해당 유형에 한해 추가 확인합니다.",
+          "requirement": "conditional"
+        }
+      ],
+      "notes": [
+        "공공마이데이터 확인은 제공 요구·동의와 조회 가능 여부를 전제로 합니다.",
+        "조회 실패·추가 확인 시 직접 제출할 수 있습니다."
+      ],
+      "sources": [
+        {
+          "title": "소진공 공통 FAQ — 신청 절차 및 필요서류",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "기관 공통 안내; 개별 자금의 최종 필수목록과 구분"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "semas-policy-2026",
+      "rate": {
+        "summary": "세부 자금과 기준분기별로 다릅니다. 최신 회차 공고의 금리를 확인하세요.",
+        "details": [
+          "세부 자금별 금리 구조와 적용 기준일이 다릅니다."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "세부 자금별로 상이 · 거치·상환기간 확인",
+        "details": [
+          "직접·대리대출 및 세부 자금의 약정에 따라 달라집니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "기관 공통 준비자료와 자금별 추가증빙을 구분해 확인합니다.",
+        "items": [],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "비용 확인",
+          "text": "자금별 대출·보증 약정의 비용을 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "직접·대리 방식 선택",
+        "자금별 접수 확인",
+        "심사·약정 확인"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-general-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 4.72% · 기준 4.12%+0.6%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "5년 · 거치 2년 포함",
+        "details": [
+          "공통 원칙: 70%는 분기별 균등, 30%는 만기 상환입니다. 실제 은행 약정을 확인하세요."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다.",
+          "공통 자료 외 추가서류는 해당 자금의 회차별 안내에서 확정합니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "보증·담보·은행 약정 관련 비용은 각 기관에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 지원대상 확인",
+        "보증 심사(해당 시)",
+        "은행 심사·약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-disaster-2026",
+      "rate": {
+        "summary": "일반 재해피해 유형 연 2.0% 고정 · 특별재난지역 특례 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "5년 · 거치 2년 포함",
+        "details": [
+          "공통 원칙: 70%는 분기별 균등, 30%는 만기 상환입니다. 실제 은행 약정을 확인하세요."
+        ]
+      },
+      "documents": {
+        "mode": "explicit",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "재해 중소기업(소상공인) 확인증",
+            "note": "지자체 발급. 일반 재해피해 유형의 대상 증빙입니다.",
+            "requirement": "published"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "보증·담보·은행 약정 관련 비용은 각 기관에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 지원대상 확인",
+        "보증 심사(해당 시)",
+        "은행 심사·약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-disabled-2026",
+      "rate": {
+        "summary": "연 2.0% 고정 · 공식 적용·우대조건 확인",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "7년 · 거치 2년 포함",
+        "details": [
+          "공통 원칙: 70%는 분기별 균등, 30%는 만기 상환입니다. 실제 은행 약정을 확인하세요."
+        ]
+      },
+      "documents": {
+        "mode": "explicit",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "장애인복지카드·국가유공자 카드(증서) 또는 장애인기업확인서",
+            "note": "해당 증빙의 인정 범위를 확인합니다.",
+            "requirement": "published"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "보증·담보·은행 약정 관련 비용은 각 기관에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 지원대상 확인",
+        "보증 심사(해당 시)",
+        "은행 심사·약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-youth-employment-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 4.12% · 기준금리+0.0%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "5년 · 거치 2년 포함",
+        "details": [
+          "공통 원칙: 70%는 분기별 균등, 30%는 만기 상환입니다. 실제 은행 약정을 확인하세요."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "청년 대표·청년 고용 확인자료",
+            "note": "대표자 연령 또는 근로자 연령·고용 유지 증빙을 해당 신청유형에 맞게 확인합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "보증·담보·은행 약정 관련 비용은 각 기관에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 지원대상 확인",
+        "보증 심사(해당 시)",
+        "은행 심사·약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-refinance-2026",
+      "rate": {
+        "summary": "연 4.5% 고정",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "10년 · 비거치 또는 거치 2년",
+        "details": [
+          "2년 거치 후 8년 분할상환 또는 거치 없이 10년 분할상환 중 선택합니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "기존 대출 확인자료",
+            "note": "대상대출 취급일·잔액·금리·사용목적 확인 범위와 발급기관을 취급은행에 확인합니다.",
+            "requirement": "confirm"
+          },
+          {
+            "name": "대출금 만기연장 애로 확인서",
+            "note": "만기연장 애로 유형을 신청할 때 취급은행 발급 협조 여부를 확인합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "보증·담보·은행 약정 관련 비용은 각 기관에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 지원대상 확인",
+        "보증 심사(해당 시)",
+        "은행 심사·약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-small-manufacturer-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 4.72% · 기준 4.12%+0.6%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "운전 5년(거치 2년) / 시설 8년(거치 3년)",
+        "details": [
+          "공통 원칙: 70%는 분기별 균등, 30%는 만기 상환입니다. 실제 은행 약정을 확인하세요."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "제조업·상시근로자 확인자료",
+            "note": "소공인 해당 여부를 확인합니다. 시설자금은 공통 안내의 투자계획·견적도 함께 확인합니다.",
+            "requirement": "confirm"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "보증·담보·은행 약정 관련 비용은 각 기관에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 지원대상 확인",
+        "보증 심사(해당 시)",
+        "은행 심사·약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-innovation-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 4.52% · 기준 4.12%+0.4%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "운전 5년(거치 2년 이내) / 시설 8년(거치 3년 이내) · 비거치 선택 가능",
+        "details": [
+          "거치 후 매월 원금균등분할상환합니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "신청유형 확인자료",
+            "note": "수출·매출 성장·선정사업·기술 도입 등 해당 유형의 증빙과 인정기간을 확인합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "별도 비용의 적용 여부는 최종 약정에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 신청·접수",
+        "공단 심사·평가",
+        "약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-private-match-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 4.52% · 기준 4.12%+0.4%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "8년 · 비거치 또는 거치 3년 이내",
+        "details": [
+          "거치 후 매월 원금균등분할상환합니다."
+        ]
+      },
+      "documents": {
+        "mode": "explicit",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "소상공인 선투자 추천서",
+            "note": "지정 주관기관의 투자·추천 조건과 함께 확인합니다.",
+            "requirement": "published"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "별도 비용의 적용 여부는 최종 약정에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 신청·접수",
+        "공단 심사·평가",
+        "약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-mutual-growth-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 4.52% · 기준 4.12%+0.4%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "운전 5년(거치 2년 이내) / 시설 8년(거치 3년 이내)",
+        "details": [
+          "거치 후 매월 원금균등분할상환합니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "지정 프로그램·협약 플랫폼 확인자료",
+            "note": "TOPS·플랫폼 추천·점프업 등 선택 유형의 인정자료를 확인합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "별도 비용의 적용 여부는 최종 약정에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 신청·접수",
+        "공단 심사·평가",
+        "약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-temporary-difficulty-2026",
+      "rate": {
+        "summary": "일반 유형 2026년 4분기 연 4.12% · 기준금리+0.0%p, 분기별 변동",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "5년 · 거치 2년 포함",
+        "details": [
+          "거치 후 매월 원금균등분할상환합니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "일시적 경영애로 확인자료",
+            "note": "매출·업력과 인정 사유별 증빙을 확인합니다. 홈플러스 피해 특례와 구분합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "별도 비용의 적용 여부는 최종 약정에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 신청·접수",
+        "공단 심사·평가",
+        "약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-rechallenge-2026",
+      "rate": {
+        "summary": "2026년 4분기 일반형 연 5.72% / 희망형 4.72% / 도약형 4.52% · 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "5년 · 거치 2년 포함",
+        "details": [
+          "거치 후 매월 원금균등분할상환합니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "재창업·성실상환 등 유형별 자료",
+            "note": "재창업교육·채무조정·희망리턴패키지 등 선택한 유형의 증빙을 확인합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "별도 비용의 적용 여부는 최종 약정에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 신청·접수",
+        "공단 심사·평가",
+        "약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    },
+    {
+      "id": "semas-credit-vulnerable-2026",
+      "rate": {
+        "summary": "2026년 4분기 연 5.72% · 기준 4.12%+1.6%p, 분기별 변동·우대 별도",
+        "details": [
+          "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
+        ],
+        "examples": []
+      },
+      "repayment": {
+        "summary": "5년 · 거치 2년 포함",
+        "details": [
+          "거치 후 매월 원금균등분할상환합니다."
+        ]
+      },
+      "documents": {
+        "mode": "common-guidance",
+        "summary": "자금별 추가자료와 기관 공통 서류 안내를 함께 확인합니다.",
+        "items": [
+          {
+            "name": "신용관리 교육 이수 확인",
+            "note": "공식 사전교육 이수 여부와 인정기준을 확인합니다. 별도 제출 방식은 해당 회차에서 확인합니다.",
+            "requirement": "conditional"
+          }
+        ],
+        "commonGuideIds": [
+          "semas-common-2026"
+        ],
+        "notes": [
+          "전자조회에 동의하지 않거나 추가 확인이 필요하면 서류 제출을 요청할 수 있습니다.",
+          "아래 기관 공통 목록은 모든 신청자에게 전부 제출하라는 뜻이 아닙니다."
+        ]
+      },
+      "fees": [
+        {
+          "label": "중도상환수수료",
+          "text": "소진공 공통 FAQ: 없음."
+        },
+        {
+          "label": "그 밖의 비용",
+          "text": "별도 비용의 적용 여부는 최종 약정에서 확인합니다."
+        }
+      ],
+      "applicationSteps": [
+        "소진공 신청·접수",
+        "공단 심사·평가",
+        "약정·실행"
+      ],
+      "sources": [
+        {
+          "title": "소진공 자금별 지원요건",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN018M/page.do",
+          "scope": "유형·기간·추가 증빙 요건"
+        },
+        {
+          "title": "소진공 2026년 4분기 금리표",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "scope": "2026-10-10 적용 표"
+        },
+        {
+          "title": "소진공 공통 FAQ",
+          "url": "https://ols.semas.or.kr/ols/man/SMAN054M/page.do",
+          "scope": "서류·심사·상환·수수료의 공통 안내"
+        },
+        {
+          "title": "중기부 2026년 융자사업 변경 5차 공고",
+          "url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?bcIdx=1071565&cbIdx=310&parentSeq=1071565",
+          "scope": "직접·대리 경로와 자금별 조건"
+        }
+      ],
+      "confirmedAt": "2026-10-27"
+    }
+  ]
+}

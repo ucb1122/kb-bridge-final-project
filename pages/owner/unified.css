@@ -34,20 +34,22 @@
 .owner-unified .rank-head b{font-size:20px}
 .owner-unified .rank-head select{max-width:150px;padding:8px;border:1px solid #e4e2dc;border-radius:9px;background:#fff;font-size:12px}
 .owner-unified #ranking li{grid-template-columns:24px minmax(0,1fr) minmax(65px,auto) minmax(50px,auto);gap:8px;min-height:53px}
+.owner-unified .sidebar #ranking li:nth-child(-n+3)>span:first-child{background:transparent;color:#151923;border:0;border-radius:0;font-weight:400}
+.owner-unified .sidebar #ranking li>span:first-child{width:24px;padding:0;text-align:left}
 .owner-unified #ranking li strong{font-size:13px;white-space:nowrap}
 .owner-unified #ranking li .change{font-size:11px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.owner-unified .region-card{right:24px;top:24px;width:clamp(460px,28vw,540px);height:calc(100% - 48px);border:1px solid #e8e7e3;border-top:5px solid #ffbc00;border-radius:17px;box-shadow:0 6px 24px #0002;overflow:visible}
+.owner-unified .region-card{right:24px;top:24px;height:calc(100% - 48px);border:1px solid #e8e7e3;border-top:5px solid #ffbc00;border-radius:17px;box-shadow:0 6px 24px #0002;overflow:visible}
 .owner-unified .region-card .report-head{padding:18px 21px 12px}
 .owner-unified .region-card .report-head small{color:#8390a4}
 .owner-unified .region-card .report-head h2{font-size:24px}
 .owner-unified .region-card .report-tabs button{font-size:12px;min-width:0;white-space:nowrap}
 .owner-unified .region-card .report-body{flex:1;min-height:0;padding:14px 20px}
 .owner-unified .owner-map-hint{position:absolute;z-index:390;top:25px;left:50%;transform:translateX(-50%);max-width:40vw;padding:11px 17px;border-radius:11px;background:#fff;box-shadow:0 2px 8px #0002;white-space:nowrap;font-size:13px;color:#293446}
-.owner-unified .map-top{top:76px;left:50%;transform:translateX(-50%)}
+.owner-unified .map-top{display:none!important}
 .owner-unified .report-source{line-height:1.6}
-@media(max-width:1200px){.owner-unified .sidebar{width:400px;left:16px}.owner-unified .sidebar-toggle{left:416px}.owner-unified .region-card{width:400px;right:16px}.owner-unified .owner-map-hint{top:80px}}
-@media(max-width:850px){.owner-unified .region-card{width:min(400px,calc(100vw - 30px));right:15px}.owner-unified .owner-map-hint{display:none}}
-@media(max-width:760px){.owner-unified .sidebar{left:10px;top:64px;bottom:10px;width:min(390px,calc(100vw - 20px))}.owner-unified .sidebar-toggle{left:min(400px,100vw - 10px)}.owner-unified .region-card{right:0;top:auto;bottom:0;width:100vw;height:min(640px,85%);border-radius:14px 14px 0 0}.owner-unified .owner-fields{gap:8px}.owner-unified .owner-title-row h1{font-size:23px}.owner-unified .owner-mode button,.owner-unified .owner-find button{font-size:13px}.owner-unified .map-top{top:8px;left:10px;transform:none}}
+@media(max-width:1200px){.owner-unified .sidebar{width:400px;left:16px}.owner-unified .sidebar-toggle{left:416px}.owner-unified .region-card{right:16px}.owner-unified .owner-map-hint{top:80px}}
+@media(max-width:850px){.owner-unified .region-card{right:15px}.owner-unified .owner-map-hint{display:none}}
+@media(max-width:760px){.owner-unified .sidebar{left:10px;top:64px;bottom:10px;width:min(390px,calc(100vw - 20px))}.owner-unified .sidebar-toggle{left:min(400px,100vw - 10px)}.owner-unified .region-card{right:0;top:auto;bottom:0;height:min(640px,85%);border-radius:14px 14px 0 0}.owner-unified .owner-fields{gap:8px}.owner-unified .owner-title-row h1{font-size:23px}.owner-unified .owner-mode button,.owner-unified .owner-find button{font-size:13px}}
 
 .owner-unified .owner-details{margin-top:14px;border:1px solid #e3e4e6;border-radius:10px;background:#fff;overflow:hidden}
 .owner-unified .owner-details summary{display:list-item;padding:14px 16px;font-size:15px;font-weight:700;cursor:pointer;list-style-position:inside}
@@ -77,7 +79,8 @@
 .owner-overview .detail-table{width:100%;table-layout:auto;white-space:normal}
 .owner-overview .detail-table th,.owner-overview .detail-table td{overflow-wrap:anywhere}
 @media(max-width:720px){.owner-overview-cards{grid-template-columns:1fr}.owner-overview-card{min-height:0}}
-.owner-unified .region-card #region-rank,.owner-unified .region-card #region-pdf,.owner-unified .region-card #region-type{display:none}
+.owner-unified .region-card #region-pdf{display:none}
+.owner-unified .region-card #region-rank{color:#69778e;font-size:11px;font-weight:400;line-height:1.4}
 .owner-unified .owner-overview-card{min-height:120px}
 .owner-unified .owner-card-quarter{margin-top:12px}
 .owner-unified .owner-card-value{margin-top:6px}
@@ -85,7 +88,7 @@
 .owner-unified .owner-overview-card{min-height:110px;padding:14px 12px}
 .owner-unified .owner-card-value{font-size:clamp(16px,1.1vw,22px);letter-spacing:-.05em;white-space:nowrap;overflow-wrap:normal}
 .owner-unified .owner-overview .detail-chart{margin:8px 0 2px}
-.owner-unified .owner-overview .detail-chart svg{display:block;width:100%;height:auto;max-height:205px}
+.owner-unified .owner-overview .detail-chart svg{display:block;width:100%;height:auto}
 .owner-trend-values{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:4px}
 .owner-trend-value{min-width:0;text-align:center;font-size:12px}
 .owner-trend-value small{display:block;color:#69778e;white-space:nowrap;font-size:11px}
@@ -98,5 +101,115 @@
 .owner-evidence summary::after{content:"";width:8px;height:8px;border-right:2px solid #344054;border-bottom:2px solid #344054;transform:rotate(45deg)}
 .owner-evidence[open] summary::after{transform:rotate(225deg)}
 .owner-evidence[open] summary{border-bottom:1px solid #e1e4e8}
-.owner-evidence>h4,.owner-evidence>.detail-table,.owner-evidence>.report-source{margin-left:18px;margin-right:18px}
+.owner-unified .owner-evidence .detail-table{display:table!important;width:calc(100% - 36px)!important;margin:0 18px 16px!important;table-layout:fixed;border-collapse:collapse;overflow:visible;font-size:11px;font-variant-numeric:tabular-nums}
+.owner-unified .owner-evidence .detail-table th,.owner-unified .owner-evidence .detail-table td{box-sizing:border-box;padding:9px 6px;overflow-wrap:normal;white-space:nowrap;border-bottom:1px solid #e5e9ef}
+.owner-unified .owner-evidence .detail-table thead th{background:#f3f5f8;color:#44516a;font-weight:700}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(1){width:26%}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(2){width:16%}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(3){width:33%}
+.owner-unified .owner-evidence .owner-raw-table th:nth-child(4){width:25%}
+.owner-unified .owner-evidence .owner-condition-table th:first-child{width:30%}
+.owner-unified .owner-evidence .owner-condition-table th:nth-child(2),.owner-unified .owner-evidence .owner-condition-table td{text-align:left}
 .owner-unified .region-card .report-tabs{display:flex}
+.owner-unified .owner-overview-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:12px}
+.owner-unified .owner-overview-card{min-height:105px;padding:12px 9px}
+.owner-unified .owner-card-value{font-size:clamp(13px,1.1vw,20px);letter-spacing:-.045em;white-space:nowrap}
+.owner-unified .owner-card-quarter{margin-top:8px;font-size:11px;white-space:nowrap}
+.owner-unified .owner-trend-summary{margin:10px 0 0;font-size:12px;line-height:1.6;color:#44516a}
+.owner-unified .owner-overview>.report-source{margin:12px 2px;color:#69778e;font-size:11px}
+.owner-unified .owner-overview>.report-block>h3{margin:0 0 14px;font-size:16px;line-height:1.4;font-weight:700}
+.owner-unified .owner-evidence summary{min-height:54px;box-sizing:border-box;line-height:1.4;align-items:center}
+.owner-unified .owner-overview .owner-evidence>h4{margin:20px 18px 10px;font-size:14px;line-height:1.4;font-weight:700}
+.owner-unified .owner-tab-title{margin:0 0 16px;font-size:17px;line-height:1.4;color:#172236}
+.owner-unified .owner-tab .owner-overview-cards{gap:8px;margin-bottom:8px}
+.owner-unified .owner-tab .owner-overview-card{min-height:98px;padding:13px 10px}
+.owner-unified .owner-tab .owner-card-value{margin-top:8px;font-size:clamp(15px,1.2vw,21px);white-space:normal;overflow-wrap:normal;word-break:keep-all}
+.owner-unified .owner-tab .owner-card-change,.owner-unified .owner-tab .owner-card-note{margin-top:7px;color:#65748b;font-size:10px;line-height:1.35;word-break:keep-all}
+.owner-unified .owner-tab>.report-block{box-sizing:border-box;border:1px solid #e1e5ea;border-radius:8px;background:#fff;padding:16px;margin:0 0 14px;box-shadow:none}
+.owner-unified .owner-tab .report-block>h3{margin:0 0 14px;font-size:15px}
+.owner-unified .owner-tab .detail-chart{margin:4px 0 0}
+.owner-unified .owner-tab .detail-chart svg{display:block;width:100%;height:auto}
+.owner-unified .owner-bar-list{display:grid;gap:16px}
+.owner-unified .owner-bar-row{display:grid;grid-template-columns:minmax(110px,1fr) minmax(100px,2fr) auto;gap:12px;align-items:center;min-width:0;font-size:13px}
+.owner-unified .owner-bar-ranked{grid-template-columns:58px minmax(90px,112px) minmax(100px,1fr) auto;gap:9px}
+.owner-unified .owner-bar-rank{font-weight:700;color:#52647d;text-align:center;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.owner-unified .owner-bar-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.owner-unified .owner-bar-track{display:block;height:15px;border-radius:8px;background:#edf0f4;overflow:hidden}
+.owner-unified .owner-bar-fill{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#c8e1ff 0%,#77b2ff 48%,#428cf2 100%)}
+.owner-unified .owner-bar-value{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:760px){.owner-unified .owner-bar-ranked{grid-template-columns:42px minmax(68px,90px) minmax(40px,1fr) auto;gap:5px}.owner-unified .owner-bar-ranked .owner-bar-value{font-size:11px}}
+.owner-unified .owner-extra{margin:10px 0;border:1px solid #e5e9ef;border-radius:9px;background:#f7f9fb;overflow:hidden}
+.owner-unified .owner-extra>summary{padding:13px 15px;cursor:pointer;list-style:none;font-size:13px;font-weight:700}
+.owner-unified .owner-extra>summary::-webkit-details-marker{display:none}
+.owner-unified .owner-extra>summary::before{content:'▸';margin-right:7px}
+.owner-unified .owner-extra[open]>summary::before{content:'▾'}
+.owner-unified .owner-extra[open]>summary{border-bottom:1px solid #e5e9ef}
+.owner-unified .owner-extra>.report-block,.owner-unified .owner-extra>.report-caption{margin:0 14px}
+.owner-unified .owner-extra>.detail-table{width:calc(100% - 28px);margin:14px;font-size:11px}
+.owner-unified .owner-tab>.report-source{font-size:11px;color:#69778e}
+.owner-unified .owner-tab .owner-extra[open]{background:#fff}
+.owner-unified .owner-tab .owner-extra>.report-block{box-sizing:border-box;width:calc(100% - 28px);margin:14px;padding:14px;overflow:hidden}
+.owner-unified .owner-tab .owner-extra>.report-block+.report-block{margin-top:0}
+.owner-unified .owner-tab .owner-detail-split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:center}
+.owner-unified .owner-tab .owner-detail-split .detail-chart{min-width:0}
+.owner-unified .owner-tab .owner-detail-split .detail-chart svg text{font-size:18px}
+.owner-unified .owner-tab .owner-extra .owner-detail-split .detail-table{margin:0!important}
+.owner-unified .owner-tab .owner-industry-trends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:8px 0 16px}
+.owner-unified .owner-tab .owner-mini-trend{min-width:0}
+.owner-unified .owner-tab .owner-mini-trend:last-child{grid-column:1/-1}
+.owner-unified .owner-tab .owner-mini-trend h4{margin:0 0 4px}
+.owner-unified .owner-tab .owner-mini-trend .detail-chart svg text{font-size:18px}
+.owner-unified .owner-tab .owner-mini-trend:last-child .detail-chart svg text{font-size:11px}
+.owner-unified .owner-tab .owner-mini-trend .detail-chart svg polyline{stroke-width:4}
+.owner-unified .owner-tab .owner-mini-trend .detail-chart svg circle{r:5px}
+.owner-unified .owner-tab .owner-industry-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 14px 14px}
+.owner-unified .owner-tab .owner-industry-pair>.report-block{box-sizing:border-box;min-width:0;width:100%;margin:0;padding:14px;overflow:hidden}
+.owner-unified .owner-tab .owner-industry-pair .detail-chart svg text{font-size:17px}
+.owner-unified .owner-tab .owner-sales-pair{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;margin:14px;align-items:stretch}
+.owner-unified .owner-tab .owner-sales-pair>.report-block{box-sizing:border-box;min-width:0;width:100%;height:100%;margin:0;padding:14px}
+.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table{table-layout:fixed}
+.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table th:nth-child(1){width:12%}
+.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table th:nth-child(2){width:54%}
+.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table th:nth-child(3){width:34%}
+.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table th:nth-child(2),.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table td:nth-child(2){text-align:left}
+.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table th,.owner-unified .owner-tab .owner-sales-pair .owner-top-industries-table td{padding:7px 5px;font-size:11px;white-space:normal;overflow-wrap:anywhere}
+.owner-unified .owner-tab .owner-sales-pair .report-highlight{font-size:16px;line-height:1.4}
+@media(max-width:1100px){.owner-unified .owner-tab .owner-sales-pair{grid-template-columns:1fr}}
+@media(max-width:760px){.owner-unified .owner-tab .owner-detail-split,.owner-unified .owner-tab .owner-industry-pair,.owner-unified .owner-tab .owner-industry-trends{grid-template-columns:1fr}.owner-unified .owner-tab .owner-mini-trend:last-child{grid-column:auto}}
+.owner-unified .owner-tab .owner-extra .detail-table{display:table!important;box-sizing:border-box;width:100%!important;margin:12px 0 0!important;table-layout:fixed;border-collapse:collapse;overflow:visible;font-size:11px;font-variant-numeric:tabular-nums}
+.owner-unified .owner-tab .owner-extra>.detail-table{width:calc(100% - 28px)!important;margin:14px!important}
+.owner-unified .owner-tab .owner-extra .detail-table th,.owner-unified .owner-tab .owner-extra .detail-table td{box-sizing:border-box;padding:10px 7px;border-bottom:1px solid #e2e7ee;line-height:1.45;vertical-align:middle;white-space:normal;overflow-wrap:anywhere}
+.owner-unified .owner-tab .owner-extra .detail-table thead th{background:#f3f5f8;color:#44516a;font-weight:700}
+.owner-unified .owner-gender-visual{width:min(100%,540px);margin:4px auto 8px}
+.owner-unified .owner-gender-image{display:block;width:100%;height:auto;filter:brightness(1.05)}
+.owner-unified .owner-gender-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px;width:70%;margin:8px auto 0;text-align:center}
+.owner-unified .owner-gender-stat{display:grid;justify-items:center;gap:4px;min-width:0}
+.owner-unified .owner-gender-name{font-size:15px;font-weight:700;color:#344054}
+.owner-unified .owner-gender-percent{font-size:clamp(24px,2vw,34px);line-height:1.1;color:#172236;font-variant-numeric:tabular-nums}
+.owner-unified .owner-gender-amount{font-size:13px;color:#65748b;font-variant-numeric:tabular-nums}
+.owner-unified .owner-tab .owner-extra .detail-table th:first-child{text-align:left}
+.owner-unified .owner-tab .owner-extra .detail-table th:not(:first-child),.owner-unified .owner-tab .owner-extra .detail-table td{text-align:right}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(1){width:26%}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(2){width:16%}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(3){width:33%}
+.owner-unified .owner-tab .owner-extra .owner-raw-table th:nth-child(4){width:25%}
+.owner-unified .owner-tab .owner-extra .owner-condition-table th:first-child,.owner-unified .owner-tab .owner-extra .owner-basis-table th:first-child{width:30%}
+.owner-unified .owner-tab .owner-extra .owner-condition-table thead th:nth-child(2),.owner-unified .owner-tab .owner-extra .owner-basis-table thead th:nth-child(2){text-align:left}
+.owner-unified .owner-tab .owner-extra .owner-condition-table td,.owner-unified .owner-tab .owner-extra .owner-basis-table td{text-align:left;line-height:1.6}
+.owner-unified .owner-condition-grid th:nth-child(1),.owner-unified .owner-condition-grid th:nth-child(3){width:15%}
+.owner-unified .owner-condition-grid th:nth-child(2),.owner-unified .owner-condition-grid th:nth-child(4){width:35%}
+.owner-unified .owner-condition-grid th,.owner-unified .owner-condition-grid td{text-align:left!important;white-space:normal!important;overflow-wrap:anywhere}
+.owner-unified .owner-condition-grid th:nth-child(3),.owner-unified .owner-condition-grid td:nth-child(3){padding-left:16px!important;border-left:1px solid #e2e7ee}
+.owner-unified .owner-tab .owner-extra .owner-basis-table{table-layout:auto}
+.owner-unified .owner-tab .owner-extra .owner-evidence-heading{margin:18px 14px 6px;font-size:14px;line-height:1.4}
+.owner-unified .owner-tab .owner-extra .owner-evidence-heading+.detail-table{margin-top:8px!important}
+.owner-unified .owner-overview .owner-overview-cards{align-items:stretch}
+.owner-unified .owner-overview .owner-overview-card{box-sizing:border-box;display:grid;grid-template-rows:22px minmax(38px,auto);align-content:center;justify-items:center;min-width:0;min-height:0;height:auto;padding:10px 12px;text-align:center}
+.owner-unified .owner-overview.owner-tab .owner-overview-card{grid-template-rows:22px minmax(38px,auto);padding:10px 12px}
+.owner-unified .owner-overview .owner-card-title{min-height:0;line-height:22px}
+.owner-unified .owner-overview .owner-card-quarter{min-height:0;line-height:20px;margin-top:0;font-size:12px}
+.owner-unified .owner-overview .owner-card-value{align-self:center;width:100%;margin-top:0;text-align:center;font-size:clamp(18px,1.45vw,27px);line-height:1.25;white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
+.owner-unified .owner-overview .owner-card-note{align-self:center;margin-top:0;font-size:11px;line-height:1.35;word-break:keep-all;color:#65748b}
+.owner-unified .owner-overview-notes{margin:-4px 2px 16px;color:#65748b;font-size:12px;line-height:1.5}
+.owner-unified .owner-overview-notes p{margin:3px 0}
+.owner-unified .owner-tab .owner-overview-notes{margin:0 2px 16px}
