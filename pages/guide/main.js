@@ -1,5 +1,5 @@
 import {ratePresentation} from './rate-model.js';
-import { renderProductDetails } from './detail-view.js?v=20261028-process-1';
+import { renderProductDetails } from './detail-view.js?v=20261028-rate-wording';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -31,7 +31,7 @@ function productFacts(product) {
     audience: text(product.presentation?.audience, product.eligibility[0] || FALLBACK),
     limit: text(product.presentation?.limit, short(product.limitText)),
     term: text(product.presentation?.term, short(product.termText)),
-    rate: displayRate.kind==='comparison'?displayRate.after+' · 적용 예시':text(financeDetails.get(product.id)?.rate?.examples?.find(e=>e.range&&e.asOf)?.range, product.category==='policy'?short(product.rateText):'상품별 확인'),
+    rate: displayRate.kind==='comparison'?displayRate.after+' · 계산 참고값':text(financeDetails.get(product.id)?.rate?.examples?.find(e=>e.range&&e.asOf)?.range, product.category==='policy'?short(product.rateText):'상품별 확인'),
     asOf: displayRate.asOf||'',
   };
 }
