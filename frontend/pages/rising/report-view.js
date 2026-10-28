@@ -43,7 +43,14 @@ export function renderOverview(target,report,analysis){
   const wrap=el('div','report-overview');
   const box=el('section','analysis-box');
   if(analysis?.lines?.length){const list=el('ul');for(const line of analysis.lines)list.append(opinionLine(line));box.append(list)}
-  else box.append(el('p','','요약을 준비하는 중입니다…'));
+  else {
+    const loading=el('div','summary-loading');
+    const mascot=el('img','summary-loading-mascot');
+    mascot.src='/shared/characters/kobi-coding.png';
+    mascot.alt='코비가 노트북으로 코딩하는 모습';
+    loading.append(mascot,el('p','','요약을 준비하는 중입니다…'));
+    box.append(loading);
+  }
   if(analysis?.note)box.append(el('small','',analysis.note));wrap.append(box);
   const grid=el('div','report-metric-grid');
   for(const [key,title] of [['stores','점포수'],['sales','매출액 (점포당 월평균)'],['footfall',report.analysisAreaM2>0?'유동인구 (3개월간 1ha당 인구수)':'유동인구 (분기 합계)']])grid.append(reportCard(report,key,title));
