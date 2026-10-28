@@ -11,3 +11,13 @@
 .fee-list dt b,.fee-list dt strong{font-size:22px!important}
 .fee-list dd{font-size:15px!important;line-height:1.85!important}
 @media(max-width:700px){.fee-cards{grid-template-columns:1fr!important}.fee-cards strong{font-size:23px!important}}
+
+/* Let the catalog heading and cards move together with the page. */
+.catalog-side .results-panel {
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
+}
+.catalog-side .results-heading {
+  position: static;
+}
