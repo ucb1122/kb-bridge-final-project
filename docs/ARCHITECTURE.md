@@ -2,28 +2,30 @@
 
 ## 실행 구조
 
-`server.js`는 Node.js 내장 `node:http` 서버입니다. 브라우저에 정적 HTML·CSS·JavaScript를 제공하고 `/api/` 요청을 `server/data.js`와 `server/analysis.js`에 전달합니다. 프런트엔드는 별도 빌드 단계 없이 동작합니다. Python은 웹 요청 처리에 참여하지 않고 서울시 원본 적재 스크립트에서만 사용합니다.
+`backend/server.js`는 Node.js 내장 `node:http` 서버입니다. 브라우저에 `frontend/`의 정적 HTML·CSS·JavaScript를 제공하고 `/api/` 요청을 `backend/server/data.js`와 `backend/server/analysis.js`에 전달합니다. 프런트엔드는 별도 빌드 단계 없이 동작합니다. Python은 웹 요청 처리에 참여하지 않고 서울시 원본 적재 스크립트에서만 사용합니다.
 
 ```text
-서울시 공개 ZIP·CSV --Python scripts/--> data/commerce.sqlite
+서울시 공개 ZIP·CSV --Python backend/scripts/--> data/commerce.sqlite
 공식 순위·보고서 확인값 ----------> data/*.json
                                        ↓
-브라우저 pages/·shared/ ← /api/* ← server.js ← server/data.js
-                              AI 의견 ← server/analysis.js → Ollama(선택)
+브라우저 /pages/·/shared/ ← frontend/ ← backend/server.js ← backend/server/data.js
+                                            AI 의견 ← backend/server/analysis.js → Ollama(선택)
 ```
 
 | 위치 | 역할 |
 | --- | --- |
-| `server.js` | API 경로, 정적 파일 제공, 오류 응답 |
-| `server/data.js` | SQLite 읽기, 조건별 순위·보고서, 공식 확인값 우선 범위 |
-| `server/analysis.js` | 선택형 Ollama 종합의견과 자료 기반 대체 문장 |
-| `server/config.js` | `.env` 로딩 |
-| `pages/rising/` | 행정동·상권 순위, 지도, 5개 보고서와 PDF 저장 화면 |
-| `pages/owner/` | 현재 사업자 위치·업종·영역 분석과 상담 준비 시연 |
-| `pages/intended-owner/` | 예비 창업자 지역 비교와 보고서 |
-| `pages/warning/`, `pages/products/` | 개발 중인 위험 진단·금융 연결 안내 |
-| `shared/` | 카카오 SDK 로더, 분석 도형 레이어, 공용 화면 코드 |
-| `scripts/` | 원본 다운로드·SQLite 적재·공식 순위 동기화 |
+| `backend/server.js` | API 경로, 정적 파일 제공, 오류 응답 |
+| `backend/static-files.js` | 기존 화면 URL과 `frontend/`의 파일 경로 연결 |
+| `backend/server/data.js` | SQLite 읽기, 조건별 순위·보고서, 공식 확인값 우선 범위 |
+| `backend/server/analysis.js` | 선택형 Ollama 종합의견과 자료 기반 대체 문장 |
+| `backend/server/config.js` | 저장소 루트 `.env` 로딩 |
+| `frontend/pages/rising/` | 행정동·상권 순위, 지도, 5개 보고서와 PDF 저장 화면 |
+| `frontend/pages/owner/` | 현재 사업자 위치·업종·영역 분석과 상담 준비 시연 |
+| `frontend/pages/intended-owner/` | 예비 창업자 지역 비교와 보고서 |
+| `frontend/pages/guide/` | 금융상품 공시 안내 화면 |
+| `frontend/pages/warning/`, `frontend/pages/products/` | 개발 중인 위험 진단·금융 연결 안내 |
+| `frontend/shared/` | 카카오 SDK 로더, 공용 화면 코드·폰트·브랜드·금융 자료 |
+| `backend/scripts/` | 원본 다운로드·SQLite 적재·공식 순위 동기화 |
 | `data/` | 공개 원본, 생성 DB·경계, 출처가 구분된 공식 확인값 |
 
 ## 데이터 계약

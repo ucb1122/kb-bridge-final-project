@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {getRankings,getRegionReport} from '../server/data.js';
-import {monthlySalesPerStore} from '../pages/rising/report-view.js';
+import {getRankings,getRegionReport} from '../backend/server/data.js';
+import {monthlySalesPerStore} from '../frontend/pages/rising/report-view.js';
 
 const hasData=fs.existsSync(new URL('../data/commerce.sqlite',import.meta.url));
 
