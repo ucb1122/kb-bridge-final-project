@@ -58,7 +58,7 @@ export function initProductConsultation(getContext, getPolicyContact) {
 
   async function loadBranches() {
     if (branchData) return renderBranches();
-    if (!loading) loading = fetch('./assets/kb-branches.json', {cache:'no-cache'}).then(async response => {
+    if (!loading) loading = fetch('/shared/finance/kb-branches.json', {cache:'no-cache'}).then(async response => {
       if (!response.ok) throw new Error('영업점 자료 연결 실패');
       const data = await response.json();
       if (!Array.isArray(data.branches)) throw new Error('영업점 자료 형식 확인 필요');

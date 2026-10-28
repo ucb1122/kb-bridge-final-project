@@ -2,7 +2,7 @@ const holder=document.getElementById('team-page');
 const pages=[['rising','뜨는 상권','/pages/rising/'],['owner','내 상권 분석','/pages/owner/'],['recovery','우리 가게 회복 플래너','/pages/intended-owner/'],['finance','금융상품 안내','/pages/guide/']];
 const header=document.createElement('header');header.className='kb-header';
 const brand=document.createElement('a');brand.className='brand';brand.href='/pages/rising/';brand.setAttribute('aria-label','KB 상권브릿지');
-brand.innerHTML='<span class="kb-brand-image" aria-hidden="true"><img src="/pages/owner/assets/kb-bank-brand-source.png" alt=""></span><span>상권브릿지</span>';
+brand.innerHTML='<span class="kb-brand-image" aria-hidden="true"><img src="/shared/kb-bank-brand-source.png" alt=""></span><span>상권브릿지</span>';
 const nav=document.createElement('nav');nav.setAttribute('aria-label','주 메뉴');
 for(const [id,label,url] of pages){const a=document.createElement('a');a.href=url;a.textContent=label;if(id===holder.dataset.active){a.className='active';a.setAttribute('aria-current','page')}nav.append(a)}
 const actions=document.createElement('div');actions.className='header-actions';

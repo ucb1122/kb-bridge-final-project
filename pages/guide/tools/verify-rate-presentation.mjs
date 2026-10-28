@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {ratePresentation,feeHeadline} from '../rate-model.js';
 import {productInformationSections} from '../detail-view.js';
-const read=f=>JSON.parse(fs.readFileSync(new URL('../assets/'+f,import.meta.url)));
+const read=f=>JSON.parse(fs.readFileSync(new URL('../../../shared/finance/'+f,import.meta.url)));
 const catalog=read('products.json').products,details=new Map(['details-bank-a.json','details-bank-b.json','details-policy.json'].flatMap(f=>read(f).products).map(p=>[p.id,p]));
 const model=id=>ratePresentation(catalog.find(p=>p.id===id),details.get(id));
 test('ranges before and after preferential rate come from all four same-condition COFIX rows',()=>{
