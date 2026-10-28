@@ -3,13 +3,13 @@
   "files": [
     {
       "path": "sources/current-catalog.csv",
-      "bytes": 48214,
-      "sha256": "211c103624a14b9a9d46a2c23fb4e3c60326eb363eae006e7aef002ca46ec6c0"
+      "bytes": 49660,
+      "sha256": "c6c0a66085366a2a006582c412bfe01a175713afc48bb53c6ca3c74e3853fc18"
     },
     {
       "path": "sources/official-source-index.json",
-      "bytes": 23328,
-      "sha256": "aef193d3570d248ec5663fbde2778553a263db4c41b609d7fc3ca98e9760ee9d"
+      "bytes": 24089,
+      "sha256": "e4159c8d8c9754e72212bd2855a2169ae416435e6209fcb2e84db9f16652652c"
     },
     {
       "path": "sources/original-finance/00_파일목록.csv",
@@ -103,13 +103,13 @@
     },
     {
       "path": "../../shared/finance/details-bank-b.json",
-      "bytes": 33128,
-      "sha256": "9e4d6c959b31081efcde7926c7beee31564c6e80be41d452d4add1e8c995ff98"
+      "bytes": 36243,
+      "sha256": "f3990ee1d962948a08766f176ad644fac4ce35198e0842cf121a68262daaa046"
     },
     {
       "path": "../../shared/finance/details-policy.json",
-      "bytes": 37344,
-      "sha256": "61030c121b7ece83552ad9745a973d6f709e4137cfe4872c3ce6660831898e08"
+      "bytes": 39394,
+      "sha256": "2ba6fb31fe8fb3c65020212d13806728e3234e5f208bd92f9c0a7d92e4db7b69"
     },
     {
       "path": "../../shared/finance/kb-branches.json",
@@ -118,8 +118,8 @@
     },
     {
       "path": "../../shared/finance/products.json",
-      "bytes": 63097,
-      "sha256": "bec92e95866831c09df5a4c97580e20068002f70cfdd23073072151f99d49217"
+      "bytes": 64632,
+      "sha256": "236de7b737fe0638c8c9ef843e4a9a545ff185ee809be99bb49fa0f70263eb29"
     }
   ]
 }
