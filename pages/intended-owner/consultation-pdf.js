@@ -41,14 +41,28 @@ export async function buildConsultationPDF({summary,branch,form},dependencies={}
  tableRow([['주요 고민',values.get('가장 큰 고민')||values.get('고민')||'']]);
  tableRow([['선택 상권',values.get('상권')||'']]);
  const metric=['월세','월 상환액','월 매출'].find(key=>values.has(key));
- heading('03  고객이 입력한 부담 변화  /  단위: 만원');
+ const linkedKey=[...values.keys()].find(k=>k.startsWith('매출 연동 상환 비교'));
+ const linkedOn=linkedKey&&!values.get(linkedKey).startsWith('미입력');
+ if(metric||!linkedOn)heading('03  고객이 입력한 부담 변화  /  단위: 만원');
  if(metric){
   const comparison=values.get(metric).split(/\s*(?:→|->)\s*/);
   tableRow([['비교 항목',metric],['입력 구분',values.get('입력 구분')||'고객 직접 입력']]);
   tableRow([['현재·평소',comparison[0]],['변경·최근',comparison[1]||'']]);
   const change=values.get('월 부담 변화')||values.get('매출 변화');if(change)tableRow([['한 달 차이',change]]);
- }else tableRow([['금액 정보','미입력 / 상담에서 함께 확인']]);
+ }else if(!linkedOn)tableRow([['금액 정보','미입력 / 상담에서 함께 확인']]);
  const cash=summary.split('\n').find(t=>t.startsWith('지금 남는 돈'));if(cash)tableRow([['남는 돈 계산',cash]]);
+ if(linkedOn){
+  heading((metric?'03-1':'03')+'  매출 연동 상환 비교 (제안 기능 · 현재 KB 상품 아님)');
+  tableRow([['대출 조건',values.get(linkedKey)]]);
+  if(values.has('업종'))tableRow([['업종',values.get('업종')]]);
+  tableRow([['매출 흐름',values.get('매출 흐름 근거')||'']]);
+  if(values.has('매출 변화 가정'))tableRow([['매출 변화 가정',values.get('매출 변화 가정')]]);
+  if(values.has('앞으로 3개월 상환액 합계'))tableRow([['3개월 상환 합계',(values.get('앞으로 3개월 상환액 합계')||'')+'  (지금 방식 -> 연동)']]);
+  tableRow([['최저 매출 달',(values.get('매출이 가장 적은 달 상환액')||'')+'  (지금 방식 -> 연동)']]);
+  if(values.has('매출이 가장 많은 달 상환액'))tableRow([['최고 매출 달',values.get('매출이 가장 많은 달 상환액')]]);
+  if(values.has('월매출 대비 최대 상환 부담'))tableRow([['최대 부담률',values.get('월매출 대비 최대 상환 부담')]]);
+  tableRow([values.has('만기 일시 상환 원금')?['만기 원금',values.get('만기 일시 상환 원금')]:['상환 기간',values.get('상환 기간')||''],['총이자',values.get('총이자 차이')||'']]);
+ }
  heading('04  함께 확인하고 싶은 지원');
  tableRow([['노란우산',values.get('노란우산 요청')||'선택 안 함']]);
  tableRow([['추가 상담',values.get('추가 상담')||'없음']]);
