@@ -1,6 +1,6 @@
 # 3번째 화면 — 우리 가게 회복 플래너
 
-최종 인계: 2026-10-28. 이 폴더가 3번째 화면의 코드·데이터·분석 원본을 모두 포함합니다.
+최종 인계: 2026-10-28. 이 폴더에 3번째 화면의 코드·분석 원본을 두고, 공용 영업점 자료와 브랜드 이미지는 `shared/`에서 읽습니다.
 
 ## 바로 실행
 
@@ -23,7 +23,7 @@ node pages/intended-owner/serve.mjs
 | `index.html`, `main.js`, `commercial-map.js` | 좌측 검색·상위 10곳·지도 선택 | 예 |
 | `assets/regions.json`, `boundaries.json` | 상권·행정동·역 검색, 이름·좌표·WGS84 경계 | 예 |
 | `assets/closure-risk.json` | Python이 계산한 1,650개 상권의 예측값·전역 순위·상태·계수 | 예 |
-| `assets/kb-branches.json` | 공식 공개 영업점 283곳, 가까운 3곳을 직선거리로 표시 | 예 |
+| `shared/finance/kb-branches.json` | 금융상품 안내와 공유하는 공식 공개 영업점 283곳, 가까운 3곳을 직선거리로 표시 | 예 |
 | `recovery-planner.js` → `friendly-planner.js` | 내 고민 → 부담 계산 → 필요한 도움 → 영업점·PDF | 예 |
 | `customer-flow-model.js`, `appointment-*.js`, `consultation-pdf.js` | 고민별 계산·거리 정렬·상담서 양식·PDF 생성 | 예 |
 | `vendor/` | 지도·PDF 라이브러리·한글 폰트·라이선스. CDN 설치 불필요 | 예 |

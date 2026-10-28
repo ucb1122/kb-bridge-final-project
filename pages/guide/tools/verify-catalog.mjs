@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const catalog = JSON.parse(await readFile(new URL('../assets/products.json', import.meta.url), 'utf8'));
+const catalog = JSON.parse(await readFile(new URL('../../../shared/finance/products.json', import.meta.url), 'utf8'));
 const products = catalog.products;
 const legacyIds = ['kb-regional-guarantee', 'kb-soho-credit', 'kb-owner-overdraft', 'kb-119plus', 'kb-soho-collateral', 'kb-general-working-capital', 'kb-growth-business', 'semas-policy-2026'];
 const categories = ['business', 'corporate', 'property', 'policy'];

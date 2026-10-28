@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {productInformationSections} from '../detail-view.js';
-const read=name=>JSON.parse(fs.readFileSync(new URL('../assets/'+name,import.meta.url)));
+const read=name=>JSON.parse(fs.readFileSync(new URL('../../../shared/finance/'+name,import.meta.url)));
 const catalog=read('products.json'),files=['details-bank-a.json','details-bank-b.json','details-policy.json'].map(read);
 const guides=new Map(files.flatMap(f=>f.documentGuides||[]).map(g=>[g.id,g]));
 const details=new Map(files.flatMap(f=>f.products).map(d=>[d.id,{...d,documents:{...d.documents,guides:(d.documents.commonGuideIds||[]).map(id=>guides.get(id)).filter(Boolean)}}]));

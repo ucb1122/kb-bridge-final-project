@@ -25,3 +25,6 @@ main{height:calc(100dvh - 100px);min-height:540px;background:#f8f7f4}.sidebar{le
 .kakao-rank-marker::after{animation-delay:1.4s}
 @keyframes kb-rank-wave{0%{transform:scale(.85);opacity:.85}100%{transform:scale(1.9);opacity:0}}
 @media(prefers-reduced-motion:reduce){.kakao-rank-marker::before,.kakao-rank-marker::after{animation:none;opacity:0}}
+
+/* Unselected analysis metrics show a soft yellow hover on both map pages. */
+.sidebar .metric button:not(.selected):hover,.sidebar .metric button:not(.selected):focus-visible{background:#fff1bd;color:#101624}

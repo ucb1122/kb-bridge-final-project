@@ -1,4 +1,4 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=kind-2';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261028-rr5';
 import {createMap} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';

@@ -1,5 +1,5 @@
 import {ratePresentation} from './rate-model.js';
-import { renderProductDetails } from './detail-view.js?v=20261028-process-1';
+import { renderProductDetails } from './detail-view.js?v=20261028-rate-note';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -31,7 +31,7 @@ function productFacts(product) {
     audience: text(product.presentation?.audience, product.eligibility[0] || FALLBACK),
     limit: text(product.presentation?.limit, short(product.limitText)),
     term: text(product.presentation?.term, short(product.termText)),
-    rate: displayRate.kind==='comparison'?displayRate.after+' · 적용 예시':text(financeDetails.get(product.id)?.rate?.examples?.find(e=>e.range&&e.asOf)?.range, product.category==='policy'?short(product.rateText):'상품별 확인'),
+    rate: displayRate.kind==='comparison'?displayRate.after+' · 계산 참고값':text(financeDetails.get(product.id)?.rate?.examples?.find(e=>e.range&&e.asOf)?.range, product.category==='policy'?short(product.rateText):'상품별 확인'),
     asOf: displayRate.asOf||'',
   };
 }
@@ -104,9 +104,9 @@ function renderResults() {
   $('#catalog-results').setAttribute('aria-busy', 'false');
   if (!shown.length) {
     const emptyMessage = state.role === 'landlord' && state.category === 'policy'
-      ? text(catalog?.missingPolicyNotice, '부동산임대업에 적용할 수 있는 정책자금을 현재 목록에서 확인하지 못했습니다. 최신 공식 공고에서 업종 조건을 확인하세요.')
+      ? ''
       : '검색어나 상세 조건을 바꿔보세요. 목록에 없다는 이유로 지원 대상이 아닌 것은 아닙니다.';
-    $('#product-list').innerHTML = `<div class="empty-state"><strong>확인된 상품이 없어요.</strong>${escapeHTML(emptyMessage)}<br><button type="button" class="button button-outline" id="clear-results">조건 다시 설정하기</button></div>`;
+    $('#product-list').innerHTML = `<div class="empty-state"><img class="empty-state-kobi" src="/shared/characters/kobi-magnifying-glass.png" alt="돋보기로 상품을 찾는 코비"><strong>확인된 상품이 없어요.</strong>${emptyMessage ? `<p>${escapeHTML(emptyMessage)}</p>` : ''}<button type="button" class="button button-outline" id="clear-results">조건 다시 설정하기</button></div>`;
     $('#clear-results').addEventListener('click', resetFilters);
   } else {
     $('#product-list').innerHTML = shown.map((product) => {
@@ -170,7 +170,7 @@ function bindEvents() {
 async function init() {
   bindEvents(); renderControls();
   try {
-    const response = await fetch('./assets/products.json', { cache: 'no-cache' });
+    const response = await fetch('/shared/finance/products.json', { cache: 'no-cache' });
     if (!response.ok) throw new Error(`상품정보 응답 오류: ${response.status}`);
     catalog = await response.json();
     if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.products)) throw new Error('상품정보 파일 형식을 확인하세요.');
@@ -182,7 +182,7 @@ async function init() {
     if (catalog.products.length && !products.length) throw new Error('표시할 수 있는 상품정보가 없습니다.');
     const detailFiles = ['details-bank-a.json','details-bank-b.json','details-policy.json'];
     const detailResults = await Promise.allSettled(detailFiles.map(async file => {
-      const result = await fetch('./assets/'+file, {cache:'no-cache'});
+      const result = await fetch('/shared/finance/'+file, {cache:'no-cache'});
       if (!result.ok) throw new Error('상세자료 연결 확인 필요');
       const data = await result.json();
       if (!Array.isArray(data.products)) throw new Error('상세자료 형식 확인 필요');
@@ -200,9 +200,6 @@ async function init() {
         financeDetails.set(detail.id,{...detail,documents});
       }
     }
-    if (typeof catalog.notice === 'string') $('#catalog-notice').textContent = catalog.notice;
-    if (typeof catalog.sourceNotice === 'string') $('#catalog-source').textContent = catalog.sourceNotice;
-    else $('#catalog-source').textContent = `출처: 상품별 공식 안내 · 출처 확인 ${text(catalog.verifiedAt, '확인 필요')}`;
     populateFilters(); renderResults();
   } catch (error) {
     console.error('[금융상품 안내] 상품정보 로딩 실패', error);
@@ -210,7 +207,6 @@ async function init() {
     $('#result-count').textContent = '연결 확인 필요';
     $('#product-list').innerHTML = '<div class="empty-state" role="alert"><strong>상품정보를 불러오지 못했어요.</strong>잠시 후 다시 확인해 주세요.<br><button id="retry-load" type="button" class="button button-outline">다시 불러오기</button></div>';
     $('#retry-load').addEventListener('click', () => location.reload());
-    $('#catalog-source').textContent = '공식 상품정보 파일 연결을 확인해야 합니다.';
   }
 }
 

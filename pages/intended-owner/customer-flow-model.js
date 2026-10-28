@@ -2,7 +2,7 @@ import {amount,compareConcern,CONCERNS} from './recovery-model.js';
 export const CUSTOMER_STEPS=['내 고민','부담 계산','필요한 도움','영업점·상담서'];
 export const CUSTOMER_CONCERNS={
  ...CONCERNS,
- repayment:{...CONCERNS.repayment,plan:'월 상환액을 줄일 방법 확인',headline:'월 상환액을 줄이면 얼마나 여유가 생길까요?',beforeLabel:'지금 내는 월 상환액',afterLabel:'상담에서 알아보고 싶은 월 상환액'},
+ repayment:{...CONCERNS.repayment,plan:'매출 연동 상환 등 월 상환 부담 조정 방법 확인',headline:'매출이 줄어든 달, 상환액은 얼마나 달라질까요?',beforeLabel:'지금 내는 월 상환액',afterLabel:'상담에서 알아보고 싶은 월 상환액'},
  lease:{...CONCERNS.lease,plan:'월세 인상 부담 상담',headline:'월세가 오르면, 한 달에 얼마가 덜 남을까요?',beforeLabel:'지금 내는 월세',afterLabel:'인상 통보받았거나 예상하는 월세'},
  sales:{...CONCERNS.sales,headline:'평소보다 매출이 얼마나 줄었나요?',before:'usualRevenue',after:'recentRevenue',beforeLabel:'평소 한 달 매출',afterLabel:'최근 한 달 매출',unit:'월 매출',plan:'매출 감소 원인과 필요한 도움 확인',note:'비슷한 영업일수의 월 매출을 비교해요. 매출 감소액이 곧 순이익 감소액은 아닙니다.'},
  restart:{...CONCERNS.restart,headline:'앞으로 어떤 방향을 알아보고 싶으세요?'}

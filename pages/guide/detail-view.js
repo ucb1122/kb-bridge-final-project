@@ -6,6 +6,7 @@ const list = values => `<ul class="info-list">${clean(values).map(value=>`<li>${
 const safe = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null; } catch { return null; } };
 const labels = {business:'사업자대출',corporate:'기업대출',property:'부동산담보',policy:'정책자금'};
 const documentLabels = {published:'공식 안내',electronic:'전자 수집',conditional:'해당 시',confirm:'추가 확인'};
+const koreanDate = value => String(value || '').replace(/^(\d{4})-(\d{2})-(\d{2})$/, (_, year, month, day) => `${year}년 ${Number(month)}월 ${Number(day)}일`);
 
 function examplesFor(product, detail) {
   const examples = Array.isArray(detail?.rate?.examples) ? detail.rate.examples : [];
@@ -17,7 +18,9 @@ function rateHero(product,detail){
  const p=ratePresentation(product,detail);
  if(p.kind==='comparison')return `<div class="rate-comparison"><article><span>${esc(p.beforeLabel)}</span><strong>${esc(p.before)}</strong></article><article><span>${esc(p.afterLabel)}</span><strong>${esc(p.after)}</strong></article></div><p class="rate-reduction">${esc(p.reductionText)}</p><details class="rate-basis"><summary>${esc(p.asOf)} 기준 · 공시 조건과 계산 보기</summary><p>${esc(p.conditions)}</p><div class="rate-benchmark-table">${p.rows.map(r=>`<div><span>${esc(r.label)}</span><b>${r.before.toFixed(2)}% → ${r.after.toFixed(2)}%</b></div>`).join('')}</div><p>${esc(p.note)}</p></details>`;
  const policy=product.category==='policy';
- return `<div class="rate-comparison published-only"><article><span>${policy?'정책자금 공시 금리':'공식 공시 금리 예시'}</span><strong class="${String(p.range).length>24?'long-rate':''}">${esc(p.range)}</strong></article><article><span>우대 조건</span><strong class="benefit-number">${esc(p.benefit?.headline||'상품별 확인')}</strong><small>${p.benefit?'우대 전·후 범위는 별도 미공시':'미공시 수치를 임의로 계산하지 않아요'}</small></article></div><details class="rate-basis"><summary>${esc(p.asOf||'자료 기준')} · 조건과 우대 항목</summary><p>${esc(p.conditions||detail?.rate?.summary||product.rateText)}</p>${list(p.benefit?.items)}${p.benefit?.note?`<p>${esc(p.benefit.note)}</p>`:''}<p>공시 시점의 조건별 안내이며 현재 개인 적용금리가 아닙니다.</p></details>`;
+ const rateTerms=p.benefit?.headline||str(detail?.rate?.summary,product.rateText);
+ const termsNote=p.benefit?'우대 전·후 범위는 별도 미공시':p.asOf?`${koreanDate(p.asOf)} 기준 공시 내용`:'공시된 금리 적용 방식';
+ return `<div class="rate-comparison published-only"><article><span>${policy?'정책자금 공시 금리':'공시 금리'}</span><strong class="${String(p.range).length>24?'long-rate':''}">${esc(p.range)}</strong></article><article><span>${p.benefit?'우대 조건':'금리 산정·우대 조건'}</span><strong class="${p.benefit?'benefit-number':'rate-terms'}">${esc(rateTerms)}</strong><small>${esc(termsNote)}</small></article></div><details class="rate-basis"><summary>${esc(p.asOf||'자료 기준')} · 조건과 우대 항목</summary><p>${esc(p.conditions||detail?.rate?.summary||product.rateText)}</p>${list(p.benefit?.items)}${p.benefit?.note?`<p>${esc(p.benefit.note)}</p>`:''}<p>공시 시점의 조건별 안내입니다. 최신 조건은 공식 안내에서 확인해 주세요.</p></details>`;
 }
 
 function feeCards(detail){const fees=(detail?.fees||[]).filter(f=>f?.label&&f.text);return fees.length?`<div class="fee-cards">${fees.slice(0,3).map(f=>`<article><span>${esc(f.label)}</span><strong>${esc(feeHeadline(f))}</strong>${f.numericNote?`<small>${esc(f.numericNote)}</small>`:''}</article>`).join('')}</div>`:'';}
@@ -27,13 +30,13 @@ function overview(product, detail, role) {
  const audience=product.presentation?.audience||product.eligibility[0]||'대상 조건 확인 필요';
  const eligibility=product.eligibility.filter(v=>role==='landlord'||!v.startsWith('임대인에게는'));
  const p=ratePresentation(product,detail);
- const rate=p.kind==='comparison'?`${esc(p.after)} <small>우대·이자지원 반영 예시</small>`:`${p.range}`;
- return `<div class="simple-product-rate"><span>공시 금리 ${p.kind==='comparison'?'· 적용 예시':'예시'}</span><strong class="${String(p.range||p.after).length>25?'long-rate':''}">${p.kind==='comparison'?rate:esc(rate)}</strong><small>${esc(p.asOf||'자료 기준은 금리 탭에서 확인')} · 개인 적용금리가 아닙니다.</small></div><div class="simple-product-facts"><div><span>한도</span><strong>${esc(product.presentation?.limit||short(product.limitText))}</strong></div><div><span>기간</span><strong>${esc(product.presentation?.term||short(product.termText))}</strong></div></div><p class="simple-product-audience">${esc(audience)}</p><p class="simple-product-next">우대 전후·수수료는 <button type="button" data-open-info="rates">금리·비용</button>에서 확인하세요.</p><details class="plain-disclosure"><summary>상세 대상·한도 조건</summary>${list(eligibility)}<p>${esc(product.limitText)}</p><p>${esc(product.termText)}</p></details>`;
+ const rate=p.kind==='comparison'?`${esc(p.after)} <small>우대·이자지원 반영 계산 참고값</small>`:`${p.range}`;
+ return `<div class="simple-product-rate"><span>공시 금리</span><strong >${p.kind==='comparison'?rate:esc(rate)}</strong><small>${p.asOf?`${esc(koreanDate(p.asOf))} 기준이며, `:''}최신 금리·조건은 변경되었을 수 있으니 공식 안내에서 확인해 주세요.</small></div><div class="simple-product-facts"><div><span>한도</span><strong>${esc(product.presentation?.limit||short(product.limitText))}</strong></div><div><span>기간</span><strong>${esc(product.presentation?.term||short(product.termText))}</strong></div></div><p class="simple-product-audience">${esc(audience)}</p><p class="simple-product-next">우대 전후·수수료는 <button type="button" data-open-info="rates">금리·비용</button>에서 확인하세요.</p><details class="plain-disclosure"><summary>상세 대상·한도 조건</summary>${list(eligibility)}<p>${esc(product.limitText)}</p><p>${esc(product.termText)}</p></details>`;
 }
 
 function rates(product, detail) {
  const examples=examplesFor(product,detail),fees=(detail?.fees||[]).filter(f=>f?.label&&f.text);
- return `${rateHero(product,detail)}${feeCards(detail)}<details class="plain-disclosure"><summary>금리 구조·기준일별 원문 요약</summary><p>${esc(str(detail?.rate?.summary,product.rateText))}</p>${list(detail?.rate?.details)}${examples.map(e=>`<article class="published-rate"><span class="example-label">${esc(e.asOf)} 기준</span><strong>${esc(e.range)}</strong><p>${esc(e.conditions)}</p>${e.formula?`<p>${esc(e.formula)}</p>`:''}<small>${esc(e.note||'현재 개인 적용금리가 아닙니다.')}</small></article>`).join('')}</details><h4>수수료·보증료 상세</h4>${fees.length?`<dl class="fee-list">${fees.map(f=>`<div><dt>${esc(f.label)} <b>${esc(feeHeadline(f))}</b></dt><dd>${esc(f.text)}</dd>${f.brackets?`<details class="stamp-brackets"><summary>인지세 구간별 고객 부담액</summary>${f.brackets.map(([band,value])=>`<div><span>${esc(band)}</span><strong>${esc(value)}</strong></div>`).join('')}<p>${esc(f.bracketsNote)}</p></details>`:''}</div>`).join('')}</dl>`:'<p class="small-notice">개별 수수료·보증료 숫자는 확인 필요합니다. 미공시를 면제로 보지 않습니다.</p>'}`;
+ return `${rateHero(product,detail)}${feeCards(detail)}<details class="plain-disclosure"><summary>금리 구조·기준일별 원문 요약</summary><p>${esc(str(detail?.rate?.summary,product.rateText))}</p>${list(detail?.rate?.details)}${examples.map(e=>`<article class="published-rate"><span class="example-label">${esc(e.asOf)} 기준</span><strong>${esc(e.range)}</strong><p>${esc(e.conditions)}</p>${e.formula?`<p>${esc(e.formula)}</p>`:''}<small>${esc(e.note||'최신 조건은 공식 안내에서 확인해 주세요.')}</small></article>`).join('')}</details><h4>수수료·보증료 상세</h4>${fees.length?`<dl class="fee-list">${fees.map(f=>`<div><dt>${esc(f.label)} <b>${esc(feeHeadline(f))}</b></dt><dd>${esc(f.text)}</dd>${f.brackets?`<details class="stamp-brackets"><summary>인지세 구간별 고객 부담액</summary>${f.brackets.map(([band,value])=>`<div><span>${esc(band)}</span><strong>${esc(value)}</strong></div>`).join('')}<p>${esc(f.bracketsNote)}</p></details>`:''}</div>`).join('')}</dl>`:'<p class="small-notice">개별 수수료·보증료 숫자는 확인 필요합니다. 미공시를 면제로 보지 않습니다.</p>'}`;
 }
 
 function repayment(product, detail) {
@@ -61,7 +64,7 @@ function sources(product, detail) {
   const values = [{title:product.sourceTitle,url:product.sourceUrl,scope:'기본 상품 안내'},...(Array.isArray(detail?.sources)?detail.sources:[]),...commonSources,...[detail?.rate?.comparison,detail?.rate?.benefit].filter(v=>v?.sourceUrl).map(v=>({title:'금리 범위·우대조건 근거',url:v.sourceUrl})),...(detail?.fees||[]).filter(f=>f.bracketsSource).map(f=>({title:'인지세 구간표 근거',url:f.bracketsSource}))];
   const seen = new Set();
   const sources = values.filter(item=>item?.title && safe(item.url) && !seen.has(item.url) && seen.add(item.url));
-  return `<details class="information-sources"><summary>출처·자료 기준 확인 <span aria-hidden="true">＋</span></summary><p>상세 확인: ${esc(detail?.confirmedAt || product.detailVerifiedAt || product.verifiedAt || '확인 필요')}. 공시 금리의 기준일은 각각의 예시에 표시했습니다.</p>${sources.map(source=>`<p><a href="${esc(safe(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>${source.scope ? `<small>${esc(source.scope)}</small>`:''}</p>`).join('')}</details>`;
+  return `<details class="information-sources"><summary>출처·자료 기준 확인 <span aria-hidden="true">＋</span></summary><p>상세 확인: ${esc(detail?.confirmedAt || product.detailVerifiedAt || product.verifiedAt || '확인 필요')}. 공시 금리의 기준일은 상품별 금리 안내에서 확인해 주세요.</p>${sources.map(source=>`<p><a href="${esc(safe(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>${source.scope ? `<small>${esc(source.scope)}</small>`:''}</p>`).join('')}</details>`;
 }
 
 export function productInformationSections(product,detail,role){
@@ -85,4 +88,10 @@ export function renderProductDetails({element,product,detail,role}) {
  function selectTab(button){for(const tab of tabs){const active=tab===button;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;element.querySelector('#product-section-'+tab.dataset.infoTab).hidden=!active;}element.querySelector('#detail-content').scrollTop=0;}
  element.querySelectorAll('[data-open-info]').forEach(button=>button.addEventListener('click',()=>{const tab=tabs.find(t=>t.dataset.infoTab===button.dataset.openInfo);if(tab){selectTab(tab);tab.focus();}}));
  for(const button of tabs){button.addEventListener('click',()=>selectTab(button));button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const i=tabs.indexOf(button);const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(i+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[next]);tabs[next].focus();});}
+ const sourceDetails=element.querySelector('.information-sources');
+ sourceDetails?.addEventListener('toggle',()=>{
+  const icon=sourceDetails.querySelector('summary span');
+  if(icon)icon.textContent=sourceDetails.open?'－':'＋';
+  if(sourceDetails.open)requestAnimationFrame(()=>{const body=element.querySelector('#detail-content');if(body.scrollHeight>body.clientHeight)body.scrollTop+=sourceDetails.getBoundingClientRect().top-body.getBoundingClientRect().top;else sourceDetails.scrollIntoView({block:'nearest'});});
+ });
 }
