@@ -1,6 +1,6 @@
 /* Map is the primary workspace. The customer comparison opens on demand. */
 .region-map-pin{background:transparent;border:0}.region-pin-label{position:absolute;left:12px;top:-38px;white-space:nowrap;background:#ffcf32;border:2px solid #fff;border-radius:8px;padding:9px 13px;font-family:Bridge,sans-serif;font-size:16px;line-height:1.5;color:#293141;box-shadow:0 3px 14px #142b4440}.region-pin-label:before{content:'';position:absolute;left:-10px;bottom:-12px;width:13px;height:13px;border-radius:50%;background:#e5ac00;border:3px solid #fff;box-shadow:0 1px 6px #243b4d40}
-.map-workspace{position:relative;display:block!important;width:100%;max-width:none;margin:0;padding:0!important;height:calc(100dvh - 78px);min-height:620px;isolation:isolate}
+.map-workspace{position:relative;display:block!important;width:100%;max-width:none;margin:0;padding:0!important;height:calc(100dvh - 100px);min-height:620px;isolation:isolate}
 .map-stage{position:absolute;inset:0;background:#e7edf1;overflow:hidden}
 .map-stage #map{position:absolute;inset:0;width:100%;height:100%}
 .map-workspace .region-panel{position:absolute;z-index:800;top:18px;left:18px;width:315px;max-height:calc(100% - 36px);padding:22px 18px;box-shadow:0 5px 25px #18243a12}
