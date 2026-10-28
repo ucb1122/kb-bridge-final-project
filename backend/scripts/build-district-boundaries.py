@@ -4,9 +4,9 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-root = Path(__file__).resolve().parents[1]
+root = Path(__file__).resolve().parents[2]
 source = root / "data" / "commerce-dong.geojson"
-target = root / "pages" / "rising" / "district-boundaries.geojson"
+target = root / "frontend" / "pages" / "rising" / "district-boundaries.geojson"
 features = json.loads(source.read_text(encoding="utf-8"))["features"]
 districts = sorted({feature["properties"]["district"] for feature in features})
 result = []

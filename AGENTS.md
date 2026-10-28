@@ -4,7 +4,7 @@
 
 - 상권의 변화와 소상공인의 경영 부담을 함께 보고, 위험 신호를 금융·정책 지원과 상담 준비로 연결하는 서비스다.
 - 웹 앱은 Node.js 내장 HTTP 서버, 브라우저 HTML·CSS·JavaScript, SQLite로 실행한다. Python은 공개 원본 자료를 준비하고 적재하는 도구에만 사용한다.
-- 화면은 `pages/`와 `shared/`, API와 분석은 `server.js`와 `server/`, 원본 적재는 `scripts/`에 둔다. 설계·검증 기준은 `docs/`를 본다.
+- 화면과 공용 브라우저 자산은 `frontend/pages/`와 `frontend/shared/`, API와 분석은 `backend/server.js`와 `backend/server/`, 원본 적재는 `backend/scripts/`에 둔다. 문서와 데이터는 저장소 루트의 `docs/`, `data/`에 둔다.
 
 ## 데이터와 표현 원칙
 

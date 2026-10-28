@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
 import {loadEnv} from '../server/config.js';
-const root=path.resolve(import.meta.dirname,'..');
+const root=path.resolve(import.meta.dirname,'../..');
 loadEnv(root);
 const input=path.resolve(root,process.argv[2]||'data/csv');
 const output=path.resolve(root,process.env.DB_PATH||'data/commerce.sqlite');

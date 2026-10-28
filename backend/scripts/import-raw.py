@@ -13,7 +13,7 @@ import zipfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SOURCES = {
     "stores": ("서울시 상권분석서비스(점포-상권).csv", "전체_점포_수"),
     "sales": ("서울시 상권분석서비스(추정매출-상권).csv", "당월_매출_금액"),
@@ -49,7 +49,7 @@ def number(value, source, line):
 def dong_rows(folder, metric, column):
     source = folder / f"{metric}.csv"
     if not source.exists():
-        raise FileNotFoundError(f"{source} 파일이 없습니다. python scripts/fetch-dong.py를 먼저 실행하세요.")
+        raise FileNotFoundError(f"{source} 파일이 없습니다. python backend/scripts/fetch-dong.py를 먼저 실행하세요.")
     with source.open(encoding="cp949", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"기준_년분기_코드", "행정동_코드", "행정동_코드_명", column}
@@ -119,7 +119,7 @@ def import_archive(source, target):
     dong_folder = source.parent / "dong"
     dong_boundary_path = dong_folder / "boundaries.geojson"
     if not dong_boundary_path.exists():
-        raise FileNotFoundError(f"{dong_boundary_path} 파일이 없습니다. python scripts/fetch-dong.py를 먼저 실행하세요.")
+        raise FileNotFoundError(f"{dong_boundary_path} 파일이 없습니다. python backend/scripts/fetch-dong.py를 먼저 실행하세요.")
     raw_dong_boundary = json.loads(dong_boundary_path.read_text(encoding="utf-8"))
     dong_features = []
     dong_centers = {}
@@ -213,5 +213,5 @@ if __name__ == "__main__":
     parser.add_argument("--db", type=Path, default=ROOT / "data/commerce.sqlite")
     args = parser.parse_args()
     import_archive(args.source, args.db)
-    subprocess.run([sys.executable, str(ROOT / "scripts/import-details.py"),
+    subprocess.run([sys.executable, str(ROOT / "backend/scripts/import-details.py"),
                     "--source", str(args.source), "--db", str(args.db)], check=True)
