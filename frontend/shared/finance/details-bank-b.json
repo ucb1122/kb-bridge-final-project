@@ -12,19 +12,32 @@
         ],
         "examples": [
           {
-            "range": "최저 연 4.83%",
-            "asOf": "2026-08-21",
-            "conditions": "상품 상단 공시 · 신용등급 1등급",
-            "note": "과거 공시 예시이며 개인 현재금리가 아닙니다."
-          },
-          {
-            "range": "연 5.29%",
-            "asOf": "2024-10-25",
-            "conditions": "소매형소호 1등급 · 보증 95% · 5년(1년 거치)",
-            "formula": "기준 3.39% + 가산 1.90%p",
-            "note": "본문의 별도 과거 예시로, 상단 금리와 기준일이 달라요."
+            "range": "연 4.81%",
+            "asOf": "2026-07-16",
+            "conditions": "소매형소호 1등급 · 5년(1년 거치 4년 분할) · 3개월 변동 · 보증 95%",
+            "formula": "기준 2.91% + 가산 1.90%p",
+            "note": "공식 상품 페이지의 과거 계산 예시이며 현재 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://zloan.kbstar.com/quics?page=C113670"
           }
-        ]
+        ],
+        "benefit": {
+          "label": "금리 상한",
+          "headline": "3개월 MOR + 1.9%p",
+          "items": [
+            "별도 우대금리 항목은 공시에 없습니다.",
+            "신용보증재단중앙회 협약 상한금리: 보증비율 95%는 3개월 MOR + 연 1.9%p"
+          ],
+          "sourceUrl": "https://zloan.kbstar.com/quics?page=C113670",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "협약 상한금리",
+              "detail": "신용보증재단중앙회 협약 · 보증비율 95% 기준. 별도 우대금리 항목은 공시에 없음",
+              "value": "3개월 MOR + 1.9%p"
+            }
+          ]
+        },
+        "baseRateText": "3개월 변동 기준금리"
       },
       "repayment": {
         "summary": "첫 1년은 이자만, 이후 4년은 같은 원금과 잔액 이자를 매달 내요.",
@@ -114,7 +127,7 @@
           "scope": "공식 상품 조건"
         }
       ],
-      "confirmedAt": "2026-10-27"
+      "confirmedAt": "2026-10-28"
     },
     {
       "id": "kb-seller",
@@ -145,9 +158,10 @@
             }
           ],
           "reductionText": "자동선정산 약정 시 0.50%p",
-          "note": "우대 후는 공시금리 4.35%에서 0.50%p를 차감한 계산입니다. 다른 마켓·고객의 적용금리가 아닙니다.",
+          "note": "상품안내 공시: 연 3.85%(쿠팡셀러 기준, 자동선정산 우대금리 0.5%p 적용 시). 우대 전 4.35%는 여기에 0.5%p를 더한 값입니다.",
           "sourceUrl": "https://zloan.kbstar.com/quics?page=C108424"
-        }
+        },
+        "baseRateText": "제휴 마켓 협약 이율"
       },
       "repayment": {
         "summary": "정산일에 마켓이 은행에 정산금을 보내면 대출부터 갚고 나머지를 받아요.",
@@ -225,7 +239,7 @@
           "scope": "공식 상품 조건"
         }
       ],
-      "confirmedAt": "2026-10-27"
+      "confirmedAt": "2026-10-28"
     },
     {
       "id": "kb-sunshine-119",
@@ -243,7 +257,24 @@
             "formula": "기준 3.73% + 가산 2.26%p",
             "note": "특정 조건의 과거 예시이며 개인 적용금리는 별도 심사예요."
           }
-        ]
+        ],
+        "benefit": {
+          "headline": "연 0.20%p",
+          "items": [
+            "상품우대금리 연 0.20%p(신용평가 결과에 따라 차등)",
+            "상한금리: 최종금리 연 5.99% 초과 불가(2026-07-31 상품 개선)"
+          ],
+          "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001590",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "상품우대금리",
+              "detail": "신용평가 결과에 따라 차등 · 최종금리는 연 5.99%를 넘지 않음",
+              "value": "0.20%p"
+            }
+          ]
+        },
+        "baseRateText": "12개월 변동 기준금리"
       },
       "repayment": {
         "summary": "1년은 이자만 내고, 이후 4년 동안 원금과 잔액 이자를 갚아요.",
@@ -334,7 +365,7 @@
           "scope": "상품별 확정 서류가 아닌 기업대출 공통 확인목록"
         }
       ],
-      "confirmedAt": "2026-10-27"
+      "confirmedAt": "2026-10-28"
     },
     {
       "id": "kb-119plus-extension",
@@ -352,7 +383,23 @@
             "formula": "기준 2.65% + 가산 3.55~3.65%p",
             "note": "과거 조건 예시이며 신규 사업자금 대출 금리로 쓰지 않아요."
           }
-        ]
+        ],
+        "benefit": {
+          "headline": "최대 연 0.10%p",
+          "items": [
+            "상품우대금리: 기초생활수급권자·장애인·국가유공자 및 자녀·만 65세 이상·다문화가정·경영컨설팅 프로그램 수료자 중 해당 시"
+          ],
+          "sourceUrl": "https://obiz.kbstar.com/quics?cc=b035196%3Ab035393&isNew=Y&page=C016280&prcode=LN25001621",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "상품우대금리",
+              "detail": "기초생활수급권자·장애인·국가유공자 및 자녀·만 65세 이상·다문화가정·경영컨설팅 프로그램 수료자 중 1개 해당",
+              "value": "최대 0.10%p"
+            }
+          ]
+        },
+        "baseRateText": "금융채 AAA · 12개월"
       },
       "repayment": {
         "summary": "1년 동안 이자를 내고 만기에 원금을 한 번에 갚아요.",
@@ -438,7 +485,7 @@
           "scope": "상품별 확정 서류가 아닌 기업대출 공통 확인목록"
         }
       ],
-      "confirmedAt": "2026-10-27"
+      "confirmedAt": "2026-10-28"
     },
     {
       "id": "kb-office-interim",
@@ -457,7 +504,18 @@
             "note": "공식 상품안내의 과거 계산 예시이며 현재 개인 적용금리가 아닙니다.",
             "sourceUrl": "https://obiz.kbstar.com/quics?page=C016287&cc=b035269%3Ab035393&prcode=LN25001419&isNew=N"
           }
-        ]
+        ],
+        "benefit": {
+          "headline": "공시 우대금리 없음",
+          "items": [
+            "금리 및 이율 탭에 별도 우대금리 항목이 없습니다.",
+            "KB스타클럽 등 거래 실적에 따른 수수료 우대는 가능(금리 우대 아님)"
+          ],
+          "sourceUrl": "https://obiz.kbstar.com/quics?page=C016287&cc=b035269%3Ab035393&prcode=LN25001419&isNew=N",
+          "verifiedAt": "2026-10-28",
+          "rows": []
+        },
+        "baseRateText": "CD91(3개월) · 금융채 AAA(6개월 이상)"
       },
       "repayment": {
         "summary": "분양 사업장별 약정과 중도금 일정에 따라 달라요.",
@@ -550,7 +608,17 @@
             "formula": "기준 2.59% + 가산 2.43~3.61%p",
             "note": "본문 예시입니다. 상단의 2026-01-15 예시(5.15~6.34%)와 기준이 달라요."
           }
-        ]
+        ],
+        "benefit": {
+          "headline": "공시 우대금리 없음",
+          "items": [
+            "금리정보에 별도 우대금리 항목이 없습니다. 기준금리 + 가산금리(신용등급·담보·거래실적)로 정해집니다."
+          ],
+          "sourceUrl": "https://obiz.kbstar.com/quics?page=C067219",
+          "verifiedAt": "2026-10-28",
+          "rows": []
+        },
+        "baseRateText": "CD91(3개월) · 금융채 AAA(6개월 이상)"
       },
       "repayment": {
         "summary": "정산금이 들어오면 만기가 빠른 건별 대출부터 갚아요.",
@@ -637,7 +705,7 @@
           "scope": "공식 상품 조건"
         }
       ],
-      "confirmedAt": "2026-10-27"
+      "confirmedAt": "2026-10-28"
     },
     {
       "id": "kb-sales-plus",
@@ -657,7 +725,17 @@
             "note": "공식 상품설명의 과거 계산 예시이며 현재 개인 적용금리가 아닙니다.",
             "sourceUrl": "https://zloan.kbstar.com/quics?page=C109181"
           }
-        ]
+        ],
+        "benefit": {
+          "headline": "공시 우대금리 없음",
+          "items": [
+            "금리안내에 별도 우대금리 항목이 없습니다. 기준금리 + 가산금리(신용등급·담보비율·거래실적)로 정해집니다."
+          ],
+          "sourceUrl": "https://zloan.kbstar.com/quics?page=C109181",
+          "verifiedAt": "2026-10-28",
+          "rows": []
+        },
+        "baseRateText": "CD91(3개월) · 금융채 AAA(6개월 이상)"
       },
       "repayment": {
         "summary": "플랫폼 정산금이 들어올 때마다 대출을 먼저 갚고 나머지를 받아요. 매출(정산금)이 많을수록 빨리 갚는 구조예요.",
@@ -748,43 +826,77 @@
         ],
         "examples": [
           {
-            "range": "연 4.88~5.78%",
-            "asOf": "2026-08-27",
-            "conditions": "신규COFIX 6개월 · 상업용부동산 · 가계일반자금 · 비거치분할30년 · 신용3등급",
-            "formula": "기준 3.18% + 가산 2.60%p - 우대 최대 0.90%p",
-            "note": "공식 표의 한 가지 예시입니다. 개인 현재금리가 아니에요."
+            "range": "연 5.15~6.05%",
+            "asOf": "2026-10-28",
+            "conditions": "신규COFIX 6개월 · 상업용부동산 · 가계일반자금 · 비거치 분할 30년 · 신용 3등급",
+            "formula": "기준 3.43% + 가산 2.62%p - 우대 최대 0.90%p",
+            "note": "공식 대출금리표의 한 행이며 개인 현재금리가 아닙니다.",
+            "sourceUrl": "https://obank.kbstar.com/quics?QSL=F&cc=b104363%3Ab104516&isNew=N&page=C103557&prcode=LN20001162"
           }
         ],
         "comparison": {
           "beforeLabel": "우대 미적용 · 공시 범위",
           "afterLabel": "최대 우대 적용 · 공시 범위",
-          "asOf": "2026-08-27",
+          "asOf": "2026-10-28",
           "conditions": "상업용부동산 · 가계일반자금 · 비거치 분할 30년 · 신용 3등급 · 아래 COFIX 4종",
           "rows": [
             {
               "label": "신규 COFIX 6개월",
-              "before": 5.78,
-              "after": 4.88
+              "before": 6.05,
+              "after": 5.15
             },
             {
               "label": "신규 COFIX 12개월",
-              "before": 6.06,
-              "after": 5.16
+              "before": 6.38,
+              "after": 5.48
             },
             {
               "label": "신잔액 COFIX 6개월",
-              "before": 5.8,
-              "after": 4.9
+              "before": 6.03,
+              "after": 5.13
             },
             {
               "label": "신잔액 COFIX 12개월",
-              "before": 5.77,
-              "after": 4.87
+              "before": 5.98,
+              "after": 5.08
             }
           ],
           "reductionText": "실적 연동 우대 최대 0.90%p",
           "note": "공시된 COFIX 4종의 최저·최고를 묶은 범위입니다. 모든 고객의 금리 범위가 아닙니다.",
           "sourceUrl": "https://obank.kbstar.com/quics?QSL=F&cc=b104363%3Ab104516&isNew=N&page=C103557&prcode=LN20001162"
+        },
+        "baseRateText": "COFIX(신규·신잔액 6·12개월)",
+        "benefit": {
+          "headline": "최대 연 0.90%p",
+          "rows": [
+            {
+              "name": "KB국민카드 결제실적",
+              "detail": "최근 3개월 30만·60만·90만원 이상",
+              "value": "0.10~0.30%p"
+            },
+            {
+              "name": "급여(연금)이체 실적",
+              "detail": "50만원 이상",
+              "value": "최대 0.30%p"
+            },
+            {
+              "name": "자동이체 거래실적",
+              "detail": "신규 3건 이상",
+              "value": "0.10%p"
+            },
+            {
+              "name": "KB스타뱅킹 이체실적",
+              "detail": "",
+              "value": "0.10%p"
+            },
+            {
+              "name": "적립식 예금 30만원 이상",
+              "detail": "",
+              "value": "0.10%p"
+            }
+          ],
+          "note": "실적연동 우대는 대출 실행 3개월 이후 매월 재산정됩니다.",
+          "verifiedAt": "2026-10-28"
         }
       },
       "repayment": {
@@ -878,7 +990,7 @@
           "scope": "공식 상품 조건"
         }
       ],
-      "confirmedAt": "2026-10-27"
+      "confirmedAt": "2026-10-28"
     }
   ]
 }
