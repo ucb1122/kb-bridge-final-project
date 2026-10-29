@@ -36,5 +36,11 @@
 .region-card .owner-gender-name{font-size:15px;font-weight:700;color:#344054}
 .region-card .owner-gender-percent{font-size:clamp(24px,2vw,34px);line-height:1.1;color:#172236}
 .region-card .owner-gender-amount{font-size:13px;color:#65748b}
-.kakao-rank-marker .rank-badge .badge-number,.kakao-rank-marker .rank-badge .badge-name,.kakao-rank-marker .rank-badge .badge-value{color:#111;font-weight:800}
+.kakao-rank-marker .rank-badge .badge-number,.kakao-rank-marker .rank-badge .badge-name,.kakao-rank-marker .rank-badge .badge-value{color:#111;font-weight:400}
+.region-card .summary-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 0;text-align:center}
+.region-card .summary-loading-mascot{display:block;width:min(100%,180px);height:auto;object-fit:contain}
+.region-card .summary-loading p{margin:0;font-weight:700}
+.region-card .opinion-emphasis{color:inherit;font-weight:700}
+.region-card .opinion-emphasis.up{color:#c83232}
+.region-card .opinion-emphasis.down{color:#1478bb}
 @media(max-width:760px){.region-card .trend-grid,.region-card .owner-detail-split,.region-card .owner-industry-trends{grid-template-columns:1fr}.region-card .owner-mini-trend:last-child{grid-column:auto}}

@@ -1,47 +1,96 @@
-import {MAP_STYLE_URL,MAP_ZOOM_OPTIONS} from './map-config.js';
+/** Kakao map and layer helpers for the recovery planner. */
+const kakaoMaps = () => {
+  const maps = window.kakao?.maps;
+  if (!maps?.Map) throw new Error('카카오 지도를 불러오지 못했습니다. 지도 API 키를 확인해 주세요.');
+  return maps;
+};
 
-/** Page-local Leaflet interface. Layers and event handlers survive a basemap failure. */
-export function createMap(id='map',options={}){
- if(!window.L)throw Error('Leaflet 라이브러리를 불러오지 못했습니다.');
- const map=L.map(id,{zoomControl:false,preferCanvas:true,...MAP_ZOOM_OPTIONS}).setView([37.5665,126.978],12.25);
- const attribution='<a href="https://openfreemap.org/">OpenFreeMap</a> © <a href="https://openmaptiles.org/">OpenMapTiles</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
- let vector,gl,timer,fallback=false;
- function restore(error){
-  if(fallback)return;fallback=true;clearTimeout(timer);
-  console.error('[상권지도] OpenFreeMap 로딩 실패. OpenStreetMap으로 복구합니다.',error);
-  if(vector&&map.hasLayer(vector))map.removeLayer(vector);
-  map.attributionControl.removeAttribution(attribution);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
-  map.getContainer().dataset.basemap='osm-fallback';
-  map.fire('basemapchange',{name:'osm-fallback'});
- }
- try{
-  if(!window.maplibregl||!L.maplibreGL)throw Error('MapLibre GL / Leaflet 어댑터 없음');
-  vector=L.maplibreGL({style:options.style||MAP_STYLE_URL,interactive:false,attribution}).addTo(map);
-  gl=vector.getMaplibreMap();
-  const loaded=()=>{
-   clearTimeout(timer);
-   // Keep Bright's roads/water/colors, with Korean-first place labels.
-   for(const layer of gl.getStyle().layers||[])if(layer.type==='symbol'&&JSON.stringify(layer.layout?.['text-field']||'').includes('name'))gl.setLayoutProperty(layer.id,'text-field',['coalesce',['get','name:ko'],['get','name:nonlatin'],['get','name'],['get','name_en']]);
-   map.getContainer().dataset.basemap='openfreemap';map.fire('basemapchange',{name:'openfreemap'});
+export function createLayerGroup(map) {
+  const layers = [];
+  return {
+    add(layer) { layers.push(layer); layer.setMap(map); return layer; },
+    clearLayers() { for (const layer of layers) layer.setMap(null); layers.length = 0; },
+    getBounds() {
+      const bounds = new (kakaoMaps().LatLngBounds)();
+      let count = 0;
+      for (const layer of layers) for (const point of layer.regionPoints || []) {
+        bounds.extend(point); count++;
+      }
+      return count ? bounds : null;
+    },
   };
-  gl.once('load',loaded);
-  gl.on('error',event=>{
-   console.error('[상권지도] 벡터 지도 오류',event.error);
-   // A bad tile alone may recover. A missing style or source before first paint cannot.
-   if(!gl.isStyleLoaded()&&!gl.getStyle()?.sources)restore(event.error);
+}
+
+export function drawFeature(group, feature, style, onClick) {
+  const maps = kakaoMaps();
+  const polygons = feature.geometry?.type === 'Polygon'
+    ? [feature.geometry.coordinates]
+    : feature.geometry?.type === 'MultiPolygon' ? feature.geometry.coordinates : [];
+  for (const rings of polygons) {
+    const paths = rings.map(ring => ring.map(([lng, lat]) => new maps.LatLng(lat, lng)));
+    if (!paths[0]?.length) continue;
+    const polygon = new maps.Polygon({
+      path: paths.length === 1 ? paths[0] : paths,
+      strokeWeight: style.weight ?? 1,
+      strokeColor: style.color ?? '#8b98a6',
+      strokeOpacity: style.opacity ?? 1,
+      strokeStyle: style.dashArray ? 'shortdash' : 'solid',
+      fillColor: style.fillColor ?? '#b9c2cc',
+      fillOpacity: style.fillOpacity ?? 0,
+      zIndex: style.zIndex ?? 1,
+    });
+    polygon.regionPoints = paths.flat();
+    group.add(polygon);
+    if (onClick) maps.event.addListener(polygon, 'click', () => {
+      maps.event.preventMap?.();
+      onClick();
+    });
+  }
+}
+
+export function createMap(id = 'map') {
+  const maps = kakaoMaps();
+  const nativeMap = new maps.Map(document.getElementById(id), {
+    center: new maps.LatLng(37.5665, 126.978), level: 7,
   });
-  gl.getCanvas().addEventListener('webglcontextlost',()=>restore(Error('WebGL context lost')));
-  timer=setTimeout(()=>{if(!gl.loaded())restore(Error('지도 로딩 시간 초과 (25초)'));},25000);
-  map.getContainer().dataset.basemap='loading';
- }catch(error){restore(error);}
- L.control.zoom({position:'bottomright'}).addTo(map);
- L.control.scale({imperial:false,position:'bottomright'}).addTo(map);
- const markers=L.layerGroup().addTo(map);
- map.on('unload',()=>clearTimeout(timer));
- return {map,show(points){markers.clearLayers();for(const p of points)if(Number.isFinite(+p.lat)&&Number.isFinite(+p.lng)){
-  const name=document.createElement('span');name.textContent=p.name||'';L.circleMarker([+p.lat,+p.lng],{radius:7,color:'#ffffff',weight:3,fillColor:'#d49b00',fillOpacity:1}).bindPopup(name).addTo(markers);
-  const label=document.createElement('strong');label.className='region-pin-label';label.textContent=p.name||'선택 지역';
-  L.marker([+p.lat,+p.lng],{interactive:false,zIndexOffset:1000,icon:L.divIcon({className:'region-map-pin',html:label,iconSize:[1,1],iconAnchor:[0,0]})}).addTo(markers);
- }},focus(lat,lng){map.setView([lat,lng],14);},restore};
+  nativeMap.addControl(new maps.ZoomControl(), maps.ControlPosition.BOTTOMRIGHT);
+  const pins = createLayerGroup(nativeMap);
+  const map = {
+    nativeMap,
+    setView([lat, lng], zoom = 12) {
+      nativeMap.setCenter(new maps.LatLng(lat, lng));
+      nativeMap.setLevel(Math.max(1, Math.round(18 - zoom)));
+    },
+    fitBounds(bounds, { maxZoom } = {}) {
+      if (!bounds) return;
+      nativeMap.setBounds(bounds);
+      if (maxZoom && nativeMap.getLevel() < Math.round(18 - maxZoom)) nativeMap.setLevel(Math.round(18 - maxZoom));
+    },
+    on(name, callback) {
+      maps.event.addListener(nativeMap, name, event => {
+        if (name === 'click') callback({ latlng: { lat: event.latLng.getLat(), lng: event.latLng.getLng() } });
+        else callback(event);
+      });
+    },
+    invalidateSize() { nativeMap.relayout(); },
+  };
+  return {
+    map,
+    show(points) {
+      pins.clearLayers();
+      for (const point of points) {
+        if (!Number.isFinite(+point.lat) || !Number.isFinite(+point.lng)) continue;
+        const content = document.createElement('div');
+        content.className = 'region-map-pin';
+        const dot = document.createElement('span');
+        dot.className = 'region-pin-dot';
+        const label = document.createElement('strong');
+        label.className = 'region-pin-label';
+        label.textContent = point.name || '선택 지역';
+        content.append(dot, label);
+        pins.add(new maps.CustomOverlay({ position: new maps.LatLng(+point.lat, +point.lng), content, yAnchor: 0, zIndex: 10 }));
+      }
+    },
+    focus(lat, lng) { map.setView([lat, lng], 14); },
+  };
 }

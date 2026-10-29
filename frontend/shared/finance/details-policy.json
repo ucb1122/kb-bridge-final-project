@@ -92,7 +92,35 @@
             "note": "자금별 공시 금리의 범위이며 개인 적용금리가 아닙니다. 우대·변동 조건은 세부 자금 공고를 확인하세요.",
             "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
           }
-        ]
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% −0.5~+1.6%p",
+          "items": [
+            "2026년 4분기 기준금리 연 4.12%에 자금별 가산·차감을 더함",
+            "일부 자금은 연 1.40~4.50% 고정금리"
+          ],
+          "note": "소진공 금리안내(2026-10-10 적용) 기준이며 분기마다 바뀝니다.",
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "기준금리",
+              "detail": "소진공 분기 기준금리 (2026년 4분기)",
+              "value": "연 4.12%"
+            },
+            {
+              "name": "자금별 가산·차감",
+              "detail": "혁신성장·상생 +0.4%p · 일반경영·소공인 +0.6%p · 신용취약 +1.6%p 등",
+              "value": "−0.5~+1.6%p"
+            },
+            {
+              "name": "고정금리 자금",
+              "detail": "재해피해·장애인기업·대환대출·호우피해",
+              "value": "연 1.40~4.50%"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "세부 자금별로 상이 · 거치·상환기간 확인",
@@ -154,7 +182,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.72%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.6%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.6%p",
+          "items": [
+            "분기별 기준금리 + 자금별 가산금리(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 + 자금별 가산금리(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.6%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "5년 · 거치 2년 포함",
@@ -221,7 +274,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 2.0%",
+            "asOf": "2026-10-10",
+            "conditions": "고정금리 · 일반 재해피해 유형 · 특별재난지역 특례 별도",
+            "fixed": true,
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "고정금리 연 2.0%",
+          "items": [
+            "분기별 기준금리 변동과 관계없이 고정"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 변동과 관계없이 고정",
+              "detail": "",
+              "value": "고정금리 연 2.0%"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "5년 · 거치 2년 포함",
@@ -293,7 +371,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 2.0%",
+            "asOf": "2026-10-10",
+            "conditions": "고정금리 · 분기 기준금리와 관계없이 고정",
+            "fixed": true,
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "고정금리 연 2.0%",
+          "items": [
+            "분기별 기준금리 변동과 관계없이 고정"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 변동과 관계없이 고정",
+              "detail": "",
+              "value": "고정금리 연 2.0%"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "7년 · 거치 2년 포함",
@@ -365,7 +468,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.12%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.0%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.0%p",
+          "items": [
+            "가산금리 없이 기준금리만 적용(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "가산금리 없이 기준금리만 적용(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.0%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "5년 · 거치 2년 포함",
@@ -437,7 +565,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.5%",
+            "asOf": "2026-10-10",
+            "conditions": "고정금리 · 분기 기준금리와 관계없이 고정",
+            "fixed": true,
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "고정금리 연 4.5%",
+          "items": [
+            "분기별 기준금리 변동과 관계없이 고정"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 변동과 관계없이 고정",
+              "detail": "",
+              "value": "고정금리 연 4.5%"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "10년 · 비거치 또는 거치 2년",
@@ -514,7 +667,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.72%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.6%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.6%p",
+          "items": [
+            "분기별 기준금리 + 자금별 가산금리(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 + 자금별 가산금리(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.6%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "운전 5년(거치 2년) / 시설 8년(거치 3년)",
@@ -586,7 +764,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.52%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.4%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.4%p",
+          "items": [
+            "분기별 기준금리 + 자금별 가산금리(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 + 자금별 가산금리(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.4%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "운전 5년(거치 2년 이내) / 시설 8년(거치 3년 이내) · 비거치 선택 가능",
@@ -658,7 +861,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.52%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.4%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.4%p",
+          "items": [
+            "분기별 기준금리 + 자금별 가산금리(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 + 자금별 가산금리(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.4%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "8년 · 비거치 또는 거치 3년 이내",
@@ -730,7 +958,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.52%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.4%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.4%p",
+          "items": [
+            "분기별 기준금리 + 자금별 가산금리(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 + 자금별 가산금리(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.4%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "운전 5년(거치 2년 이내) / 시설 8년(거치 3년 이내)",
@@ -802,7 +1055,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.12%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동 · 일반 유형",
+            "formula": "기준 4.12% + 가산 0.0%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.0%p",
+          "items": [
+            "가산금리 없이 기준금리만 적용(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "가산금리 없이 기준금리만 적용(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 0.0%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "5년 · 거치 2년 포함",
@@ -874,7 +1152,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 4.52~5.72%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 도약형 4.52% / 희망형 4.72% / 일반형 5.72% · 분기별 변동",
+            "formula": "기준 4.12% + 가산 0.4~1.6%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 0.4~1.6%p",
+          "items": [
+            "일반형 +1.6%p(연 5.72%) · 희망형 +0.6%p(연 4.72%) · 도약형 +0.4%p(연 4.52%)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "일반형 +1.6%p(연 5.72%) · 희망형 +0.6%p(연 4.72%) · 도약형 +0.4%p(연 4.52%)",
+              "detail": "",
+              "value": "기준 4.12% + 0.4~1.6%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "5년 · 거치 2년 포함",
@@ -946,7 +1249,32 @@
         "details": [
           "금리표 적용: 2026-10-10. 우대·변동 조건 별도."
         ],
-        "examples": []
+        "examples": [
+          {
+            "range": "연 5.72%",
+            "asOf": "2026-10-10",
+            "conditions": "2026년 4분기 · 분기별 변동",
+            "formula": "기준 4.12% + 가산 1.6%p",
+            "note": "소진공 금리안내(2026-10-10 적용) 공시 금리이며 개인 적용금리가 아닙니다.",
+            "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do"
+          }
+        ],
+        "benefit": {
+          "label": "금리 구성",
+          "headline": "기준 4.12% + 1.6%p",
+          "items": [
+            "분기별 기준금리 + 자금별 가산금리(2026년 4분기)"
+          ],
+          "sourceUrl": "https://ols.semas.or.kr/ols/man/SMAN019M/page.do",
+          "verifiedAt": "2026-10-28",
+          "rows": [
+            {
+              "name": "분기별 기준금리 + 자금별 가산금리(2026년 4분기)",
+              "detail": "",
+              "value": "기준 4.12% + 1.6%p"
+            }
+          ]
+        }
       },
       "repayment": {
         "summary": "5년 · 거치 2년 포함",
