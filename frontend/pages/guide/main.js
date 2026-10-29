@@ -1,5 +1,5 @@
 import {ratePresentation} from './rate-model.js';
-import { renderProductDetails } from './detail-view.js?v=20261028-rate-note';
+import { renderProductDetails } from './detail-view.js?v=20261029-fee-disclosure';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];

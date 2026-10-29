@@ -7,13 +7,13 @@ const read=f=>JSON.parse(fs.readFileSync(new URL('../../../shared/finance/'+f,im
 const catalog=read('products.json').products,details=new Map(['details-bank-a.json','details-bank-b.json','details-policy.json'].flatMap(f=>read(f).products).map(p=>[p.id,p]));
 const model=id=>ratePresentation(catalog.find(p=>p.id===id),details.get(id));
 test('ranges before and after preferential rate come from all four same-condition COFIX rows',()=>{
- const p=model('kb-general-property-collateral');assert.equal(p.kind,'comparison');assert.equal(p.before,'연 5.77~6.06%');assert.equal(p.after,'연 4.87~5.16%');assert.equal(p.rows.length,4);assert.match(p.note,/모든 고객.*아닙니다/);
+ const p=model('kb-general-property-collateral');assert.equal(p.kind,'comparison');assert.equal(p.before,'연 5.98~6.38%');assert.equal(p.after,'연 5.08~5.48%');assert.equal(p.rows.length,4);assert.match(p.note,/모든 고객.*아닙니다/);
 });
 test('single-value examples stay single values, including explicitly marked subsidy calculation',()=>{
- assert.equal(model('kb-seller').before,'연 4.35%');assert.equal(model('kb-seller').after,'연 3.85%');assert.equal(model('kb-regional-guarantee').before,'연 4.56%');assert.match(model('kb-regional-guarantee').note,/합한 값/);
+ assert.equal(model('kb-seller').before,'연 4.35%');assert.equal(model('kb-seller').after,'연 3.85%');assert.equal(model('kb-regional-guarantee').before,'연 4.51%');assert.match(model('kb-regional-guarantee').note,/합한 값/);
 });
 test('missing before/after never inferred from published loan range and maximum discount',()=>{
- const p=model('kb-soho-credit');assert.equal(p.kind,'published');assert.equal(p.range,'연 3.63~5.64%');assert.equal(p.before,undefined);assert.equal(p.benefit.headline,'최대 연 2.60%p');
+ const p=model('kb-soho-credit');assert.equal(p.kind,'published');assert.equal(p.range,'연 3.84~5.85%');assert.equal(p.before,undefined);assert.equal(p.benefit.headline,'최대 연 2.60%p');
  assert.equal(model('kb-sales-plus').range,'연 4.91~6.32%');assert.equal(model('kb-office-interim').range,'연 5.99%');assert.equal(model('semas-policy-2026').range,'연 1.40~5.72%');
 });
 test('rate details show the published product terms instead of a generic preference placeholder',()=>{
@@ -23,11 +23,19 @@ test('rate details show the published product terms instead of a generic prefere
  }
  const product=catalog.find(p=>p.id==='kb-sales-plus');
  const html=productInformationSections(product,details.get(product.id),'tenant')[1].html;
- assert.match(html,/금리 산정·우대 조건/);
+ assert.match(html,/우대 조건/);
  assert.match(html,/기준금리|가산금리|우대조건/);
+ const benefitHtml=productInformationSections(catalog.find(p=>p.id==='kb-soho-credit'),details.get('kb-soho-credit'),'tenant')[1].html;
+ assert.match(benefitHtml,/rate-benefit-rows/);
+ assert.match(benefitHtml,/기본 우대|전략 우대/);
+ for(const label of ['기본 우대','전략 우대','우량고객 우대']) assert.match(benefitHtml,new RegExp(label));
+ for(const value of ['−0.60%p','최대 −0.80%p','최대 −1.20%p']) assert.ok(benefitHtml.includes(value),value);
+ const bankBenefit=details.get('kb-soho-credit').rate.benefit;
+ assert.equal(bankBenefit.sourceUrl,'https://obizapi.kbstar.com/quics?page=C100265');
+ assert.equal(bankBenefit.rows.length,3);
 });
 test('fee exemption and unknown fees stay distinct; stamp tax is numeric and bounded',()=>{
- assert.equal(feeHeadline({text:'공식 안내상 면제입니다.'}),'0원');assert.equal(feeHeadline({text:'추가 확인 필요'}),'조건별 확인');
+ assert.equal(feeHeadline({text:'공식 안내상 면제입니다.'}),'0원');assert.equal(feeHeadline({text:'추가 확인 필요'}),'상담이 필요합니다');
  assert.equal(details.get('kb-soho-credit').fees.find(f=>f.label==='인지세').headline,'0~7만5천원');
  assert.equal(details.get('kb-regional-guarantee').fees.find(f=>f.label==='인지세').headline,'0~3만5천원');
  assert.equal(details.get('kb-ontact').fees.find(f=>f.label==='인지세').headline,'0원');
