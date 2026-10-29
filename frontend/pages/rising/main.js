@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js?v=23';
+import {renderReportTab} from './full-report.js?v=26';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
@@ -9,6 +9,8 @@ const appliedFilters={criterion:'growth',comparison:'previous',industry:'all',pe
 let draftFilters={...appliedFilters},availableQuarters=[];
 let badges,provider='leaflet';
 const summaryCache=new Map();
+const analysisCache=new Map();
+let analysisTimer;
 const boundaryCache=new Map();
 let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode=null;
 let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[],hoverLabel;
@@ -258,6 +260,7 @@ function centerRegionInVisibleMap(){
 }
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
+  clearTimeout(analysisTimer);
   if(selectedCode!==row.code){
     $('report-body').scrollTop=0;
     document.querySelectorAll('[data-report-tab]').forEach(tab=>{const selected=tab.dataset.reportTab==='overview';tab.classList.toggle('selected',selected);if(ownerMode)tab.setAttribute('aria-selected',String(selected))});
@@ -268,18 +271,34 @@ async function showSummary(row,rank,clicked=false){
   $('region-type').textContent=ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
   $('region-title').textContent=`${row.district} ${row.name}`;
   $('region-rank').textContent=ownerMode?`${row.district} · ${kind==='dong'?'행정동 전체':'공식 상권'} · ${$('owner-industry').selectedOptions[0].textContent} · ${$('quarter').selectedOptions[0].textContent}`:`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
-  $('report-overview').textContent='지역 데이터를 불러오는 중…';
+  const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
+  const cached=summaryCache.get(key);
+  if(!cached){
+    const loading=document.createElement('div'),mascot=document.createElement('img'),message=document.createElement('p');
+    loading.className='region-loading';loading.setAttribute('role','status');
+    mascot.src='/shared/characters/kobi-running.png';mascot.alt='달리는 코비';
+    message.textContent='지역 데이터를 불러오는 중…';loading.append(mascot,message);
+    $('report-overview').replaceChildren(loading);
+  }
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
-  const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
   try{
-    let summary=summaryCache.get(key);
+    let summary=cached;
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
-    for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab);
-    if(clicked&&!ownerMode){
-      try{const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis)}
-      catch(error){if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[],note:error.message})}
+    for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab,tab==='overview'&&!ownerMode?(analysisCache.get(key)||{mode:'loading'}):undefined);
+    if(!ownerMode&&!analysisCache.has(key)){
+      const loadAnalysis=async()=>{
+        try{
+          const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));
+          analysisCache.set(key,analysis);
+          if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis);
+        }catch(error){
+          if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',{mode:'data',lines:[],note:error.message});
+        }
+      };
+      if(clicked)loadAnalysis();
+      else analysisTimer=setTimeout(loadAnalysis,350);
     }
   }catch(error){if(current===summaryId)$('report-overview').textContent=error.message}
 }

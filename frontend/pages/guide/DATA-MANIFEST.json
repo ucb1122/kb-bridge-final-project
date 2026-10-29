@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "sources/current-catalog.csv",
-      "bytes": 49660,
-      "sha256": "c6c0a66085366a2a006582c412bfe01a175713afc48bb53c6ca3c74e3853fc18"
+      "bytes": 49370,
+      "sha256": "244abe24859c33b0745b8ce6bb2ff6243abfa00be50acefdd4a016ae90283150"
     },
     {
       "path": "sources/official-source-index.json",
@@ -98,18 +98,18 @@
     },
     {
       "path": "../../shared/finance/details-bank-a.json",
-      "bytes": 33604,
-      "sha256": "5acde9bfbde02bc294e0850c89180fb2a2422feafa9de883a9240c6b344d8df7"
+      "bytes": 38840,
+      "sha256": "4ed78bf2d6981fc6e2b9ab9003d544c1d3639839a565eddc2598d3d7b395245d"
     },
     {
       "path": "../../shared/finance/details-bank-b.json",
-      "bytes": 36243,
-      "sha256": "f3990ee1d962948a08766f176ad644fac4ce35198e0842cf121a68262daaa046"
+      "bytes": 40399,
+      "sha256": "f402932fd6d5c3e8f52fd7d51afeaad02ca8d8e87e4133ebd1df00d11f028f9a"
     },
     {
       "path": "../../shared/finance/details-policy.json",
-      "bytes": 39394,
-      "sha256": "2ba6fb31fe8fb3c65020212d13806728e3234e5f208bd92f9c0a7d92e4db7b69"
+      "bytes": 51383,
+      "sha256": "afbf0079ece9a69e9cd7c08263eb41ec38a833ad973ed52f71401724e3bb445e"
     },
     {
       "path": "../../shared/finance/kb-branches.json",
