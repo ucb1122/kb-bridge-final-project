@@ -9,7 +9,13 @@ const el=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.cla
 function opinionLine(text){
   const item=el('li'),pattern=/(증가|감소|점포수|추정매출액|유동인구|상주인구|\d[\d,]*(?:\.\d+)?(?:%|개|명|원|위))/g;
   const emphasis=/^(?:증가|감소|점포수|추정매출액|유동인구|상주인구|\d[\d,]*(?:\.\d+)?(?:%|개|명|원|위))$/;
-  for(const part of text.split(pattern))if(part)item.append(emphasis.test(part)?el('strong','opinion-emphasis',part):document.createTextNode(part));
+  const parts=text.split(pattern);
+  for(let i=0;i<parts.length;i++){
+    const part=parts[i];if(!part)continue;
+    if(!emphasis.test(part)){item.append(document.createTextNode(part));continue}
+    const direction=part==='증가'||part==='감소'?part:/^\d/.test(part)?/^\s*(증가|감소)/.exec(parts[i+1]||'')?.[1]:null;
+    item.append(el('strong',`opinion-emphasis${direction?` ${direction==='증가'?'up':'down'}`:''}`,part));
+  }
   return item;
 }
 function reportCard(report,key,title){
@@ -43,14 +49,14 @@ export function renderOverview(target,report,analysis){
   const wrap=el('div','report-overview');
   const box=el('section','analysis-box');
   if(analysis?.lines?.length){const list=el('ul');for(const line of analysis.lines)list.append(opinionLine(line));box.append(list)}
-  else {
+  else if(analysis?.mode==='loading'){
     const loading=el('div','summary-loading');
     const mascot=el('img','summary-loading-mascot');
     mascot.src='/shared/characters/kobi-coding.png';
     mascot.alt='코비가 노트북으로 코딩하는 모습';
     loading.append(mascot,el('p','','요약을 준비하는 중입니다…'));
     box.append(loading);
-  }
+  }else box.append(el('p','',analysis?.note?'요약을 불러오지 못했습니다. 아래 지역 지표를 확인해 주세요.':'지역 지표가 준비되었습니다. 아래 핵심 수치를 확인해 주세요.'));
   if(analysis?.note)box.append(el('small','',analysis.note));wrap.append(box);
   const grid=el('div','report-metric-grid');
   for(const [key,title] of [['stores','점포수'],['sales','매출액 (점포당 월평균)'],['footfall',report.analysisAreaM2>0?'유동인구 (3개월간 1ha당 인구수)':'유동인구 (분기 합계)']])grid.append(reportCard(report,key,title));

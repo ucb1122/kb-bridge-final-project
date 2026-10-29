@@ -1,4 +1,4 @@
-import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=1';
+import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=4';
 
 const labels={stores:'점포수',sales:'추정매출액',footfall:'유동인구',residents:'상주인구'};
 const days=['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
