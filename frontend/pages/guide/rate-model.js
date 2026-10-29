@@ -15,5 +15,5 @@ export function feeHeadline(fee){
  const text=fee?.text||'';
  if(/면제|수수료 없음|모두 없/.test(text)||(/수수료/.test(fee?.label||'')&&/없음/.test(text)))return '0원';
  const matches=text.match(/\d+(?:\.\d+)?\s*(?:~|～)\s*(?:최고\s*)?\d+(?:\.\d+)?\s*%|\d+(?:\.\d+)?\s*%/g);
- return matches?.length?matches.slice(0,2).join(' · '):'조건별 확인';
+ return matches?.length?matches.slice(0,2).join(' · '):'상담이 필요합니다';
 }

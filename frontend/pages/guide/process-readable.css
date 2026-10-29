@@ -13,3 +13,13 @@
 .catalog-side .empty-state button{margin-top:14px}
 
 .rate-comparison .rate-terms{font-size:16px;line-height:1.5;letter-spacing:-.02em;white-space:normal;overflow-wrap:anywhere}
+
+/* Keep the three application steps in one aligned row on desktop. */
+.readable-process{grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch}
+.readable-process>li{min-width:0;height:100%;align-items:center!important;gap:11px!important;padding:16px!important}
+.readable-process>li>div{min-width:0}
+.readable-process .process-number{width:38px;height:38px;flex-basis:38px;font-size:19px}
+.readable-process h4{font-size:16px!important;line-height:1.45!important}
+@media(max-width:900px){.readable-process{grid-template-columns:1fr!important}}
+.product-info-section .process-checks>summary{color:#243850;font-weight:800}
+.product-info-section .process-checks .info-list li{color:#344760;font-weight:700}
