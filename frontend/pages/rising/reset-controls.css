@@ -1,0 +1,10 @@
+.map-reset-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.map-reset-heading h1,.owner-unified .map-reset-heading h1{margin:0}
+.map-reset-text{border:0;background:transparent;color:#637388;padding:6px 0;font:inherit;font-size:12px;font-weight:400;white-space:nowrap;cursor:pointer}
+.map-reset-text:hover{color:#8d6500;text-decoration:underline}
+.map-reset-text:focus-visible{outline:2px solid #a47700;outline-offset:2px}
+.filter-reset-row{display:flex;justify-content:flex-end;align-items:center;padding:4px 16px 0}
+.owner-unified .owner-details-body .filter-reset-row{padding:4px 0 0}
+.sidebar #ranking li{grid-template-columns:24px minmax(0,1fr) 96px 64px;column-gap:9px}
+.sidebar #ranking li>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar #ranking li strong,.sidebar #ranking li .change{text-align:right;font-variant-numeric:tabular-nums}
