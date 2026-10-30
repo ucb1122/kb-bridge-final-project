@@ -7,7 +7,8 @@ export function validateRequest(value,branch,currentDay=today()){
  if(!/^0\d{8,10}$/.test((value.phone||'').replace(/[\s-]/g,'')))errors.push('연락받을 전화번호를 확인해 주세요.');
  if(value.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.email))errors.push('이메일 주소를 확인해 주세요.');
  const date=String(value.date||''),parsed=new Date(date+'T00:00:00Z');
- if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<currentDay)errors.push('오늘 이후의 희망 상담일을 선택해 주세요.');
+ const latest=`${Number(currentDay.slice(0,4))+2}${currentDay.slice(4)}`;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<currentDay||date>latest)errors.push('희망 상담일은 오늘부터 2년 이내의 날짜로 선택해 주세요.');
  if(!['오전','오후'].includes(value.time))errors.push('희망 상담 시간대를 선택해 주세요.');
  if(!value.consent)errors.push('PDF 상담서에 연락처를 포함하는 데 동의해 주세요.');
  return errors;

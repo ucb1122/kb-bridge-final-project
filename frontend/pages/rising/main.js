@@ -47,6 +47,37 @@ mapTopToggle.id='map-top-toggle';mapTopToggle.className='map-top-toggle';mapTopT
 mapTopToggle.setAttribute('aria-label','지도 지역 선택창 접기');mapTopToggle.setAttribute('aria-expanded','true');mapTop.append(mapTopToggle);
 mapTopToggle.onclick=()=>{const collapsed=mapTop.classList.toggle('collapsed');mapTopToggle.textContent=collapsed?'펼치기':'접기';mapTopToggle.setAttribute('aria-label',collapsed?'지도 지역 선택창 펼치기':'지도 지역 선택창 접기');mapTopToggle.setAttribute('aria-expanded',String(!collapsed))};
 
+function resetMapView(){
+  selectedCode=null;pinned=false;hoveredCode=null;summaryId++;
+  $('region-card').hidden=true;
+  $('dong').value='';$('map-dong').value='';
+  if(map){
+    if(provider==='kakao'){map.setCenter(new kakao.maps.LatLng(37.5665,126.978));map.setLevel(9)}
+    else map.setView([37.5665,126.978],11);
+  }
+  drawMap();
+}
+$('reset-map').onclick=resetMapView;
+$('reset-conditions').onclick=async()=>{
+  kind='dong';metric=ownerMode?'salesPerStore':'stores';
+  Object.assign(appliedFilters,{criterion:'growth',comparison:'previous',industry:'all',period:'quarter',quarter:availableQuarters[0]??'',year:(availableQuarters[0]??'').slice(0,4)});
+  draftFilters={...appliedFilters};
+  $('district').value='';$('map-district').value='';populateDongs();
+  $('quarter').value=appliedFilters.quarter;
+  select('[data-kind]',document.querySelector('[data-kind="dong"]'));
+  if(ownerMode){
+    const salesButton=document.querySelector('[data-metric="salesPerStore"], .owner-unified .metric button:nth-child(2)');
+    salesButton.dataset.metric='salesPerStore';
+    $('owner-kind').value='dong';$('owner-industry').value='all';$('owner-industry').disabled=false;
+    $('owner-sales-basis').value='average';$('owner-sales-basis').hidden=false;
+    $('owner-rank-sort').value='growth';$('owner-search').value='';$('owner-search-results').hidden=true;
+    document.querySelectorAll('[data-owner-mode]').forEach(button=>{const active=button.dataset.ownerMode==='operating';button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active))});
+    select('[data-find]',document.querySelector('[data-find="browse"]'));
+  }
+  select('[data-metric]',document.querySelector(`[data-metric="${metric}"]`));
+  syncFilterUi();resetMapView();drawDistrictOutline();await load();
+};
+
 document.querySelectorAll('[data-kind]').forEach(button=>button.onclick=()=>{kind=button.dataset.kind;select('[data-kind]',button);load()});
 document.querySelectorAll('[data-metric]').forEach(button=>button.onclick=()=>{metric=button.dataset.metric;select('[data-metric]',button);if(!['stores','sales','salesPerStore'].includes(metric)){appliedFilters.industry='all';draftFilters.industry='all'}syncFilterUi();load()});
 function select(selector,button){document.querySelectorAll(selector).forEach(item=>item.classList.toggle('selected',item===button))}
