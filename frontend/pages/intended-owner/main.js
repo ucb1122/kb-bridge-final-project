@@ -1,10 +1,10 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=20261028-rr5';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261030-input-validation';
 import {createMap,createLayerGroup,drawFeature} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';
 import {escapeHTML as esc,regionKey,pointInGeometry,filterRegions} from './navigator-model.js';
 import {initCooperation} from './cooperation-view.js?v=20261027-3';
-import {validateClosureRisk,riskRows,riskDetail,criteriaHTML} from './closure-risk.js';
+import {validateClosureRisk,riskRows,riskDetail,criteriaHTML} from './closure-risk.js?v=20261030-store-label';
 
 const $=id=>document.getElementById(id),SEOUL=[37.5665,126.978],fmt=n=>new Intl.NumberFormat('ko-KR',{maximumFractionDigits:1}).format(n);
 const state={role:new URLSearchParams(location.search).get('role')==='landlord'?'landlord':'tenant',kind:'area',district:'',query:'',heat:'all',selected:null};
@@ -12,6 +12,7 @@ const freshDraft=()=>({rentChangePercent:'0',rateEnabled:false,vacancyEnabled:fa
 const drafts={tenant:freshDraft(),landlord:freshDraft()};
 let snapshot=null,features=[],view=null,baseLayer=null,selectedLayer=null,lastResult=null,heatState=validateHeatResults(null),heatConnectionError='';
 let closureData=null,rankLayer=null,closureLoading=true;
+let seoulOutline=null;
 const regionByKey=new Map(),featureByKey=new Map();
 const draft=()=>drafts[state.role];
 const setStatus=text=>{$('region-status').textContent=text;};
@@ -91,11 +92,11 @@ function renderSearch(){
   const rows=riskRows(snapshot.regions,closureData,state);
   for(const [i,row]of rows.slice(0,10).entries()){
    const result=closureData.byCode.get(row.code),button=document.createElement('button');button.type='button';button.className='region-result';button.setAttribute('aria-current',String(state.selected&&regionKey(state.selected)===regionKey(row)));
-   button.innerHTML=`<span class="risk-rank">${i+1}</span><span><strong>${esc(row.name)}</strong><small>${esc(row.district+' · '+(row.type||'행정동'))}${result?.rank?' · 서울 '+result.rank+'위':''}</small></span><span class="risk-score">${result?.predictedClosureRate===null||!result?'—':fmt(result.predictedClosureRate)+'%'}<small>${result?.status==='insufficient'?'자료미비':state.kind==='area'?'예측 폐업률':'분류 없음'}</small></span>`;
+   button.innerHTML=`<span class="risk-rank">${result?.rank??'—'}</span><span><strong>${esc(row.name)}</strong><small>${esc(row.district+' · '+(row.type||'행정동'))}${result?.rank?' · 서울 '+result.rank+'위':''}</small></span><span class="risk-score">${result?.predictedClosureRate===null||!result?'—':fmt(result.predictedClosureRate)+'%'}</span>`;
    button.onclick=()=>selectRegion(row);target.append(button);
   }
   if(!rows.length)target.innerHTML='<p class="region-empty">조건에 맞는 상권이 없습니다. 전체 평가 상권으로 바꾸거나 검색 조건을 확인하세요.</p>';
-  $('risk-ranking-title').textContent=state.kind==='dong'?'행정동 찾기':state.heat==='unknown'?'자료미비 상권':state.heat==='all'?'예측 폐업률 상위 10곳':'폐업 위험이 높은 상권';
+  $('risk-ranking-title').textContent=state.kind==='dong'?'행정동 찾기':state.heat==='all'?'예측 폐업률 상위 10곳':'폐업 위험이 높은 상권';
   setStatus(`${rows.length.toLocaleString('ko-KR')}개 중 ${Math.min(10,rows.length)}개 표시 · 2025 입력 → 2027 추정`);
   return;
  }
@@ -130,25 +131,28 @@ function renderHeat(){
  $('heat-description').textContent=state.selected?.kind==='dong'?'현재 분석결과는 개별 상권 단위입니다. 행정동으로 바꾸어 분류하지 않습니다.':row?row.reason:'선택한 상권의 결과가 없습니다. 비과열로 해석하지 않습니다.';
  if(row){const meta=heatState.metadata;$('heat-evidence').hidden=false;$('heat-evidence').innerHTML='<p>'+esc(`${meta.scope==='forecast'?'예측':'관측 분류'} · ${meta.asOfDate} · ${meta.analysisVersion}`)+'</p>'+row.evidence.map(e=>'<p>'+esc(e.label+': '+(e.value===null?'자료 없음':fmt(e.value)+' '+e.unit)+' · '+e.period)+'</p>').join('');}
 }
+let rankPins=[];
 function drawBoundaries(){
  if(closureData&&view&&features.length){
-   baseLayer.clearLayers();if(!rankLayer)rankLayer=createLayerGroup(view.map.nativeMap);rankLayer.clearLayers();
+   baseLayer.clearLayers();if(!rankLayer)rankLayer=createLayerGroup(view.map.nativeMap);rankLayer.clearLayers();rankPins=[];
   const rows=riskRows(snapshot.regions,closureData,{...state,query:''}),codes=new Set(rows.map(r=>regionKey(r)));
   const collection={type:'FeatureCollection',features:features.filter(f=>codes.has(regionKey(f.properties)))};
    for(const f of collection.features){const r=closureData.byCode.get(String(f.properties.code)),candidate=state.kind==='area'&&r?.status==='candidate',region=regionByKey.get(regionKey(f.properties));drawFeature(baseLayer,f,{color:candidate?'#cf6c78':'#8b98a6',weight:candidate?1.7:.8,fillColor:candidate?'#f0a9b1':'#b9c2cc',fillOpacity:candidate?.36:.06,opacity:.8,dashArray:r?.status==='insufficient'?'3 4':null},()=>{if(region)selectRegion(region);});}
   if(state.kind==='area')for(const [i,r]of riskRows(snapshot.regions,closureData,state).filter(r=>closureData.byCode.get(r.code)?.rank!==null).slice(0,10).entries()){
-    const content=document.createElement('button');content.type='button';content.className='risk-rank-pin';content.innerHTML=`<b>${i+1}</b><span>${esc(r.name)}</span>`;content.onclick=()=>selectRegion(r);rankLayer.add(new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(r.lat,r.lng),content,zIndex:8,yAnchor:.5}));
+    const risk=closureData.byCode.get(r.code);
+    const rate=Number.isFinite(risk?.predictedClosureRate)?`${fmt(risk.predictedClosureRate)}%`:'자료 없음';
+    const content=document.createElement('button');content.type='button';content.className='risk-map-badge';content.dataset.regionCode=String(r.code);content.setAttribute('aria-label',`${risk?.rank??'—'}위 ${r.name}, 예측 폐업률 ${rate}`);content.title=`${r.name} · ${rate}`;content.innerHTML=`<span class="risk-map-rank">${risk?.rank??'—'}</span><span class="risk-map-name">${esc(r.name)}</span><span class="risk-map-rate">${esc(rate)}</span>`;content.onclick=()=>selectRegion(r);rankPins.push(content);rankLayer.add(new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(r.lat,r.lng),content,zIndex:100-i,yAnchor:.5}));
   }
    return;
  }
-  if(!view||!features.length)return;baseLayer.clearLayers();rankLayer?.clearLayers();
+  if(!view||!features.length)return;baseLayer.clearLayers();rankLayer?.clearLayers();rankPins=[];
  const collection={type:'FeatureCollection',features:features.filter(feature=>feature.properties.kind===state.kind&&(!state.district||feature.properties.district===state.district)&&(state.heat==='all'||(classificationFor(heatState,feature.properties.code)?.classification||'unknown')===state.heat))};
   for(const feature of collection.features){const row=state.kind==='area'?classificationFor(heatState,feature.properties.code):null,col=row?.classification==='overheated'?'#d76725':row?.classification==='not_overheated'?'#438aab':'#8b98a6',region=regionByKey.get(regionKey(feature.properties));drawFeature(baseLayer,feature,{color:col,weight:row?.classification&&row.classification!=='unknown'?1.6:.9,opacity:.75,fillColor:col,fillOpacity:row?.classification&&row.classification!=='unknown'?.25:.075},()=>{if(region)selectRegion(region);});}
 }
 function selectRegion(region){
  if(!region)return;state.selected=region;document.dispatchEvent(new CustomEvent('bridge:region-selected',{detail:{...region,risk:closureData?.byCode.get(String(region.code))}}));$('clear-selection').disabled=false;selectedLayer?.clearLayers();
   const feature=featureByKey.get(regionKey(region));if(view&&feature){drawFeature(selectedLayer,feature,{color:'#d89c00',weight:3,fillColor:'#ffcc30',fillOpacity:.23,zIndex:4});view.map.fitBounds(selectedLayer.getBounds(),{maxZoom:14.75});}
- $('map-title').textContent=region.name;document.querySelector('.map-caption').textContent='서울특별시 › '+region.district;$('simulator-region-name').textContent=region.district+' · '+region.name+' · 직접 입력 비교';$('map-finance-link').href=financeURL();$('finance-catalog').href=financeURL();view?.show([{lat:region.lat,lng:region.lng,name:region.name}]);$('selected-name').textContent=region.name;$('selected-detail').textContent=region.district+' · '+(region.type||'행정동')+' · '+region.quarter.slice(0,4)+'년 '+region.quarter.slice(4)+'분기';
+ $('simulator-region-name').textContent=region.district+' · '+region.name+' · 직접 입력 비교';$('map-finance-link').href=financeURL();$('finance-catalog').href=financeURL();view?.show(rankPins.some(pin=>pin.dataset.regionCode===String(region.code))?[]:[{lat:region.lat,lng:region.lng,name:region.name}]);$('selected-name').textContent=region.name;$('selected-detail').textContent=region.district+' · '+(region.type||'행정동')+' · '+region.quarter.slice(0,4)+'년 '+region.quarter.slice(4)+'분기';
  const metric=(value,unit)=>typeof value==='number'&&Number.isFinite(value)?fmt(value)+unit:'자료 없음';
  $('region-metrics').hidden=false;$('region-metrics').innerHTML=[['전체 업종 점포수',metric(region.metrics.stores,'개')],['분기 상권 추정매출',metric(region.metrics.sales===null?null:region.metrics.sales/1e8,'억원')],['분기 유동인구 집계',metric(region.metrics.floating,'명')],['직장인구(지역 집계)',metric(region.metrics.worker,'명')]].map(([label,val])=>'<div><span>'+esc(label)+'</span><strong>'+esc(val)+'</strong></div>').join('');
 
@@ -158,17 +162,18 @@ function selectRegion(region){
 function matchingRegions(lat,lng){const visible=closureData?new Set(riskRows(snapshot.regions,closureData,{...state,query:''}).map(regionKey)):null;return features.filter(feature=>feature.properties.kind===state.kind&&(!state.district||feature.properties.district===state.district)&&(!visible||visible.has(regionKey(feature.properties)))&&pointInGeometry([lng,lat],feature.geometry)).map(feature=>regionByKey.get(regionKey(feature.properties))).filter(Boolean);}
 function chooseMatches(rows){if(rows.length===1){selectRegion(rows[0]);return;}if(!rows.length){setStatus('이 위치의 공식 지역을 찾지 못했습니다. 자치구·지역 단위를 바꾸거나 이름으로 검색해 주세요.');return;}const target=$('region-results');target.replaceChildren(...rows.map(row=>makeRegionButton(row)));setStatus('겹치는 지역이 있습니다. 목록에서 상권을 선택해 주세요.');}
 function selectPlace(place){view?.map.setView([place.lat,place.lng],14,{animate:false});chooseMatches(matchingRegions(place.lat,place.lng));}
-function clearRegion(){state.selected=null;document.dispatchEvent(new CustomEvent('bridge:region-selected',{detail:null}));$('clear-selection').disabled=true;selectedLayer?.clearLayers();view?.show([]);$('map-title').textContent=state.district||'서울특별시 전체';document.querySelector('.map-caption').textContent='서울시 상권 지도';$('simulator-region-name').textContent='지역 미선택 · 직접 입력 비교';$('map-finance-link').href=financeURL();$('finance-catalog').href=financeURL();$('selected-name').textContent='관심 지역을 선택해 주세요';$('selected-detail').textContent='검색 또는 지도에서 지역을 선택할 수 있습니다.';$('region-metrics').hidden=true;$('analysis-link').href='/pages/owner/';$('analysis-link').textContent='내 상권 분석 열기 →';$('map-note').textContent='검색하거나 지도에서 상권 경계를 눌러보세요.';renderHeat();renderSearch();}
+function clearRegion(){state.selected=null;document.dispatchEvent(new CustomEvent('bridge:region-selected',{detail:null}));$('clear-selection').disabled=true;selectedLayer?.clearLayers();view?.show([]);$('simulator-region-name').textContent='지역 미선택 · 직접 입력 비교';$('map-finance-link').href=financeURL();$('finance-catalog').href=financeURL();$('selected-name').textContent='관심 지역을 선택해 주세요';$('selected-detail').textContent='검색 또는 지도에서 지역을 선택할 수 있습니다.';$('region-metrics').hidden=true;$('analysis-link').href='/pages/owner/';$('analysis-link').textContent='내 상권 분석 열기 →';$('map-note').textContent='검색하거나 지도에서 상권 경계를 눌러보세요.';renderHeat();renderSearch();}
 $('region-search-form').onsubmit=event=>{event.preventDefault();state.query=$('region-search').value;renderSearch();if(closureData)drawBoundaries();};$('region-search').oninput=()=>{state.query=$('region-search').value;renderSearch();if(closureData)drawBoundaries();};
 $('region-kind').onchange=()=>{state.kind=$('region-kind').value;state.heat='all';$('heat-filter').value='all';clearRegion();drawBoundaries();};
 $('district').onchange=()=>{state.district=$('district').value;clearRegion();drawBoundaries();const bounds=baseLayer?.getBounds();if(view&&bounds)view.map.fitBounds(bounds,{maxZoom:13});};$('heat-filter').onchange=()=>{state.heat=$('heat-filter').value;renderSearch();drawBoundaries();};
-$('clear-region').onclick=()=>{state.query='';state.district='';state.heat=closureData?'candidate':'all';$('region-search').value='';$('district').value='';$('heat-filter').value=state.heat;clearRegion();drawBoundaries();view?.map.setView(SEOUL,11.25,{animate:false});};$('seoul-view').onclick=()=>view?.map.setView(SEOUL,11.25,{animate:false});
+$('reset-region-filters').onclick=()=>{state.kind='area';state.district='';state.heat=closureData?'candidate':'all';state.query='';$('region-kind').value='area';$('district').value='';$('heat-filter').value=state.heat;$('region-search').value='';clearRegion();drawBoundaries();view?.map.setView(SEOUL,11.25,{animate:false});};
+$('clear-region').onclick=()=>{clearRegion();view?.map.setView(SEOUL,11.25,{animate:false});};
 async function jsonAsset(name){const response=await fetch(new URL('./assets/'+name,import.meta.url));if(!response.ok)throw Error(name+' 불러오기 실패');return response.json();}
 async function loadClosure(){
  try{
   closureData=validateClosureRisk(await jsonAsset('closure-risk.json'),new Set(snapshot.regions.filter(r=>r.kind==='area').map(r=>r.code)));closureLoading=false;
-  state.heat='candidate';$('heat-filter').innerHTML='<option value="candidate">폐업 위험 관찰 상권 · 상위 10%</option><option value="all">전체 평가·자료미비 상권</option><option value="unknown">자료미비 · 별도 확인</option>';
-  $('analysis-criteria-body').innerHTML=criteriaHTML(closureData);$('risk-ranking-heading').hidden=false;$('risk-period').hidden=false;
+  state.heat='candidate';$('heat-filter').innerHTML='<option value="candidate">폐업 위험 관찰 상권 · 상위 10%</option><option value="all">전체 평가 상권</option>';
+  $('analysis-criteria-body').innerHTML=criteriaHTML(closureData);$('risk-ranking-heading').hidden=false;
   document.querySelector('[data-classified] .heat-dot').parentElement.lastChild.textContent='폐업 위험 관찰 상권';document.querySelector('[data-classified] .nonheat-dot').parentElement.lastChild.textContent='그 외 평가 상권';
   document.querySelector('.map-legend .unknown-dot').parentElement.lastChild.textContent='자료미비';
   $('region-total-note').textContent=`평가 ${closureData.eligibleCount.toLocaleString('ko-KR')}개 · 관찰 ${closureData.candidateCount}개 · 자료미비 ${closureData.unavailableCount}개`;
@@ -177,7 +182,7 @@ async function loadClosure(){
 }
 async function loadHeat(){try{const connection=await jsonAsset('heat-connection.json');if(connection.resultFile){if(!/^[a-zA-Z0-9_.-]+\.json$/.test(connection.resultFile))throw Error('결과 파일 이름을 확인해 주세요.');const raw=await jsonAsset(connection.resultFile);heatState=validateHeatResults(raw,new Set(snapshot.regions.filter(row=>row.kind==='area').map(row=>row.code)));if(heatState.errors.length)console.error('[상생 네비게이터 분석결과]',heatState.errors);}}catch(error){console.error(error);heatConnectionError='분석결과 파일을 확인하지 못했습니다. 과열 분류는 표시하지 않습니다.';}for(const option of $('heat-filter').options)if(['overheated','not_overheated'].includes(option.value)){option.disabled=!heatState.ready;option.textContent=HEAT_LABELS[option.value]+(heatState.ready?'':' · 결과 연결 후');}renderHeat();renderSearch();drawBoundaries();}
 async function loadRegions(){try{const [data,boundaries]=await Promise.all([jsonAsset('regions.json'),jsonAsset('boundaries.json')]);snapshot=data;features=boundaries.features;for(const row of data.regions)regionByKey.set(regionKey(row),row);for(const feature of features)featureByKey.set(regionKey(feature.properties),feature);for(const district of [...new Set(data.regions.map(row=>row.district))].sort((a,b)=>a.localeCompare(b,'ko'))){const option=document.createElement('option');option.value=district;option.textContent=district;$('district').append(option);}$('district').disabled=false;$('region-search').disabled=false;renderSearch();drawBoundaries();await loadClosure();}catch(error){console.error('[상생 네비게이터 지역자료]',error);setStatus('지역 자료를 불러오지 못했습니다. 시뮬레이터는 계속 이용할 수 있습니다.');$('map-note').textContent='지역 자료를 확인해 주세요.';}}
-try{view=createMap();view.map.setView(SEOUL,11.25);baseLayer=createLayerGroup(view.map.nativeMap);selectedLayer=createLayerGroup(view.map.nativeMap);view.map.on('click',event=>{if(snapshot)chooseMatches(matchingRegions(event.latlng.lat,event.latlng.lng));});new ResizeObserver(()=>view.map.invalidateSize()).observe($('map'));}catch(error){console.error(error);$('map-note').textContent='지도를 불러오지 못했습니다. 지역 검색으로 계속 이용할 수 있습니다.';}
+try{view=createMap();view.map.setView(SEOUL,11.25);baseLayer=createLayerGroup(view.map.nativeMap);selectedLayer=createLayerGroup(view.map.nativeMap);view.map.on('click',event=>{if(snapshot)chooseMatches(matchingRegions(event.latlng.lat,event.latlng.lng));});new ResizeObserver(()=>view.map.invalidateSize()).observe($('map'));fetch('/pages/rising/seoul-boundary.geojson').then(response=>{if(!response.ok)throw Error('서울시 경계 불러오기 실패');return response.json();}).then(data=>{const ring=data.features?.[0]?.geometry?.coordinates?.[0];if(!Array.isArray(ring))return;seoulOutline=new kakao.maps.Polyline({map:view.map.nativeMap,path:ring.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng)),strokeWeight:3,strokeColor:'#667085',strokeOpacity:.95,strokeStyle:'solid',zIndex:4});}).catch(error=>console.error('[서울시 경계]',error));}catch(error){console.error(error);$('map-note').textContent='지도를 불러오지 못했습니다. 지역 검색으로 계속 이용할 수 있습니다.';}
 
 function summaryRows(){const r=lastResult,d=draft(),ready=r?.status==='ready';return[['고객 유형',state.role==='tenant'?'임차인(개인사업자)':'임대인(건물주)'],['관심 지역',state.selected?state.selected.district+' '+state.selected.name:'선택하지 않음'],['입력 구분',d.example?'설명용 예시':'고객 직접 입력'],['현재 월세·임대수입',ready?fmt(r.rentAmount)+'만원':'입력하지 않음'],['임대료 변동 가정',String(d.rentChangePercent??'').trim()?d.rentChangePercent+'%':'입력하지 않음'],['월 수입·지출 영향',ready?fmt(r.monthlyDifference)+'만원 (잔여현금에 미치는 변화)':'계산하지 않음'],['현재 월 잔여현금',ready&&r.currentMonthlyCashflow!==null?fmt(r.currentMonthlyCashflow)+'만원':'입력하지 않음'],['변경 후 월 잔여현금',ready&&r.scenarioMonthlyCashflow!==null?fmt(r.scenarioMonthlyCashflow)+'만원':'계산하지 않음'],['금리 변화',d.rateEnabled?(String(d.rateChangePp??'').trim()?d.rateChangePp+'%p':'입력 필요'):'선택하지 않음'],...(state.role==='landlord'?[['추가 공실 가정',d.vacancyEnabled?'임대수입 '+(d.vacancySharePercent??'미입력')+'% / '+(d.vacancyMonths??'미입력')+'개월':'선택하지 않음']]:[])];}
 $('prepare-consultation').onclick=()=>{const panel=document.querySelector('.finance-details');panel.open=true;panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});};
@@ -186,8 +191,13 @@ function setComparison(open){$('simulator-dialog').hidden=!open;document.querySe
 $('open-simulator').onclick=()=>setComparison(true);
 $('close-comparison').onclick=()=>setComparison(false);
 $('clear-selection').onclick=()=>{clearRegion();$('clear-selection').disabled=true;};
+document.addEventListener('bridge:clear-region',clearRegion);
 let panelsVisible=true;
-$('toggle-panels').onclick=()=>{panelsVisible=!panelsVisible;document.querySelector('.map-workspace').classList.toggle('panels-collapsed',!panelsVisible);$('toggle-panels').setAttribute('aria-expanded',String(panelsVisible));$('toggle-panels').textContent=panelsVisible?'지도 넓게 보기':'검색·지역 정보 보기';view?.map.invalidateSize();};
+function setPanelsVisible(visible){panelsVisible=visible;document.querySelector('.map-workspace').classList.toggle('panels-collapsed',!visible);const toggle=$('toggle-panels');toggle.setAttribute('aria-expanded',String(visible));toggle.setAttribute('aria-label',visible?'선택창 접기':'선택창 열기');toggle.textContent=visible?'❮':'❯';requestAnimationFrame(()=>view?.map.invalidateSize());}
+$('toggle-panels').onclick=()=>setPanelsVisible(!panelsVisible);
+let recoveryVisible=true;
+function setRecoveryVisible(visible){recoveryVisible=visible;document.querySelector('.map-workspace').classList.toggle('recovery-collapsed',!visible);const toggle=$('toggle-recovery');toggle.setAttribute('aria-expanded',String(visible));toggle.setAttribute('aria-label',visible?'회복 플래너 창 접기':'회복 플래너 창 열기');toggle.textContent=visible?'❯':'❮';requestAnimationFrame(()=>view?.map.invalidateSize());}
+$('toggle-recovery').onclick=()=>setRecoveryVisible(!recoveryVisible);
 $('show-evidence').onclick=()=>$('evidence-dialog').showModal();$('show-help').onclick=()=>$('help-dialog').showModal();for(const button of document.querySelectorAll('[data-close-dialog]'))button.onclick=()=>button.closest('dialog').close();
 initCooperation();
 initRecoveryPlanner();

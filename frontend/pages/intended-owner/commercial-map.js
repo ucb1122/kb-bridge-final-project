@@ -53,7 +53,6 @@ export function createMap(id = 'map') {
   const nativeMap = new maps.Map(document.getElementById(id), {
     center: new maps.LatLng(37.5665, 126.978), level: 7,
   });
-  nativeMap.addControl(new maps.ZoomControl(), maps.ControlPosition.BOTTOMRIGHT);
   const pins = createLayerGroup(nativeMap);
   const map = {
     nativeMap,
