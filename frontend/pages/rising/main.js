@@ -39,6 +39,7 @@ async function initializeMap(){
     });
     provider='kakao';
     map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(37.5665,126.978),level:9});
+    new ResizeObserver(()=>map.relayout()).observe($('map'));
     badges=[];
   }
 }

@@ -38,7 +38,7 @@ body.owner-unified{overflow:hidden}
 .owner-unified #ranking li{grid-template-columns:24px minmax(0,1fr) 100px max-content;gap:6px;min-height:53px}
 .owner-unified .sidebar #ranking li:nth-child(-n+3)>span:first-child{background:transparent;color:#151923;border:0;border-radius:0;font-weight:400}
 .owner-unified .sidebar #ranking li>span:first-child{width:24px;padding:0;text-align:left}
-.owner-unified #ranking li strong{font-size:13px;white-space:nowrap;text-align:left;justify-self:start}
+.owner-unified #ranking li strong{width:100%;font-size:13px;white-space:nowrap;text-align:right;justify-self:end}
 .owner-unified #ranking li .change{font-size:11px;max-width:none;overflow:visible;text-overflow:clip;white-space:nowrap;text-align:right}
 .owner-unified .region-card{right:24px;top:24px;height:calc(100% - 48px);border:1px solid #e8e7e3;border-top:5px solid #ffbc00;border-radius:17px;box-shadow:0 6px 24px #0002;overflow:visible}
 .owner-unified .region-card .report-head{padding:18px 21px 12px}

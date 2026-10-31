@@ -20,7 +20,7 @@ if(password!==confirm)throw Error('비밀번호가 일치하지 않습니다.');
 const db=openUserDb(root);
 try{
   const existing=db.prepare('SELECT id FROM users WHERE login_id=?').get('test1234');
-  if(existing)db.prepare('UPDATE users SET name=?,email=?,password_hash=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').run('홍길동','test1234@naver.com',hashPassword(password),existing.id);
-  else db.prepare('INSERT INTO users(login_id,email,name,password_hash) VALUES(?,?,?,?)').run('test1234','test1234@naver.com','홍길동',hashPassword(password));
-  console.log('테스트 계정이 준비되었습니다: test1234 / 홍길동 / test1234@naver.com');
+  if(existing)db.prepare('UPDATE users SET name=?,email=?,phone=?,password_hash=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').run('홍길동','test1234@example.com','010-1234-5678',hashPassword(password),existing.id);
+  else db.prepare('INSERT INTO users(login_id,email,name,phone,password_hash) VALUES(?,?,?,?,?)').run('test1234','test1234@example.com','홍길동','010-1234-5678',hashPassword(password));
+  console.log('테스트 계정이 준비되었습니다: test1234 / 홍길동 / test1234@example.com / 010-1234-5678');
 }finally{db.close()}

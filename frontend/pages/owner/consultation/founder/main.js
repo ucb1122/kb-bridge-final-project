@@ -56,9 +56,10 @@ function renderBranches(){
   for(const bank of branches){
     const card=add(list,'div','', 'branch-card');
     const label=add(card,'label','', 'branch-option');const input=document.createElement('input');input.type='radio';input.name='branch';input.value=bank.id;input.checked=bank.id===chosenBranch?.id;label.append(input);
-    add(label,'strong',`KB국민은행 ${bank.name}`);
-    add(label,'small',bank.address);add(label,'small',`${bank.phone||'전화번호 확인 필요'} · ${bank.hours||'운영시간 확인 필요'}`);
-    const status=add(card,'p','','branch-route-status');status.setAttribute('role','status');status.hidden=true;
+    const details=add(label,'span','','branch-details');
+    add(details,'strong',`KB국민은행 ${bank.name}`);
+    add(details,'small',bank.address);add(details,'small',`${bank.phone||'전화번호 확인 필요'} · ${bank.hours||'운영시간 확인 필요'}`);
+    const status=add(label,'span','','branch-route-status');status.setAttribute('role','status');status.hidden=true;
     if(walkingRoute?.branchId===bank.id){status.hidden=false;status.classList.add('route-ready');status.textContent=`약 ${(walkingRoute.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(walkingRoute.durationSeconds/60))}분`}
     input.onchange=()=>showWalkingRoute(bank);
   }
@@ -134,35 +135,41 @@ async function setupMap(){
 }
 function reviewRow(dl,label,value){const row=add(dl,'div','', 'review-row');add(row,'dt',label,'review-row-label');add(row,'dd',value)}
 function reviewSection(parent,title){const section=add(parent,'section','','review-section');add(section,'h3',title);const dl=add(section,'dl','','review-list');return dl}
-function renderReview(){
+function renderReview(personalUser){
   const box=$('review-content');box.replaceChildren();const paper=add(box,'article','','review-paper');
   add(paper,'p','KB 상권브릿지 · 영업점 상담 준비서','review-kicker');
   add(paper,'h3','상담 전에 확인할 내용','review-paper-title');
-  const place=reviewSection(paper,'01 · 선택한 상권');
+  if(personalUser){const applicant=reviewSection(paper,'01 · 신청인 정보');reviewRow(applicant,'이름',personalUser.name);reviewRow(applicant,'이메일',personalUser.email);reviewRow(applicant,'전화번호',personalUser.phone||'미등록');reviewRow(applicant,'아이디',personalUser.loginId)}
+  const place=reviewSection(paper,personalUser?'02 · 선택한 상권':'01 · 선택한 상권');
   reviewRow(place,'지역',`${report.district} ${report.name}`);
   reviewRow(place,'기준 분기',`${quarter.slice(0,4)}년 ${quarter.slice(4)}분기`);
   reviewRow(place,'업종',$('industry').textContent);
   reviewRow(place,'필요한 도움',document.querySelector(`[data-purpose="${purpose}"]`).textContent);
-  const costs=reviewSection(paper,'02 · 예상 창업 자금');
+  const costs=reviewSection(paper,personalUser?'03 · 예상 창업 자금':'02 · 예상 창업 자금');
   const inputs=[...document.querySelectorAll('[data-amount]')];const names=['임차보증금','인테리어·시설비','초도물품비','초기 운영비','준비한 자기자금'];
   inputs.forEach((input,i)=>reviewRow(costs,names[i],input.value.trim()?money(Number(input.value.trim())):'미입력'));
   const result=updateFunding();const totals=add(paper,'div','','review-totals');
   const total=add(totals,'div','');add(total,'span','합계 비용');add(total,'strong',money(result.total));
   const needed=add(totals,'div','');add(needed,'span','추가로 준비할 금액');add(needed,'strong',money(result.needed));
-  const consult=reviewSection(paper,'03 · 영업점과 상담 메모');
+  const consult=reviewSection(paper,personalUser?'05 · 영업점과 상담 메모':'04 · 영업점과 상담 메모');
   const routeText=walkingRoute?.branchId===chosenBranch?.id?`약 ${(walkingRoute.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(walkingRoute.durationSeconds/60))}분`:'도보 경로 확인 전';
   reviewRow(consult,'상담할 영업점',chosenBranch?`KB국민은행 ${chosenBranch.name}\n${routeText}\n${chosenBranch.address}\n${chosenBranch.phone||''}`:'선택하지 않음');
   reviewRow(consult,'상담에서 물어볼 내용',$('memo').value.trim()||'미입력');
-  const source=reviewSection(paper,'04 · 자료 출처');
+  const source=reviewSection(paper,personalUser?'06 · 자료 출처':'05 · 자료 출처');
   reviewRow(source,'공개 자료',`서울시 상권분석서비스 공개자료 · KB국민은행 공식 지점검색 (${branchMeta.retrievedAt.slice(0,10)})`);
 }
 async function showReviewPDF(){
-  renderReview();
+  let personalUser=null;
+  if($('include-personal-info').checked){
+    try{const response=await fetch('/api/auth/me',{cache:'no-store'});if(!response.ok)throw Error();personalUser=(await response.json()).user;if(!personalUser)throw Error()}
+    catch{$('personal-info-message').textContent='계정 정보를 포함하려면 먼저 로그인해 주세요.';$('personal-info-message').hidden=false;return}
+  }
+  $('personal-info-message').hidden=true;
+  renderReview(personalUser);
   const box=$('review-content');
   const sections=[...box.querySelectorAll('.review-section')].map(section=>({title:section.querySelector('h3').textContent,rows:[...section.querySelectorAll('.review-row')].map(row=>[row.querySelector('dt').textContent,row.querySelector('dd').textContent])}));
   const totals=[...box.querySelectorAll('.review-totals>div')].map(item=>[item.querySelector('span').textContent,item.querySelector('strong').textContent]);
-  sections.splice(2,0,{title:'03 · 자금 합계',rows:totals});
-  sections[3].title='04 · 영업점과 상담 메모';sections[4].title='05 · 자료 출처';
+  sections.splice(personalUser?3:2,0,{title:personalUser?'04 · 자금 합계':'03 · 자금 합계',rows:totals});
   box.replaceChildren();const status=add(box,'p','PDF 상담서를 만드는 중입니다.','review-loading');status.setAttribute('role','status');$('print').disabled=true;
   setStep(4);const current=++reviewGeneration;
   try{
@@ -202,11 +209,14 @@ $('amount-notice').onclick=event=>{if(event.target===event.currentTarget)event.c
 $('fill-sample').onclick=()=>{
   const sampleAmounts=['3000','2000','300','600','3000'];
   amountInputs.forEach((input,index)=>{input.value=sampleAmounts[index];validateAmountInput(input)});
-  $('sample-note').hidden=false;
 };
-$('clear-amounts').onclick=()=>{amountInputs.forEach(input=>{input.value='';validateAmountInput(input)});$('sample-note').hidden=true};
+$('fill-memo').onclick=()=>{
+  $('memo').value='현재 직장에 다니고 있고, 약 6개월 뒤 선택한 지역에서 15평 안팎의 한식 식당을 열어 점심 장사를 시작하려고 합니다. 처음에는 가족 2명이 운영할 생각입니다. 주변 직장인 수요가 실제로 어느 정도인지, 점심 매출만으로 월세와 인건비를 감당할 수 있을지 확신이 없어 입지와 예상 손익을 먼저 점검하고 싶습니다.\n\n임차보증금 3,000만원, 인테리어·주방 설비 2,000만원, 초도물품 300만원, 초기 운영비 600만원으로 총 5,900만원을 예상합니다. 모아 둔 자기자금은 3,000만원이고, 나머지 2,900만원을 어떻게 준비할지 고민입니다. 특히 개업 직후 매출이 자리 잡기 전까지 재료비와 월세를 낼 여유자금을 얼마나 남겨 둬야 하는지 알고 싶습니다.\n\n사업자등록과 임대차계약을 하기 전에 받을 수 있는 상담이 있는지, 창업자금 대출이나 보증을 검토하려면 어떤 서류와 자기자금 증빙이 필요한지 궁금합니다. 대출이 가능하더라도 금리와 상환 기간에 따라 매달 얼마를 갚아야 하는지, 매출이 예상보다 낮을 때도 감당할 수 있는 수준인지 함께 확인하고 싶습니다.';
+  $('memo').focus();
+};
+$('clear-amounts').onclick=()=>{amountInputs.forEach(input=>{input.value='';validateAmountInput(input)})};
 amountInputs.forEach(input=>{
-  input.addEventListener('input',()=>{validateAmountInput(input);$('sample-note').hidden=true});
+  input.addEventListener('input',()=>{validateAmountInput(input)});
   input.addEventListener('blur',()=>{if(!validateAmountInput(input))showAmountNotice()});
 });
 $('reset-branch').onclick=()=>{chosenBranch=null;clearWalkingRoute();showBranchMarkers();renderBranches();if(map){const bounds=new kakao.maps.LatLngBounds();bounds.extend(new kakao.maps.LatLng(origin.lat,origin.lng));branches.forEach(item=>bounds.extend(new kakao.maps.LatLng(item.lat,item.lng)));map.setBounds(bounds,40,40,40,40)}};
