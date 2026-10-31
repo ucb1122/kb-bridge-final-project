@@ -11,7 +11,7 @@ const add=(parent,tag,value,className)=>{const el=document.createElement(tag);el
 
 async function getJson(url){const response=await fetch(url);if(!response.ok)throw Error(`자료를 불러오지 못했습니다 (${response.status}).`);return response.json()}
 function showError(message){$('app').hidden=true;$('load-error').hidden=false;$('load-error').querySelector('p').textContent=message}
-function setStep(next){step=next;document.querySelectorAll('[data-page]').forEach(el=>el.hidden=Number(el.dataset.page)!==next);document.querySelectorAll('[data-step]').forEach(el=>{const n=Number(el.dataset.step);el.classList.toggle('active',n===Math.min(next,3));el.classList.toggle('done',n<next)});window.scrollTo({top:0,behavior:'smooth'})}
+function setStep(next){step=next;document.querySelectorAll('[data-page]').forEach(el=>el.hidden=Number(el.dataset.page)!==next);document.querySelectorAll('[data-step]').forEach(el=>{const n=Number(el.dataset.step);el.classList.toggle('active',n===Math.min(next,3));el.classList.toggle('done',n<next);el.querySelector('b').textContent=n<next?'✓':String(n)});window.scrollTo({top:0,behavior:'smooth'})}
 function renderSupport(){
   const list=$('support-list');list.replaceChildren();
   const preparing=founderSupport(support);

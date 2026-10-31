@@ -22,7 +22,7 @@ const analysisCache=new Map();
 let analysisTimer;
 const boundaryCache=new Map();
 let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode=null;
-let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[],hoverLabel;
+let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[];
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
   if(!config.kakaoJavaScriptKey)throw Error('카카오 지도 JavaScript 키를 .env에 설정해 주세요.');
@@ -39,7 +39,6 @@ async function initializeMap(){
     });
     provider='kakao';
     map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(37.5665,126.978),level:9});
-    hoverLabel=new kakao.maps.CustomOverlay({zIndex:999,yAnchor:1});
     badges=[];
   }
 }
@@ -221,7 +220,7 @@ function updateBoundaryStyles(){
 }
 function setHover(code){hoveredCode=code;updateBoundaryStyles()}
 function drawBoundaries(){
-  hoverLabel?.setMap(null);hoveredCode=null;
+  hoveredCode=null;
   boundaryPolygons.forEach(({polygon})=>polygon.setMap(null));boundaryPolygons=[];
   if(provider!=='kakao')return;
   const ranked=new Map(rows.map((row,i)=>[String(row.code),{row,rank:i+1}]));
@@ -233,14 +232,10 @@ function drawBoundaries(){
       if(!path[0]||path[0].length<3)continue;
       const polygon=new kakao.maps.Polygon({map,path,strokeStyle:'solid',strokeOpacity:.001,fillOpacity:.001,zIndex:0});
       boundaryPolygons.push({polygon,code,path});
-      kakao.maps.event.addListener(polygon,'mouseover',event=>{
+      kakao.maps.event.addListener(polygon,'mouseover',()=>{
         setHover(code);
-        hoverLabel.setContent(`<div class="boundary-hover-label">${html(feature.properties?.district??'')} ${html(feature.properties?.name??'')}</div>`);
-        hoverLabel.setPosition(event.latLng);hoverLabel.setMap(map);
-        if(match)showSummary(match.row,match.rank);
       });
-      kakao.maps.event.addListener(polygon,'mousemove',event=>hoverLabel.setPosition(event.latLng));
-      kakao.maps.event.addListener(polygon,'mouseout',()=>{if(hoveredCode===code){setHover(null);hoverLabel.setMap(null)}});
+      kakao.maps.event.addListener(polygon,'mouseout',()=>{if(hoveredCode===code)setHover(null)});
       if(match)kakao.maps.event.addListener(polygon,'click',()=>focusRegion(match.row));
     }
   }
@@ -263,17 +258,16 @@ function drawMap(){
       element.type='button';element.className='rank-marker kakao-rank-marker';element.innerHTML=content;
       element.setAttribute('aria-label',`${i+1}위 ${row.district} ${row.name} ${format(row.value)}`);
       let overlay;
-      element.onmouseenter=()=>{setHover(String(row.code));showSummary(row,i+1);overlay.setZIndex(2000)};
+      element.onmouseenter=()=>{setHover(String(row.code));overlay.setZIndex(2000)};
       element.onmouseleave=()=>{if(hoveredCode===String(row.code))setHover(null);overlay.setZIndex(pinned&&selectedCode===row.code?1000:10-i)};
-      element.onfocus=()=>showSummary(row,i+1);
+      element.onfocus=()=>setHover(String(row.code));
       element.onclick=()=>focusRegion(row);
       markerElements.set(String(row.code),element);
       overlay=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(row.lat,row.lng),content:element,yAnchor:.5,zIndex:active?1000:10-i});
       overlay.setMap(map);badges.push(overlay);
     }else{
       L.marker([row.lat,row.lng],{icon:L.divIcon({className:'rank-marker',html:content,iconSize:[82,82],iconAnchor:[41,41]}),zIndexOffset:active?1000:10-i})
-        .bindTooltip(`${row.district} ${row.name} · ${format(row.value)}`,{direction:'top',offset:[0,-40]})
-        .on('mouseover',()=>showSummary(row,i+1)).on('click',()=>focusRegion(row)).addTo(badges);
+        .on('click',()=>focusRegion(row)).addTo(badges);
     }
   });
 }
@@ -353,7 +347,6 @@ function render(list){
     rank.textContent=i+1;name.textContent=`${row.district} ${row.name}`;value.textContent=format(row.value);
     change.textContent=rankingComparison(row);change.className='change '+((appliedFilters.criterion==='absolute'?row.delta:row.change)>=0?'up':'down');
     li.append(rank,name,value,change);li.tabIndex=0;
-    li.onmouseenter=()=>showSummary(row,i+1);li.onfocus=()=>showSummary(row,i+1);
     li.onclick=()=>focusRegion(row);li.onkeydown=e=>{if(e.key==='Enter')focusRegion(row)};return li;
   }));drawMap();
 }
