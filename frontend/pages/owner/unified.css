@@ -1,4 +1,6 @@
 /* 내 상권 분석은 기존 상권 자료를 지역·분기·지표 중심으로 탐색한다. */
+html:has(body.owner-unified){scrollbar-gutter:auto}
+body.owner-unified{overflow:hidden}
 .owner-unified .sidebar{left:24px;top:24px;bottom:24px;width:clamp(460px,28vw,540px);border:1px solid #e8e7e3;border-radius:17px;background:#fff;box-shadow:0 6px 24px #0002}
 .owner-unified .sidebar-toggle{left:calc(24px + clamp(460px,28vw,540px))}
 .owner-unified .sidebar-toggle.collapsed{left:0}
@@ -213,3 +215,9 @@
 .owner-unified .owner-overview-notes{margin:-4px 2px 16px;color:#65748b;font-size:12px;line-height:1.5}
 .owner-unified .owner-overview-notes p{margin:3px 0}
 .owner-unified .owner-tab .owner-overview-notes{margin:0 2px 16px}
+.owner-unified .region-card .owner-consult-actions{flex:none;display:flex;gap:12px;padding:12px 20px 16px;border-top:1px solid #e1e6ee;background:#fff;border-radius:0 0 17px 17px}
+.owner-unified .region-card .owner-consult-actions[hidden]{display:none}
+.owner-consult-actions a{flex:1 1 0;min-width:0;min-height:52px;display:grid;place-items:center;text-align:center;text-decoration:none;border:1px solid #e6c66e;border-radius:10px;color:#263248;background:#fff8e5;font-weight:700}
+.owner-consult-actions a:first-child:not([hidden]){background:#ffbc00;border-color:#ffbc00;color:#141923}
+.owner-consult-actions a[hidden]{display:none}
+.owner-consult-actions a:hover{background:#fff0bd}

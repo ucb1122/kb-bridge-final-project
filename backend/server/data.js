@@ -130,7 +130,7 @@ export function getRegionSummary({kind,code,quarter}={}){
   if(!kinds.has(kind)||!code||code.length>100||!/^20\d{2}[1-4]$/.test(quarter||''))throw Error('잘못된 조회 조건입니다.');
   const db=open();if(!db)return null;
   try{
-    const rows=db.prepare(`SELECT metric,value,region_name AS name,district,
+    const rows=db.prepare(`SELECT metric,value,region_name AS name,district,lat,lng,
       (SELECT p.value FROM observations p WHERE p.quarter=(SELECT MAX(q.quarter) FROM observations q WHERE q.quarter<o.quarter)
        AND p.kind=o.kind AND p.metric=o.metric AND p.region_code=o.region_code) AS previous
       FROM observations o WHERE quarter=? AND kind=? AND region_code=?`).all(quarter,kind,code);
@@ -139,7 +139,9 @@ export function getRegionSummary({kind,code,quarter}={}){
       WHERE kind=? AND region_code=? AND quarter<=? AND quarter>=?
       ORDER BY quarter`).all(kind,code,quarter,String(Number(quarter.slice(0,4))-1)+quarter.slice(4));
     const snapshot=officialSnapshot(quarter);
+    const located=rows.find(row=>Number.isFinite(row.lat)&&Number.isFinite(row.lng));
     return {code,kind,quarter,name:displayRegionName(rows[0].name),district:rows[0].district,
+      lat:located?.lat??null,lng:located?.lng??null,
       analysisAreaM2:snapshot?.areas?.[`${kind}:${code}`]??null,
       officialSalesEok:snapshot?.values?.[`${kind}:sales:${code}`]??null,
       officialReportSales:officialReportSales(quarter,kind,code),
