@@ -20,7 +20,7 @@ export async function buildConsultationPDF({summary,branch,form},dependencies={}
  function heading(text){y-=5;rect(36,y-22,523,25,rgb(.95,.96,.98));draw(text,40,y-14,12,ink);y-=26;}
  const values=new Map(summary.split('\n').filter(t=>t.includes(':')).map(t=>{const i=t.indexOf(':');return [t.slice(0,i).trim(),t.slice(i+1).trim()];}));
  function tableRow(entries){
-  const columns=entries.length,columnWidth=519/columns,labelWidth=columns===1?90:71;
+  const columns=entries.length,columnWidth=519/columns,labelWidth=90;
   const lines=entries.map(([label,value])=>({label,lines:wrapped(value||' ',11,columnWidth-labelWidth-17)}));
   const height=Math.max(34,...lines.map(c=>c.lines.length*16+12));
   if(y-height<70){page=pdf.addPage([595.28,841.89]);header();}
@@ -69,7 +69,7 @@ export async function buildConsultationPDF({summary,branch,form},dependencies={}
  y-=13;line('상담 참고: '+(values.get('상권 신호')||'상권 신호는 상담에서 확인'),8.5,muted);
  line('고객 입력과 가정의 비교이며, 지원·상환 조정·공제 가입은 별도 확인합니다.',8.5,muted);
  line('시연용 사전 상담서입니다. 실제 은행 접수·예약 또는 정식 신청서를 대신하지 않습니다.',8.5,muted);
- const pages=pdf.getPages();for(const [i,p] of pages.entries())draw(`상권브릿지 · 고객 직접 입력 / ${i+1} / ${pages.length}`,40,30,9,muted,p);
+ const pages=pdf.getPages();for(const [i,p] of pages.entries())draw(`상권브릿지  |  ${i+1} / ${pages.length}`,40,30,9,muted,p);
  pdf.setTitle('우리 가게 회복 플래너 - 영업점 상담서');
  if(dependencies.onPreview)await dependencies.onPreview(paintings,fontBytes);
  return pdf.save();

@@ -39,7 +39,7 @@ http.createServer(async(req,res)=>{
           if(!localDemoRequest(req))return authResponse(res,403,{error:'로컬 시연 환경에서만 사용할 수 있습니다.'});
           let user=db.prepare('SELECT * FROM users WHERE login_id=?').get('test1234');
           if(!user){
-            db.prepare('INSERT INTO users(login_id,email,name,password_hash) VALUES(?,?,?,?)').run('test1234','test1234@naver.com','홍길동',hashPassword(randomBytes(32).toString('hex')));
+            db.prepare('INSERT INTO users(login_id,email,name,phone,password_hash) VALUES(?,?,?,?,?)').run('test1234','test1234@example.com','홍길동','010-1234-5678',hashPassword(randomBytes(32).toString('hex')));
             user=db.prepare('SELECT * FROM users WHERE login_id=?').get('test1234');
           }
           const session=createSession(db,user.id);
