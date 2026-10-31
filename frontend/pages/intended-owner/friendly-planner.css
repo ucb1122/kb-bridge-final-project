@@ -6,6 +6,10 @@
 .risk-rank-pin span{background:#fff8df;border-color:#e7b536;color:#1b2538}
 .risk-rank-pin span{font-weight:400}
 #rp-steps .rp-step-name{min-width:0}
+.rp-selected-region{margin:0 0 14px;padding:12px 16px;border:1px solid #e8d59b;border-radius:10px;background:#fff9e8;color:#5e470d;font-size:15px;font-weight:700}
+.recovery-bank-marker{width:38px;height:38px;border:2px solid #a57a00;border-radius:50%;background:#fff8df;color:#745300;font-size:13px;font-weight:800;box-shadow:0 2px 8px #17203333;cursor:pointer}
+.recovery-bank-marker[data-selected="true"]{background:#ffbc00;color:#172033;border-color:#805d00}
+.walking-status{font-size:13px;color:#66758a}
 #rp-steps .rp-step-status{font-size:11px;font-weight:600;white-space:nowrap;color:#697588}
 #rp-steps .rp-step-status[data-status="완료"]{color:#765400}
 #rp-steps button[aria-current="step"] .rp-step-status{color:#493500}
