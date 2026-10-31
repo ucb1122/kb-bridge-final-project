@@ -1,4 +1,4 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-region-bank';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-map-center';
 import {createMap,createLayerGroup,drawFeature} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';
@@ -13,6 +13,16 @@ const drafts={tenant:freshDraft(),landlord:freshDraft()};
 let snapshot=null,features=[],view=null,baseLayer=null,selectedLayer=null,branchLayer=null,routeLayer=null,nearbyBranches=[],selectedBranchId='',lastResult=null,heatState=validateHeatResults(null),heatConnectionError='';
 let closureData=null,rankLayer=null,closureLoading=true;
 let seoulOutline=null;
+function centerSelectionBesideSidebar(){
+ if(!view||window.innerWidth<=900)return;
+ const mapElement=$('map'),sidebar=$('region-panel');
+ if(!mapElement||!sidebar)return;
+ const mapRect=mapElement.getBoundingClientRect(),sideRect=sidebar.getBoundingClientRect();
+ if(sideRect.right<=mapRect.left||sideRect.right>=mapRect.right-100)return;
+ const offset=((sideRect.right+mapRect.right)/2-(mapRect.left+mapRect.width/2))/mapRect.width;
+ const nativeMap=view.map.nativeMap,bounds=nativeMap.getBounds(),center=nativeMap.getCenter();
+ nativeMap.setCenter(new kakao.maps.LatLng(center.getLat(),center.getLng()-(bounds.getNorthEast().getLng()-bounds.getSouthWest().getLng())*offset));
+}
 function drawNearbyBranches(){
  if(!view||!branchLayer)return;branchLayer.clearLayers();
  if(!state.selected)return;
@@ -23,7 +33,7 @@ function drawNearbyBranches(){
  }
 }
 document.addEventListener('bridge:nearby-branches',event=>{nearbyBranches=event.detail.branches||[];selectedBranchId=event.detail.selectedId||'';drawNearbyBranches();});
-document.addEventListener('bridge:walking-route',event=>{routeLayer?.clearLayers();const points=event.detail?.points;if(!view||!routeLayer||!Array.isArray(points)||points.length<2)return;const path=points.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng));routeLayer.add(new kakao.maps.Polyline({path,strokeWeight:5,strokeColor:'#2068d9',strokeOpacity:.9,zIndex:11}));const bounds=new kakao.maps.LatLngBounds();path.forEach(point=>bounds.extend(point));view.map.fitBounds(bounds,{maxZoom:14});});
+document.addEventListener('bridge:walking-route',event=>{routeLayer?.clearLayers();const points=event.detail?.points;if(!view||!routeLayer||!Array.isArray(points)||points.length<2)return;const path=points.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng));routeLayer.add(new kakao.maps.Polyline({path,strokeWeight:5,strokeColor:'#2068d9',strokeOpacity:.9,zIndex:11}));const bounds=new kakao.maps.LatLngBounds();path.forEach(point=>bounds.extend(point));view.map.fitBounds(bounds,{maxZoom:14});centerSelectionBesideSidebar();});
 const regionByKey=new Map(),featureByKey=new Map();
 const draft=()=>drafts[state.role];
 const setStatus=text=>{$('region-status').textContent=text;};
@@ -162,7 +172,7 @@ function drawBoundaries(){
 }
 function selectRegion(region){
  if(!region)return;state.selected=region;document.dispatchEvent(new CustomEvent('bridge:region-selected',{detail:{...region,risk:closureData?.byCode.get(String(region.code))}}));$('clear-selection').disabled=false;selectedLayer?.clearLayers();
-  const feature=featureByKey.get(regionKey(region));if(view&&feature){drawFeature(selectedLayer,feature,{color:'#d89c00',weight:3,fillColor:'#ffcc30',fillOpacity:.23,zIndex:4});view.map.fitBounds(selectedLayer.getBounds(),{maxZoom:14.75});}
+  const feature=featureByKey.get(regionKey(region));if(view&&feature){drawFeature(selectedLayer,feature,{color:'#d89c00',weight:3,fillColor:'#ffcc30',fillOpacity:.23,zIndex:4});view.map.fitBounds(selectedLayer.getBounds(),{maxZoom:14.75});centerSelectionBesideSidebar();}
  $('simulator-region-name').textContent=region.district+' · '+region.name+' · 직접 입력 비교';$('map-finance-link').href=financeURL();$('finance-catalog').href=financeURL();view?.show(rankPins.some(pin=>pin.dataset.regionCode===String(region.code))?[]:[{lat:region.lat,lng:region.lng,name:region.name}]);$('selected-name').textContent=region.name;$('selected-detail').textContent=region.district+' · '+(region.type||'행정동')+' · '+region.quarter.slice(0,4)+'년 '+region.quarter.slice(4)+'분기';
  const metric=(value,unit)=>typeof value==='number'&&Number.isFinite(value)?fmt(value)+unit:'자료 없음';
  $('region-metrics').hidden=false;$('region-metrics').innerHTML=[['전체 업종 점포수',metric(region.metrics.stores,'개')],['분기 상권 추정매출',metric(region.metrics.sales===null?null:region.metrics.sales/1e8,'억원')],['분기 유동인구 집계',metric(region.metrics.floating,'명')],['직장인구(지역 집계)',metric(region.metrics.worker,'명')]].map(([label,val])=>'<div><span>'+esc(label)+'</span><strong>'+esc(val)+'</strong></div>').join('');
