@@ -1,4 +1,4 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-bank-pulse';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-nearby-walk';
 import {createMap,createLayerGroup,drawFeature} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';
