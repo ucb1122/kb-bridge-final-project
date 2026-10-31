@@ -3,6 +3,15 @@ import {renderReportTab} from './full-report.js?v=26';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
+let consultationReady=false;
+function syncOwnerConsultation(){
+  if(!ownerMode)return;
+  const preparing=document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
+  const actions=document.querySelector('.owner-consult-actions');
+  actions.hidden=!preparing||!selectedCode||!consultationReady;
+  if(actions.hidden)return;
+  $('owner-consult-link').href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:selectedCode,quarter:$('quarter').value,industry:appliedFilters.industry});
+}
 const labels={stores:'점포수',sales:'매출',salesPerStore:'점포당 월평균 매출',footfall:'유동인구',residents:'상주인구'};
 let kind='dong',metric=ownerMode?'salesPerStore':'stores',map,requestId=0,summaryId=0,rows=[],selectedCode,pinned=false;
 const appliedFilters={criterion:'growth',comparison:'previous',industry:'all',period:'quarter',quarter:'',year:''};
@@ -13,7 +22,7 @@ const analysisCache=new Map();
 let analysisTimer;
 const boundaryCache=new Map();
 let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode=null;
-let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[],hoverLabel;
+let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[];
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
   if(!config.kakaoJavaScriptKey)throw Error('카카오 지도 JavaScript 키를 .env에 설정해 주세요.');
@@ -30,7 +39,7 @@ async function initializeMap(){
     });
     provider='kakao';
     map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(37.5665,126.978),level:9});
-    hoverLabel=new kakao.maps.CustomOverlay({zIndex:999,yAnchor:1});
+    new ResizeObserver(()=>map.relayout()).observe($('map'));
     badges=[];
   }
 }
@@ -212,7 +221,7 @@ function updateBoundaryStyles(){
 }
 function setHover(code){hoveredCode=code;updateBoundaryStyles()}
 function drawBoundaries(){
-  hoverLabel?.setMap(null);hoveredCode=null;
+  hoveredCode=null;
   boundaryPolygons.forEach(({polygon})=>polygon.setMap(null));boundaryPolygons=[];
   if(provider!=='kakao')return;
   const ranked=new Map(rows.map((row,i)=>[String(row.code),{row,rank:i+1}]));
@@ -224,14 +233,10 @@ function drawBoundaries(){
       if(!path[0]||path[0].length<3)continue;
       const polygon=new kakao.maps.Polygon({map,path,strokeStyle:'solid',strokeOpacity:.001,fillOpacity:.001,zIndex:0});
       boundaryPolygons.push({polygon,code,path});
-      kakao.maps.event.addListener(polygon,'mouseover',event=>{
+      kakao.maps.event.addListener(polygon,'mouseover',()=>{
         setHover(code);
-        hoverLabel.setContent(`<div class="boundary-hover-label">${html(feature.properties?.district??'')} ${html(feature.properties?.name??'')}</div>`);
-        hoverLabel.setPosition(event.latLng);hoverLabel.setMap(map);
-        if(match)showSummary(match.row,match.rank);
       });
-      kakao.maps.event.addListener(polygon,'mousemove',event=>hoverLabel.setPosition(event.latLng));
-      kakao.maps.event.addListener(polygon,'mouseout',()=>{if(hoveredCode===code){setHover(null);hoverLabel.setMap(null)}});
+      kakao.maps.event.addListener(polygon,'mouseout',()=>{if(hoveredCode===code)setHover(null)});
       if(match)kakao.maps.event.addListener(polygon,'click',()=>focusRegion(match.row));
     }
   }
@@ -254,17 +259,16 @@ function drawMap(){
       element.type='button';element.className='rank-marker kakao-rank-marker';element.innerHTML=content;
       element.setAttribute('aria-label',`${i+1}위 ${row.district} ${row.name} ${format(row.value)}`);
       let overlay;
-      element.onmouseenter=()=>{setHover(String(row.code));showSummary(row,i+1);overlay.setZIndex(2000)};
+      element.onmouseenter=()=>{setHover(String(row.code));overlay.setZIndex(2000)};
       element.onmouseleave=()=>{if(hoveredCode===String(row.code))setHover(null);overlay.setZIndex(pinned&&selectedCode===row.code?1000:10-i)};
-      element.onfocus=()=>showSummary(row,i+1);
+      element.onfocus=()=>setHover(String(row.code));
       element.onclick=()=>focusRegion(row);
       markerElements.set(String(row.code),element);
       overlay=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(row.lat,row.lng),content:element,yAnchor:.5,zIndex:active?1000:10-i});
       overlay.setMap(map);badges.push(overlay);
     }else{
       L.marker([row.lat,row.lng],{icon:L.divIcon({className:'rank-marker',html:content,iconSize:[82,82],iconAnchor:[41,41]}),zIndexOffset:active?1000:10-i})
-        .bindTooltip(`${row.district} ${row.name} · ${format(row.value)}`,{direction:'top',offset:[0,-40]})
-        .on('mouseover',()=>showSummary(row,i+1)).on('click',()=>focusRegion(row)).addTo(badges);
+        .on('click',()=>focusRegion(row)).addTo(badges);
     }
   });
 }
@@ -292,6 +296,8 @@ function centerRegionInVisibleMap(){
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
   clearTimeout(analysisTimer);
+  consultationReady=false;
+  syncOwnerConsultation();
   if(selectedCode!==row.code){
     $('report-body').scrollTop=0;
     document.querySelectorAll('[data-report-tab]').forEach(tab=>{const selected=tab.dataset.reportTab==='overview';tab.classList.toggle('selected',selected);if(ownerMode)tab.setAttribute('aria-selected',String(selected))});
@@ -299,7 +305,8 @@ async function showSummary(row,rank,clicked=false){
   }
   selectedCode=row.code;$('region-card').hidden=false;
   updateBoundaryStyles();
-  $('region-type').textContent=ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
+  const preparingOwner=ownerMode&&document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
+  $('region-type').textContent=preparingOwner?'창업 의사결정 보고서':ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
   $('region-title').textContent=`${row.district} ${row.name}`;
   $('region-rank').textContent=ownerMode?`${row.district} · ${kind==='dong'?'행정동 전체':'공식 상권'} · ${$('owner-industry').selectedOptions[0].textContent} · ${$('quarter').selectedOptions[0].textContent}`:`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
   const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
@@ -318,6 +325,8 @@ async function showSummary(row,rank,clicked=false){
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
     for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab,tab==='overview'&&!ownerMode?(analysisCache.get(key)||{mode:'loading'}):undefined);
+    consultationReady=true;
+    syncOwnerConsultation();
     if(!ownerMode&&!analysisCache.has(key)){
       const loadAnalysis=async()=>{
         try{
@@ -339,7 +348,6 @@ function render(list){
     rank.textContent=i+1;name.textContent=`${row.district} ${row.name}`;value.textContent=format(row.value);
     change.textContent=rankingComparison(row);change.className='change '+((appliedFilters.criterion==='absolute'?row.delta:row.change)>=0?'up':'down');
     li.append(rank,name,value,change);li.tabIndex=0;
-    li.onmouseenter=()=>showSummary(row,i+1);li.onfocus=()=>showSummary(row,i+1);
     li.onclick=()=>focusRegion(row);li.onkeydown=e=>{if(e.key==='Enter')focusRegion(row)};return li;
   }));drawMap();
 }
@@ -401,6 +409,10 @@ function setupOwnerControls(){
   salesBasis.onchange=()=>{if(!['sales','salesPerStore'].includes(metric))return;const button=document.querySelector('.owner-unified .metric button:nth-child(2)');button.dataset.metric=salesBasis.value==='average'?'salesPerStore':'sales';button.click()};
   document.querySelectorAll('[data-owner-mode]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
+    if(ownerMode){
+      $('region-type').textContent=button.dataset.ownerMode==='preparing'?'창업 의사결정 보고서':'경영 진단 보고서';
+      syncOwnerConsultation();
+    }
   });
   document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-find]').forEach(item=>item.classList.toggle('selected',item===button));

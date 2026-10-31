@@ -58,11 +58,26 @@ body > header.kb-header .header-login {
   border: 1px solid #e2e4e8; border-radius: 8px; background: #fff;
   color: #273244; font: 700 12px/1.3 'KB Shared Header','Malgun Gothic',sans-serif;
 }
+body > header.kb-header .header-actions { position: relative; }
+body > header.kb-header .account-menu { box-sizing: border-box; position: absolute; z-index: 1000; right: 0; top: 48px; display: grid; gap: 14px; width: 290px; padding: 18px; border: 1px solid #e2e4e8; border-radius: 14px; background: #fff; box-shadow: 0 12px 30px #14233d21; color: #273244; font: 13px/1.4 'KB Shared Header',sans-serif; }
+body > header.kb-header .account-menu[hidden] { display: none; }
+body > header.kb-header .account-profile { display: flex; align-items: center; gap: 10px; }
+body > header.kb-header .account-avatar { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 50%; background: #fff0b8; color: #805a00; font-weight: 700; }
+body > header.kb-header .account-profile strong { font-size: 16px; }
+body > header.kb-header .account-info { display: grid; gap: 1px; padding: 3px 12px; border: 1px solid #e6eaf0; border-radius: 9px; background: #f8f9fb; }
+body > header.kb-header .account-info-row { display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 8px; padding: 9px 0; align-items: center; }
+body > header.kb-header .account-info-row + .account-info-row { border-top: 1px solid #e6eaf0; }
+body > header.kb-header .account-info-row span { color: #748197; font-size: 11px; }
+body > header.kb-header .account-info-row b { overflow-wrap: anywhere; font-size: 12px; font-weight: 700; }
+body > header.kb-header .account-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+body > header.kb-header .account-actions button { min-height: 36px; border: 1px solid #dbe2eb; border-radius: 8px; background: #fff; color: #273244; font: 700 12px 'KB Shared Header',sans-serif; cursor: pointer; }
+body > header.kb-header .account-actions button:disabled { background: #fff; color: #9aa5b5; cursor: not-allowed; }
+body > header.kb-header .account-actions button:not(:disabled):hover { background: #fff5d6; border-color: #e7be51; }
 @media(max-width:1300px) {
   body > header.kb-header, body > header.site-header.kb-header { padding: 0 14px; gap: 12px; }
   body > header.kb-header nav { min-width: 0; flex: 1; }
 }
-@media(max-width:1100px) { body > header.kb-header .header-actions { display: none; } }
+@media(max-width:1100px) { body > header.kb-header .header-chatbot, body > header.kb-header .header-end { display: none; } }
 @media(max-width:760px) {
   body > header.kb-header, body > header.site-header.kb-header { height: 44px; min-height: 44px; padding: 0 8px; gap: 8px; }
   body > header.kb-header .brand { font-size: 16px; }

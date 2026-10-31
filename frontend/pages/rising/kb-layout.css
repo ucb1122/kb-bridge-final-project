@@ -14,6 +14,9 @@ main{height:calc(100dvh - 100px);min-height:540px;background:#f8f7f4}.sidebar{le
 .sidebar .district-fields select{width:100%;min-width:0}
 
 /* 두 상세조건 컨트롤의 화살표를 같은 위치와 모양으로 표시한다. */
+html:has(body:not(.owner-unified)){scrollbar-gutter:auto}
+body:not(.owner-unified){width:100%;overflow:hidden}
+body:not(.owner-unified) main,body:not(.owner-unified) #map{width:100%;max-width:none}
 .sidebar .filter>button,.owner-unified .owner-details summary{display:flex;align-items:center;text-align:left}
 .sidebar .filter>button::after,.owner-unified .owner-details summary::after{content:"";display:block;flex:none;width:8px;height:8px;margin-left:auto;margin-right:3px;border-right:2px solid #344054;border-bottom:2px solid #344054;transform:rotate(45deg)}
 .sidebar .filter>button[aria-expanded="true"]::after,.owner-unified .owner-details[open] summary::after{transform:rotate(225deg)}

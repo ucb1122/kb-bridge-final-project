@@ -4,14 +4,14 @@ const rules={
   rrMonths:{label:'남은 기간',min:1,max:600,integer:true},
   rrSales:{label:'평균 월매출',min:0,max:100000000},
   rrShock:{label:'매출 변화율',min:0,max:60},
-  payment:{label:'지금 내는 월 상환액',min:0,max:100000000},
-  adjusted:{label:'상담에서 알아보고 싶은 월 상환액',min:0,max:100000000},
-  usualRevenue:{label:'평소 월매출',min:0,max:100000000},
-  recentRevenue:{label:'최근 월매출',min:0,max:100000000},
-  rent:{label:'현재 월세',min:0,max:100000000},
-  nextRent:{label:'변경 후 월세',min:0,max:100000000},
-  net:{label:'지금 한 달에 남는 돈',min:-100000000,max:100000000},
-  'actual-net':{label:'다음 달 실제로 남은 돈',min:-100000000,max:100000000},
+  payment:{label:'지금 내는 월 상환액',min:0,max:100000000,integer:true},
+  adjusted:{label:'상담에서 알아보고 싶은 월 상환액',min:0,max:100000000,integer:true},
+  usualRevenue:{label:'평소 월매출',min:0,max:100000000,integer:true},
+  recentRevenue:{label:'최근 월매출',min:0,max:100000000,integer:true},
+  rent:{label:'현재 월세',min:0,max:100000000,integer:true},
+  nextRent:{label:'변경 후 월세',min:0,max:100000000,integer:true},
+  net:{label:'지금 한 달에 남는 돈',min:-100000000,max:100000000,integer:true},
+  'actual-net':{label:'다음 달 실제로 남은 돈',min:-100000000,max:100000000,integer:true},
 };
 export function validatePlannerNumber(key,value,badInput=false){
   const rule=rules[key];
