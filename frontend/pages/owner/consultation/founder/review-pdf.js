@@ -1,7 +1,7 @@
 import {renderPagePreviews} from '../../../intended-owner/consultation-pdf.js';
 
 let fontBytes;
-export async function buildFounderReviewPDF(sections,note){
+export async function buildFounderReviewPDF(sections){
   const {PDFDocument,rgb}=globalThis.PDFLib;
   const pdf=await PDFDocument.create();
   pdf.registerFontkit(globalThis.fontkit);
@@ -34,18 +34,39 @@ export async function buildFounderReviewPDF(sections,note){
   function canPair([label,value]){
     return font.widthOfTextAtSize(label,9.5)<=95&&wrap(value,10.5,136).length<=2;
   }
+  function memoCell([label,value]){
+    const lines=wrap(value,10.5,499);
+    for(let offset=0;offset<lines.length;){
+      const available=Math.max(1,Math.floor((y-76-66)/16));
+      if(available<3){startPage();continue}
+      const chunk=lines.slice(offset,offset+available);
+      const height=Math.max(86,chunk.length*16+66);
+      ensure(height);
+      rect(38,y,519,height,line);
+      rect(38.7,y-.7,517.6,28,pale);
+      rect(38.7,y-28.7,517.6,height-29.4,rgb(1,1,1));
+      draw(label,46,y-19,9.5,muted);
+      chunk.forEach((text,index)=>draw(text,46,y-48-index*16,10.5,ink));
+      y-=height;offset+=chunk.length;
+    }
+  }
   startPage();
   for(const section of sections){
     heading(section.title);
     const keepTwoColumns=section.title.includes('신청인 정보')||section.title.includes('예상 창업 자금');
     for(let index=0;index<section.rows.length;index++){
       const first=section.rows[index], second=section.rows[index+1];
+      if(first[0]==='상담에서 물어볼 내용'){
+        startPage();
+        heading(section.title);
+        memoCell(first);
+        continue;
+      }
       if(second&&canPair(first)&&canPair(second)){rowCells([first,second]);index++}
       else if(keepTwoColumns&&canPair(first))rowCells([first,['','']]);
       else rowCells([first]);
     }
   }
-  y-=15;for(const text of wrap(note,8.5,510)){ensure(16);draw(text,40,y,8.5,muted);y-=15}
   const pages=pdf.getPages();for(const [index,target] of pages.entries()){page=target;draw(`상권브릿지  |  ${index+1} / ${pages.length}`,40,30,9,muted)}
   pdf.setTitle('상권브릿지 - KB 영업점 상담 준비 내용');
   const preview=await renderPagePreviews(paintings,fontBytes);

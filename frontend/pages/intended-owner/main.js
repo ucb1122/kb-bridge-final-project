@@ -1,4 +1,4 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-schedule-sample';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-split-modals';
 import {createMap,createLayerGroup,drawFeature} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';
@@ -10,7 +10,7 @@ const $=id=>document.getElementById(id),SEOUL=[37.5665,126.978],INITIAL_ZOOM=10.
 const state={role:new URLSearchParams(location.search).get('role')==='landlord'?'landlord':'tenant',kind:'area',district:'',query:'',heat:'all',selected:null};
 const freshDraft=()=>({rentChangePercent:'0',rateEnabled:false,vacancyEnabled:false,example:false});
 const drafts={tenant:freshDraft(),landlord:freshDraft()};
-let snapshot=null,features=[],view=null,baseLayer=null,selectedLayer=null,branchLayer=null,routeLayer=null,nearbyBranches=[],selectedBranchId='',lastResult=null,heatState=validateHeatResults(null),heatConnectionError='';
+let snapshot=null,features=[],view=null,baseLayer=null,selectedLayer=null,branchLayer=null,routeLayer=null,nearbyBranches=[],selectedBranchId='',showConsultationBranches=false,lastWalkingRoute=null,lastResult=null,heatState=validateHeatResults(null),heatConnectionError='';
 let closureData=null,rankLayer=null,closureLoading=true;
 let seoulOutline=null;
 function centerSelectionBesideSidebar(){
@@ -25,7 +25,7 @@ function centerSelectionBesideSidebar(){
 }
 function drawNearbyBranches(){
  if(!view||!branchLayer)return;branchLayer.clearLayers();
- if(!state.selected)return;
+ if(!state.selected||!showConsultationBranches)return;
  for(const branch of nearbyBranches){
   const marker=document.createElement('button');marker.type='button';marker.className='recovery-bank-marker';marker.title=`KB국민은행 ${branch.name} · 직선 약 ${branch.distance.toFixed(1)}km`;marker.setAttribute('aria-label',`${marker.title} 선택`);marker.dataset.selected=String(branch.id===selectedBranchId);
   const symbol=document.createElement('img');symbol.src='/shared/finance/kb-branch-symbol.png';symbol.alt='';marker.append(symbol);
@@ -34,7 +34,8 @@ function drawNearbyBranches(){
  }
 }
 document.addEventListener('bridge:nearby-branches',event=>{nearbyBranches=event.detail.branches||[];selectedBranchId=event.detail.selectedId||'';drawNearbyBranches();});
-document.addEventListener('bridge:walking-route',event=>{routeLayer?.clearLayers();const points=event.detail?.points;if(!view||!routeLayer||!Array.isArray(points)||points.length<2)return;const path=points.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng));routeLayer.add(new kakao.maps.Polyline({path,strokeWeight:5,strokeColor:'#2068d9',strokeOpacity:.9,zIndex:11}));const bounds=new kakao.maps.LatLngBounds();path.forEach(point=>bounds.extend(point));view.map.fitBounds(bounds,{maxZoom:14});centerSelectionBesideSidebar();});
+document.addEventListener('bridge:consultation-step',event=>{const wasVisible=showConsultationBranches;showConsultationBranches=event.detail?.step===3;if(wasVisible===showConsultationBranches)return;drawNearbyBranches();if(!showConsultationBranches)routeLayer?.clearLayers();else if(lastWalkingRoute)document.dispatchEvent(new CustomEvent('bridge:walking-route',{detail:lastWalkingRoute}));});
+document.addEventListener('bridge:walking-route',event=>{lastWalkingRoute=event.detail||null;routeLayer?.clearLayers();const points=event.detail?.points;if(!showConsultationBranches||!view||!routeLayer||!Array.isArray(points)||points.length<2)return;const path=points.map(([lng,lat])=>new kakao.maps.LatLng(lat,lng));routeLayer.add(new kakao.maps.Polyline({path,strokeWeight:5,strokeColor:'#2068d9',strokeOpacity:.9,zIndex:11}));const bounds=new kakao.maps.LatLngBounds();path.forEach(point=>bounds.extend(point));view.map.fitBounds(bounds,{maxZoom:14});centerSelectionBesideSidebar();});
 const regionByKey=new Map(),featureByKey=new Map();
 const draft=()=>drafts[state.role];
 const setStatus=text=>{$('region-status').textContent=text;};
