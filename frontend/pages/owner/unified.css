@@ -213,8 +213,8 @@
 .owner-unified .owner-overview-notes{margin:-4px 2px 16px;color:#65748b;font-size:12px;line-height:1.5}
 .owner-unified .owner-overview-notes p{margin:3px 0}
 .owner-unified .owner-tab .owner-overview-notes{margin:0 2px 16px}
-.owner-consult-actions{display:flex;gap:12px;padding:20px 4px 10px;border-top:1px solid #e1e6ee;flex-wrap:wrap}
-.owner-consult-actions a{flex:1 1 210px;min-height:52px;display:grid;place-items:center;text-decoration:none;border:1px solid #e6c66e;border-radius:10px;color:#263248;background:#fff8e5;font-weight:700}
+.owner-unified .region-card .owner-consult-actions{flex:none;display:flex;gap:12px;padding:12px 20px 16px;border-top:1px solid #e1e6ee;background:#fff;border-radius:0 0 17px 17px}
+.owner-consult-actions a{flex:1 1 0;min-width:0;min-height:52px;display:grid;place-items:center;text-align:center;text-decoration:none;border:1px solid #e6c66e;border-radius:10px;color:#263248;background:#fff8e5;font-weight:700}
 .owner-consult-actions a:first-child:not([hidden]){background:#ffbc00;border-color:#ffbc00;color:#141923}
 .owner-consult-actions a[hidden]{display:none}
 .owner-consult-actions a:hover{background:#fff0bd}

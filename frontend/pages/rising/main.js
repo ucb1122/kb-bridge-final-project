@@ -299,7 +299,8 @@ async function showSummary(row,rank,clicked=false){
   }
   selectedCode=row.code;$('region-card').hidden=false;
   updateBoundaryStyles();
-  $('region-type').textContent=ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
+  const preparingOwner=ownerMode&&document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
+  $('region-type').textContent=preparingOwner?'창업 의사결정 보고서':ownerMode?'경영 진단 보고서':kind==='dong'?'뜨는 동네':'뜨는 상권';
   $('region-title').textContent=`${row.district} ${row.name}`;
   $('region-rank').textContent=ownerMode?`${row.district} · ${kind==='dong'?'행정동 전체':'공식 상권'} · ${$('owner-industry').selectedOptions[0].textContent} · ${$('quarter').selectedOptions[0].textContent}`:`${labels[metric]}${rank==null?'':` 순위 ${rank}위`} · ${format(row.value)}${appliedFilters.criterion==='highest'?'':` · ${appliedFilters.period==='year'?'전년':appliedFilters.comparison==='same'?'전년 동분기':'전분기'} 대비 ${rankingComparison(row)}`}`;
   const current=++summaryId,key=`${$('quarter').value}:${kind}:${row.code}:${ownerMode?appliedFilters.industry:'all'}`;
@@ -314,9 +315,8 @@ async function showSummary(row,rank,clicked=false){
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
   if(ownerMode){
-    const founder=document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
     const consult=$('owner-consult-link');
-    consult.hidden=!founder;
+    consult.hidden=!preparingOwner;
     consult.href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,industry:appliedFilters.industry});
   }
   try{
@@ -407,7 +407,10 @@ function setupOwnerControls(){
   salesBasis.onchange=()=>{if(!['sales','salesPerStore'].includes(metric))return;const button=document.querySelector('.owner-unified .metric button:nth-child(2)');button.dataset.metric=salesBasis.value==='average'?'salesPerStore':'sales';button.click()};
   document.querySelectorAll('[data-owner-mode]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
-    if(ownerMode&&$('owner-consult-link'))$('owner-consult-link').hidden=button.dataset.ownerMode!=='preparing';
+    if(ownerMode){
+      $('region-type').textContent=button.dataset.ownerMode==='preparing'?'창업 의사결정 보고서':'경영 진단 보고서';
+      $('owner-consult-link').hidden=button.dataset.ownerMode!=='preparing';
+    }
   });
   document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-find]').forEach(item=>item.classList.toggle('selected',item===button));
