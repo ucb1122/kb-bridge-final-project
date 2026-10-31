@@ -313,6 +313,12 @@ async function showSummary(row,rank,clicked=false){
   }
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
+  if(ownerMode){
+    const founder=document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
+    const consult=$('owner-consult-link');
+    consult.hidden=!founder;
+    consult.href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,industry:appliedFilters.industry});
+  }
   try{
     let summary=cached;
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
@@ -401,6 +407,7 @@ function setupOwnerControls(){
   salesBasis.onchange=()=>{if(!['sales','salesPerStore'].includes(metric))return;const button=document.querySelector('.owner-unified .metric button:nth-child(2)');button.dataset.metric=salesBasis.value==='average'?'salesPerStore':'sales';button.click()};
   document.querySelectorAll('[data-owner-mode]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
+    if(ownerMode&&$('owner-consult-link'))$('owner-consult-link').hidden=button.dataset.ownerMode!=='preparing';
   });
   document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
     document.querySelectorAll('[data-find]').forEach(item=>item.classList.toggle('selected',item===button));
