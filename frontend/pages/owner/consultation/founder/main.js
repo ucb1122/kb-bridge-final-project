@@ -1,10 +1,11 @@
 import {fundingSummary,nearestBranches,founderSupport} from './model.js';
+import {loadKakaoMaps} from '../../../../shared/kakao-bootstrap.js';
 
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const kind=params.get('kind'),code=params.get('code'),quarter=params.get('quarter'),industry=params.get('industry')||'all';
 const origin={lat:null,lng:null};
-let report,branches=[],support=[],branchMeta,financeMeta,chosenBranch=null,purpose='startup',category='all',step=1,map,branchLayer;
+let report,branches=[],support=[],branchMeta,financeMeta,chosenBranch=null,purpose='startup',category='all',step=1,map,branchMarker;
 const money=n=>n===null?'미입력':`${n.toLocaleString('ko-KR',{maximumFractionDigits:2})}만원`;
 const add=(parent,tag,value,className)=>{const el=document.createElement(tag);el.textContent=value;if(className)el.className=className;parent.append(el);return el};
 
@@ -36,12 +37,12 @@ function renderBranches(){
     input.onchange=()=>{chosenBranch=bank;showBranch(bank)};
   }
 }
-function showBranch(bank){if(!map||!window.L)return;branchLayer.clearLayers();const label=document.createElement('span');label.textContent=`KB국민은행 ${bank.name}`;L.marker([bank.lat,bank.lng]).bindPopup(label).addTo(branchLayer);map.fitBounds([[origin.lat,origin.lng],[bank.lat,bank.lng]],{padding:[40,40],maxZoom:15})}
-function setupMap(){if(!window.L)return;map=L.map('consult-map',{scrollWheelZoom:false}).setView([origin.lat,origin.lng],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);const label=document.createElement('span');label.textContent=`${report.district} ${report.name}`;L.circleMarker([origin.lat,origin.lng],{radius:9,color:'#a67200',fillColor:'#ffbc00',fillOpacity:1}).bindPopup(label).addTo(map);branchLayer=L.layerGroup().addTo(map)}
+function showBranch(bank){if(!map||!window.kakao?.maps)return;if(branchMarker)branchMarker.setMap(null);const maps=kakao.maps;const point=new maps.LatLng(bank.lat,bank.lng);branchMarker=new maps.Marker({map,position:point,title:`KB국민은행 ${bank.name}`});const bounds=new maps.LatLngBounds();bounds.extend(new maps.LatLng(origin.lat,origin.lng));bounds.extend(point);map.setBounds(bounds,40,40,40,40)}
+async function setupMap(){try{const maps=await loadKakaoMaps();const center=new maps.LatLng(origin.lat,origin.lng);map=new maps.Map($('consult-map'),{center,level:4});new maps.Marker({map,position:center,title:`${report.district} ${report.name}`});if(chosenBranch)showBranch(chosenBranch)}catch(error){$('consult-map').classList.add('map-error');$('consult-map').textContent=`카카오 지도를 표시하지 못했습니다. ${error.message}`}}
 function reviewRow(dl,label,value){const row=add(dl,'div','', 'review-row');add(row,'dt',label,'review-row-label');add(row,'dd',value)}
 function renderReview(){
   const box=$('review-content');box.replaceChildren();const dl=add(box,'dl','');dl.className='review-list';
-  reviewRow(dl,'선택한 상권',`${report.district} ${report.name} · ${report.quarter}`);
+  reviewRow(dl,'선택한 상권',`${report.district} ${report.name} · ${quarter.slice(0,4)}년 ${quarter.slice(4)}분기`);
   reviewRow(dl,'업종', $('industry').textContent);
   reviewRow(dl,'필요한 도움',document.querySelector(`[data-purpose="${purpose}"]`).textContent);
   const inputs=[...document.querySelectorAll('[data-amount]')];const names=['임차보증금','인테리어·시설비','초도물품비','초기 운영비','준비한 자기자금'];
