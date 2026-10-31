@@ -1,17 +1,38 @@
-import {fundingSummary,nearestBranches,founderSupport} from './model.js';
+import {parseAmount,fundingSummary,nearestBranches,founderSupport} from './model.js';
 import {loadKakaoMaps} from '../../../../shared/kakao-bootstrap.js';
+import {buildFounderReviewPDF} from './review-pdf.js';
 
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const kind=params.get('kind'),code=params.get('code'),quarter=params.get('quarter'),industry=params.get('industry')||'all';
 const origin={lat:null,lng:null};
-let report,branches=[],support=[],branchMeta,financeMeta,chosenBranch=null,purpose='startup',category='all',step=1,map,branchMarker;
+let report,branches=[],support=[],branchMeta,financeMeta,chosenBranch=null,purpose='startup',category='all',step=1,maxStepReached=1,map,branchMarkers=[],routePolyline,routeRequest=0,walkingRoute=null;
+const routeCache=new Map();
+let reviewPdfUrl='',reviewGeneration=0;
 const money=n=>n===null?'미입력':`${n.toLocaleString('ko-KR',{maximumFractionDigits:2})}만원`;
 const add=(parent,tag,value,className)=>{const el=document.createElement(tag);el.textContent=value;if(className)el.className=className;parent.append(el);return el};
+const amountInputs=[...document.querySelectorAll('[data-amount]')];
+function validateAmountInput(input){
+  const invalid=Number.isNaN(parseAmount(input.value.trim()));
+  input.setAttribute('aria-invalid',String(invalid));
+  input.closest('label').querySelector('.amount-field-error').hidden=!invalid;
+  return !invalid;
+}
+function showAmountNotice(){
+  const dialog=$('amount-notice');
+  if(!dialog.open)dialog.showModal();
+  $('amount-notice-confirm').focus();
+}
+function validateAmounts(){
+  const invalid=amountInputs.filter(input=>!validateAmountInput(input));
+  if(!invalid.length)return true;
+  showAmountNotice();
+  return false;
+}
 
 async function getJson(url){const response=await fetch(url);if(!response.ok)throw Error(`자료를 불러오지 못했습니다 (${response.status}).`);return response.json()}
 function showError(message){$('app').hidden=true;$('load-error').hidden=false;$('load-error').querySelector('p').textContent=message}
-function setStep(next){step=next;document.querySelectorAll('[data-page]').forEach(el=>el.hidden=Number(el.dataset.page)!==next);document.querySelectorAll('[data-step]').forEach(el=>{const n=Number(el.dataset.step);el.classList.toggle('active',n===Math.min(next,3));el.classList.toggle('done',n<next);el.querySelector('b').textContent=n<next?'✓':String(n)});window.scrollTo({top:0,behavior:'smooth'})}
+function setStep(next){step=next;maxStepReached=Math.max(maxStepReached,next);document.querySelectorAll('[data-page]').forEach(el=>el.hidden=Number(el.dataset.page)!==next);document.querySelectorAll('[data-step]').forEach(el=>{const n=Number(el.dataset.step);el.classList.toggle('active',n===Math.min(next,3));el.classList.toggle('done',n<next);el.querySelector('b').textContent=n<next?'✓':String(n);const button=el.querySelector('button');button.disabled=n>maxStepReached;button.setAttribute('aria-current',n===Math.min(next,3)?'step':'false')});window.scrollTo({top:0,behavior:'smooth'})}
 function renderSupport(){
   const list=$('support-list');list.replaceChildren();
   const preparing=founderSupport(support);
@@ -21,7 +42,7 @@ function renderSupport(){
   for(const item of available){
     const card=add(list,'article','', 'support-item');const stage=item.businessTypes.includes('preparing')?'창업 전 상담 안내':'사업자등록 후 조건 확인';add(card,'small',`${stage} · ${item.categories.join(' · ')}`,'tag');add(card,'h3',item.name);add(card,'p',item.summary);
     const checks=add(card,'details','');add(checks,'summary','추가로 확인할 조건');const ul=add(checks,'ul','');for(const check of item.checks||[])add(ul,'li',check);
-    const link=add(card,'a','공식 안내에서 현재 조건 확인 ↗');link.href=item.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';
+    const link=add(card,'a','공식 안내에서 현재 조건 확인');link.href=item.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';
     add(card,'p',`자료 확인일 ${item.verifiedAt||financeMeta.verifiedAt} · 신청 가능 여부는 별도 확인`,'source');
   }
 }
@@ -31,26 +52,130 @@ function updateFunding(){
 }
 function renderBranches(){
   const list=$('branch-list');list.replaceChildren();
+  $('reset-branch').disabled=!chosenBranch;
   for(const bank of branches){
-    const label=add(list,'label','', 'branch-option');const input=document.createElement('input');input.type='radio';input.name='branch';input.value=bank.id;input.checked=bank.id===chosenBranch?.id;label.append(input);
-    add(label,'strong',`KB국민은행 ${bank.name} · 직선 약 ${bank.distanceKm.toFixed(2)}km`);add(label,'small',bank.address);add(label,'small',`${bank.phone||'전화번호 확인 필요'} · ${bank.hours||'운영시간 확인 필요'}`);
-    input.onchange=()=>{chosenBranch=bank;showBranch(bank)};
+    const card=add(list,'div','', 'branch-card');
+    const label=add(card,'label','', 'branch-option');const input=document.createElement('input');input.type='radio';input.name='branch';input.value=bank.id;input.checked=bank.id===chosenBranch?.id;label.append(input);
+    add(label,'strong',`KB국민은행 ${bank.name}`);
+    add(label,'small',bank.address);add(label,'small',`${bank.phone||'전화번호 확인 필요'} · ${bank.hours||'운영시간 확인 필요'}`);
+    const status=add(card,'p','','branch-route-status');status.setAttribute('role','status');status.hidden=true;
+    if(walkingRoute?.branchId===bank.id){status.hidden=false;status.classList.add('route-ready');status.textContent=`약 ${(walkingRoute.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(walkingRoute.durationSeconds/60))}분`}
+    input.onchange=()=>showWalkingRoute(bank);
   }
 }
-function showBranch(bank){if(!map||!window.kakao?.maps)return;if(branchMarker)branchMarker.setMap(null);const maps=kakao.maps;const point=new maps.LatLng(bank.lat,bank.lng);branchMarker=new maps.Marker({map,position:point,title:`KB국민은행 ${bank.name}`});const bounds=new maps.LatLngBounds();bounds.extend(new maps.LatLng(origin.lat,origin.lng));bounds.extend(point);map.setBounds(bounds,40,40,40,40)}
-async function setupMap(){try{const maps=await loadKakaoMaps();const center=new maps.LatLng(origin.lat,origin.lng);map=new maps.Map($('consult-map'),{center,level:4});new maps.Marker({map,position:center,title:`${report.district} ${report.name}`});if(chosenBranch)showBranch(chosenBranch)}catch(error){$('consult-map').classList.add('map-error');$('consult-map').textContent=`카카오 지도를 표시하지 못했습니다. ${error.message}`}}
+async function fetchWalkingRoute(bank){
+  if(routeCache.has(bank.id))return routeCache.get(bank.id);
+  const url='/api/owner/walking-route?'+new URLSearchParams({kind,code,quarter,industry,branchId:bank.id});
+  const pending=(async()=>{const response=await fetch(url);const result=await response.json();if(!response.ok)throw Error(result.error||'도보 경로를 불러오지 못했습니다.');return result})();
+  routeCache.set(bank.id,pending);
+  try{const result=await pending;routeCache.set(bank.id,result);return result}catch(error){routeCache.delete(bank.id);throw error}
+}
+async function orderBranchesByWalkingTime(){
+  const candidates=[...branches];
+  await Promise.allSettled(candidates.map(fetchWalkingRoute));
+  branches.sort((a,b)=>{
+    const first=routeCache.get(a.id)?.durationSeconds,second=routeCache.get(b.id)?.durationSeconds;
+    if(Number.isFinite(first)&&Number.isFinite(second))return first-second;
+    if(Number.isFinite(first))return -1;if(Number.isFinite(second))return 1;
+    return a.distanceKm-b.distanceKm;
+  });
+  renderBranches();
+}
+function clearWalkingRoute(){
+  routeRequest++;
+  walkingRoute=null;
+  if(routePolyline){routePolyline.setMap(null);routePolyline=null}
+  $('map-route-summary')?.remove();
+}
+async function showWalkingRoute(bank){
+  chosenBranch=bank;clearWalkingRoute();showBranch(bank);renderBranches();
+  const card=[...document.querySelectorAll('.branch-card')].find(item=>item.querySelector('input')?.value===bank.id);
+  const status=card.querySelector('.branch-route-status');
+  const request=routeRequest;
+  status.hidden=false;status.classList.remove('route-ready');status.textContent='카카오 도보 경로를 불러오는 중입니다.';
+  try{
+    if(!map)throw Error('지도를 불러오지 못해 경로를 표시할 수 없습니다.');
+    const result=await fetchWalkingRoute(bank);
+    if(request!==routeRequest)return;
+    walkingRoute={branchId:bank.id,...result};
+    const maps=kakao.maps;
+    const path=result.points.map(([lng,lat])=>new maps.LatLng(lat,lng));
+    routePolyline=new maps.Polyline({map,path,strokeWeight:6,strokeColor:'#1164c8',strokeOpacity:.9,strokeStyle:'solid'});
+    const bounds=new maps.LatLngBounds();path.forEach(point=>bounds.extend(point));branches.forEach(item=>bounds.extend(new maps.LatLng(item.lat,item.lng)));map.setBounds(bounds,48,48,48,48);
+    status.textContent=`약 ${(result.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(result.durationSeconds/60))}분`;
+    status.classList.add('route-ready');
+    const summary=add($('consult-map'),'div',status.textContent,'map-route-summary');summary.id='map-route-summary';summary.setAttribute('role','status');
+  }catch(error){if(request===routeRequest)status.textContent=error.message}
+}
+function showBranch(bank){
+  if(!map||!window.kakao?.maps)return;
+  for(const marker of branchMarkers)marker.setMap(null);branchMarkers=[];
+  const maps=kakao.maps;
+  showBranchMarkers();
+  const bounds=new maps.LatLngBounds();bounds.extend(new maps.LatLng(origin.lat,origin.lng));branches.forEach(item=>bounds.extend(new maps.LatLng(item.lat,item.lng)));map.setBounds(bounds,40,40,40,40);
+}
+function showBranchMarkers(){
+  if(!map||!window.kakao?.maps)return;
+  for(const marker of branchMarkers)marker.setMap(null);branchMarkers=[];
+  for(const bank of branches){
+    const badge=document.createElement('button');badge.type='button';badge.className='branch-map-pin'+(bank.id===chosenBranch?.id?' selected':'');badge.title=`KB국민은행 ${bank.name}`;badge.setAttribute('aria-label',`KB국민은행 ${bank.name} 선택`);
+    const symbol=document.createElement('img');symbol.src='/shared/finance/kb-branch-symbol.png';symbol.alt='';badge.append(symbol);badge.addEventListener('click',()=>showWalkingRoute(bank));
+    branchMarkers.push(new kakao.maps.CustomOverlay({map,position:new kakao.maps.LatLng(bank.lat,bank.lng),content:badge,yAnchor:1,zIndex:10}));
+  }
+}
+async function setupMap(){
+  try{
+    const maps=await loadKakaoMaps();
+    const center=new maps.LatLng(origin.lat,origin.lng);
+    map=new maps.Map($('consult-map'),{center,level:4});
+    new maps.Marker({map,position:center,title:`현재 위치: ${report.district} ${report.name}`,zIndex:1000});
+    showBranchMarkers();if(chosenBranch)showBranch(chosenBranch);else{const bounds=new maps.LatLngBounds();bounds.extend(center);branches.forEach(item=>bounds.extend(new maps.LatLng(item.lat,item.lng)));map.setBounds(bounds,40,40,40,40)}
+  }catch(error){$('consult-map').classList.add('map-error');$('consult-map').textContent=`카카오 지도를 표시하지 못했습니다. ${error.message}`}
+}
 function reviewRow(dl,label,value){const row=add(dl,'div','', 'review-row');add(row,'dt',label,'review-row-label');add(row,'dd',value)}
+function reviewSection(parent,title){const section=add(parent,'section','','review-section');add(section,'h3',title);const dl=add(section,'dl','','review-list');return dl}
 function renderReview(){
-  const box=$('review-content');box.replaceChildren();const dl=add(box,'dl','');dl.className='review-list';
-  reviewRow(dl,'선택한 상권',`${report.district} ${report.name} · ${quarter.slice(0,4)}년 ${quarter.slice(4)}분기`);
-  reviewRow(dl,'업종', $('industry').textContent);
-  reviewRow(dl,'필요한 도움',document.querySelector(`[data-purpose="${purpose}"]`).textContent);
+  const box=$('review-content');box.replaceChildren();const paper=add(box,'article','','review-paper');
+  add(paper,'p','KB 상권브릿지 · 영업점 상담 준비서','review-kicker');
+  add(paper,'h3','상담 전에 확인할 내용','review-paper-title');
+  const place=reviewSection(paper,'01 · 선택한 상권');
+  reviewRow(place,'지역',`${report.district} ${report.name}`);
+  reviewRow(place,'기준 분기',`${quarter.slice(0,4)}년 ${quarter.slice(4)}분기`);
+  reviewRow(place,'업종',$('industry').textContent);
+  reviewRow(place,'필요한 도움',document.querySelector(`[data-purpose="${purpose}"]`).textContent);
+  const costs=reviewSection(paper,'02 · 예상 창업 자금');
   const inputs=[...document.querySelectorAll('[data-amount]')];const names=['임차보증금','인테리어·시설비','초도물품비','초기 운영비','준비한 자기자금'];
-  inputs.forEach((input,i)=>reviewRow(dl,names[i],input.value.trim()?`${input.value.trim()}만원`:'미입력'));
-  const result=updateFunding();reviewRow(dl,'합계 비용',money(result.total));reviewRow(dl,'추가로 준비할 금액',money(result.needed));
-  reviewRow(dl,'상담할 영업점',chosenBranch?`KB국민은행 ${chosenBranch.name}\n${chosenBranch.address}\n${chosenBranch.phone||''}`:'선택하지 않음');
-  reviewRow(dl,'상담에서 물어볼 내용',$('memo').value.trim()||'미입력');
-  reviewRow(dl,'자료 출처',`서울시 상권분석서비스 공개자료 · KB국민은행 공식 지점검색 (${branchMeta.retrievedAt.slice(0,10)})`);
+  inputs.forEach((input,i)=>reviewRow(costs,names[i],input.value.trim()?money(Number(input.value.trim())):'미입력'));
+  const result=updateFunding();const totals=add(paper,'div','','review-totals');
+  const total=add(totals,'div','');add(total,'span','합계 비용');add(total,'strong',money(result.total));
+  const needed=add(totals,'div','');add(needed,'span','추가로 준비할 금액');add(needed,'strong',money(result.needed));
+  const consult=reviewSection(paper,'03 · 영업점과 상담 메모');
+  const routeText=walkingRoute?.branchId===chosenBranch?.id?`약 ${(walkingRoute.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(walkingRoute.durationSeconds/60))}분`:'도보 경로 확인 전';
+  reviewRow(consult,'상담할 영업점',chosenBranch?`KB국민은행 ${chosenBranch.name}\n${routeText}\n${chosenBranch.address}\n${chosenBranch.phone||''}`:'선택하지 않음');
+  reviewRow(consult,'상담에서 물어볼 내용',$('memo').value.trim()||'미입력');
+  const source=reviewSection(paper,'04 · 자료 출처');
+  reviewRow(source,'공개 자료',`서울시 상권분석서비스 공개자료 · KB국민은행 공식 지점검색 (${branchMeta.retrievedAt.slice(0,10)})`);
+}
+async function showReviewPDF(){
+  renderReview();
+  const box=$('review-content');
+  const sections=[...box.querySelectorAll('.review-section')].map(section=>({title:section.querySelector('h3').textContent,rows:[...section.querySelectorAll('.review-row')].map(row=>[row.querySelector('dt').textContent,row.querySelector('dd').textContent])}));
+  const totals=[...box.querySelectorAll('.review-totals>div')].map(item=>[item.querySelector('span').textContent,item.querySelector('strong').textContent]);
+  sections.splice(2,0,{title:'03 · 자금 합계',rows:totals});
+  sections[3].title='04 · 영업점과 상담 메모';sections[4].title='05 · 자료 출처';
+  box.replaceChildren();const status=add(box,'p','PDF 상담서를 만드는 중입니다.','review-loading');status.setAttribute('role','status');$('print').disabled=true;
+  setStep(4);const current=++reviewGeneration;
+  try{
+    const note=document.querySelector('[data-page="4"]>.source').textContent;
+    const result=await buildFounderReviewPDF(sections,note);
+    if(current!==reviewGeneration)return;
+    if(reviewPdfUrl)URL.revokeObjectURL(reviewPdfUrl);
+    reviewPdfUrl=URL.createObjectURL(new Blob([result.bytes],{type:'application/pdf'}));
+    box.replaceChildren();const preview=add(box,'div','','review-pdf-preview');
+    result.preview.forEach((src,index)=>{const image=document.createElement('img');image.src=src;image.alt=`KB 영업점 상담 준비서 ${index+1}쪽 미리보기`;preview.append(image)});
+    $('print').textContent='PDF 내려받기';
+    $('print').disabled=false;
+  }catch(error){if(current===reviewGeneration)status.textContent=`PDF를 만들지 못했습니다. ${error.message}`}
 }
 async function init(){
   if(!['area','dong'].includes(kind)||!/^\d{5,12}$/.test(code||'')||!/^20\d{2}[1-4]$/.test(quarter||'')){showError('지역 또는 기준분기가 올바르지 않습니다.');return}
@@ -61,19 +186,35 @@ async function init(){
     origin.lat=region.lat;origin.lng=region.lng;
     report=region;branchMeta=banks;financeMeta=catalog;support=catalog.items;
     branches=nearestBranches(banks.branches,origin,3);if(!branches.length)throw Error('좌표가 확인된 공식 KB 영업점이 없습니다.');
-    $('place').textContent=`${report.district} ${report.name}`;$('scope').textContent=kind==='dong'?'행정동 전체':'공식 상권';
+    $('place').textContent=`${report.district} ${report.name}`;
     const group=report.scopeIndustry||industry;$('industry').textContent=({all:'전체 업종',CS1:'외식업',CS2:'서비스업',CS3:'소매업'})[group]||group;
     $('quarter').textContent=`${quarter.slice(0,4)}년 ${quarter.slice(4)}분기`;
     $('branch-source').textContent=`출처: KB국민은행 공식 지점검색 · ${banks.retrievedAt.slice(0,10)} 조회`;
-    $('app').hidden=false;setupMap();renderSupport();renderBranches();
+    $('app').hidden=false;setupMap();renderSupport();renderBranches();orderBranchesByWalkingTime();
   }catch(error){showError(error.message)}
 }
 
 document.querySelectorAll('[data-purpose]').forEach(button=>button.onclick=()=>{purpose=button.dataset.purpose;document.querySelectorAll('[data-purpose]').forEach(el=>el.classList.toggle('selected',el===button))});
 document.querySelectorAll('[data-category]').forEach(button=>button.onclick=()=>{category=button.dataset.category;document.querySelectorAll('[data-category]').forEach(el=>el.classList.toggle('selected',el===button));renderSupport()});
 document.querySelectorAll('[data-back]').forEach(button=>button.onclick=()=>setStep(Number(button.dataset.back)));
-$('next-1').onclick=()=>{try{updateFunding();$('amount-error').textContent='';setStep(2)}catch(error){$('amount-error').textContent=error.message}};
+$('amount-notice-confirm').onclick=()=>$('amount-notice').close();
+$('amount-notice').onclick=event=>{if(event.target===event.currentTarget)event.currentTarget.close()};
+$('fill-sample').onclick=()=>{
+  const sampleAmounts=['3000','2000','300','600','3000'];
+  amountInputs.forEach((input,index)=>{input.value=sampleAmounts[index];validateAmountInput(input)});
+  $('sample-note').hidden=false;
+};
+$('clear-amounts').onclick=()=>{amountInputs.forEach(input=>{input.value='';validateAmountInput(input)});$('sample-note').hidden=true};
+amountInputs.forEach(input=>{
+  input.addEventListener('input',()=>{validateAmountInput(input);$('sample-note').hidden=true});
+  input.addEventListener('blur',()=>{if(!validateAmountInput(input))showAmountNotice()});
+});
+$('reset-branch').onclick=()=>{chosenBranch=null;clearWalkingRoute();showBranchMarkers();renderBranches();if(map){const bounds=new kakao.maps.LatLngBounds();bounds.extend(new kakao.maps.LatLng(origin.lat,origin.lng));branches.forEach(item=>bounds.extend(new kakao.maps.LatLng(item.lat,item.lng)));map.setBounds(bounds,40,40,40,40)}};
+document.querySelectorAll('[data-step] button').forEach(button=>button.onclick=()=>{const target=Number(button.closest('[data-step]').dataset.step);if(target<=maxStepReached)setStep(target)});
+$('next-1').onclick=()=>{if(!validateAmounts())return;updateFunding();setStep(2)};
 $('next-2').onclick=()=>setStep(3);
-$('review').onclick=()=>{renderReview();setStep(4)};
-$('print').onclick=()=>window.print();
+$('review').onclick=showReviewPDF;
+$('print').onclick=()=>{if(!reviewPdfUrl)return;const link=document.createElement('a');link.href=reviewPdfUrl;link.download='KB_영업점_상담_준비서.pdf';link.click()};
+window.addEventListener('pagehide',()=>{if(reviewPdfUrl)URL.revokeObjectURL(reviewPdfUrl)});
 init();
+setStep(1);

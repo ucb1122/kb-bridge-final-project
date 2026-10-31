@@ -1,4 +1,6 @@
 /* 내 상권 분석은 기존 상권 자료를 지역·분기·지표 중심으로 탐색한다. */
+html:has(body.owner-unified){scrollbar-gutter:auto}
+body.owner-unified{overflow:hidden}
 .owner-unified .sidebar{left:24px;top:24px;bottom:24px;width:clamp(460px,28vw,540px);border:1px solid #e8e7e3;border-radius:17px;background:#fff;box-shadow:0 6px 24px #0002}
 .owner-unified .sidebar-toggle{left:calc(24px + clamp(460px,28vw,540px))}
 .owner-unified .sidebar-toggle.collapsed{left:0}
