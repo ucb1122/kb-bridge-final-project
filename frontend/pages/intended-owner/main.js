@@ -1,4 +1,4 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-map-center';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-bank-pulse';
 import {createMap,createLayerGroup,drawFeature} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';
@@ -27,7 +27,8 @@ function drawNearbyBranches(){
  if(!view||!branchLayer)return;branchLayer.clearLayers();
  if(!state.selected)return;
  for(const branch of nearbyBranches){
-  const marker=document.createElement('button');marker.type='button';marker.className='recovery-bank-marker';marker.textContent='KB';marker.title=`KB국민은행 ${branch.name} · 직선 약 ${branch.distance.toFixed(1)}km`;marker.setAttribute('aria-label',`${marker.title} 선택`);marker.dataset.selected=String(branch.id===selectedBranchId);
+  const marker=document.createElement('button');marker.type='button';marker.className='recovery-bank-marker';marker.title=`KB국민은행 ${branch.name} · 직선 약 ${branch.distance.toFixed(1)}km`;marker.setAttribute('aria-label',`${marker.title} 선택`);marker.dataset.selected=String(branch.id===selectedBranchId);
+  const symbol=document.createElement('img');symbol.src='/shared/finance/kb-branch-symbol.png';symbol.alt='';marker.append(symbol);
   marker.addEventListener('click',()=>document.dispatchEvent(new CustomEvent('bridge:map-branch-selected',{detail:{id:branch.id}})));
   branchLayer.add(new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(+branch.lat,+branch.lng),content:marker,yAnchor:1,zIndex:12}));
  }
