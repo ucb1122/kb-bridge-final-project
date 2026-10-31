@@ -3,6 +3,14 @@ import {renderReportTab} from './full-report.js?v=26';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
+function syncOwnerConsultation(){
+  if(!ownerMode)return;
+  const preparing=document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
+  const actions=document.querySelector('.owner-consult-actions');
+  actions.hidden=!preparing||!selectedCode;
+  if(actions.hidden)return;
+  $('owner-consult-link').href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:selectedCode,quarter:$('quarter').value,industry:appliedFilters.industry});
+}
 const labels={stores:'점포수',sales:'매출',salesPerStore:'점포당 월평균 매출',footfall:'유동인구',residents:'상주인구'};
 let kind='dong',metric=ownerMode?'salesPerStore':'stores',map,requestId=0,summaryId=0,rows=[],selectedCode,pinned=false;
 const appliedFilters={criterion:'growth',comparison:'previous',industry:'all',period:'quarter',quarter:'',year:''};
@@ -314,11 +322,7 @@ async function showSummary(row,rank,clicked=false){
   }
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
-  if(ownerMode){
-    const consult=$('owner-consult-link');
-    consult.hidden=!preparingOwner;
-    consult.href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,industry:appliedFilters.industry});
-  }
+  syncOwnerConsultation();
   try{
     let summary=cached;
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
@@ -409,7 +413,7 @@ function setupOwnerControls(){
     document.querySelectorAll('[data-owner-mode]').forEach(item=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button))});
     if(ownerMode){
       $('region-type').textContent=button.dataset.ownerMode==='preparing'?'창업 의사결정 보고서':'경영 진단 보고서';
-      $('owner-consult-link').hidden=button.dataset.ownerMode!=='preparing';
+      syncOwnerConsultation();
     }
   });
   document.querySelectorAll('[data-find]').forEach(button=>button.onclick=()=>{
