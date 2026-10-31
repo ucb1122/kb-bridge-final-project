@@ -6,6 +6,7 @@
     "dev": "node --watch backend/server.js",
     "start": "node backend/server.js",
     "test": "node --test tests/*.test.js",
+    "setup:test-user": "node backend/scripts/create-test-user.js",
     "import:csv": "node backend/scripts/import-csv.js",
     "fetch:dong": "python backend/scripts/fetch-dong.py",
     "import:raw": "python backend/scripts/import-raw.py",
