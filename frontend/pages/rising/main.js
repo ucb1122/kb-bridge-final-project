@@ -3,11 +3,12 @@ import {renderReportTab} from './full-report.js?v=26';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
+let consultationReady=false;
 function syncOwnerConsultation(){
   if(!ownerMode)return;
   const preparing=document.querySelector('[data-owner-mode="preparing"]')?.classList.contains('selected');
   const actions=document.querySelector('.owner-consult-actions');
-  actions.hidden=!preparing||!selectedCode;
+  actions.hidden=!preparing||!selectedCode||!consultationReady;
   if(actions.hidden)return;
   $('owner-consult-link').href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:selectedCode,quarter:$('quarter').value,industry:appliedFilters.industry});
 }
@@ -300,6 +301,8 @@ function centerRegionInVisibleMap(){
 async function showSummary(row,rank,clicked=false){
   if(pinned&&!clicked)return;
   clearTimeout(analysisTimer);
+  consultationReady=false;
+  syncOwnerConsultation();
   if(selectedCode!==row.code){
     $('report-body').scrollTop=0;
     document.querySelectorAll('[data-report-tab]').forEach(tab=>{const selected=tab.dataset.reportTab==='overview';tab.classList.toggle('selected',selected);if(ownerMode)tab.setAttribute('aria-selected',String(selected))});
@@ -322,12 +325,13 @@ async function showSummary(row,rank,clicked=false){
   }
   for(const tab of ['industry','sales','population','hinterland'])$('report-'+tab).textContent='';
   $('region-pdf').href='/pages/rising/report.html?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value,rank:String(rank??''),metric,industry:ownerMode?appliedFilters.industry:'all'});
-  syncOwnerConsultation();
   try{
     let summary=cached;
     if(!summary){summary=await api('/api/rising/report?'+new URLSearchParams({quarter:$('quarter').value,kind,code:row.code,industry:ownerMode?appliedFilters.industry:'all'}));summaryCache.set(key,summary)}
     if(current!==summaryId||!summary)return;
     for(const tab of ['overview','industry','sales','population','hinterland'])renderReportTab($('report-'+tab),summary,tab,tab==='overview'&&!ownerMode?(analysisCache.get(key)||{mode:'loading'}):undefined);
+    consultationReady=true;
+    syncOwnerConsultation();
     if(!ownerMode&&!analysisCache.has(key)){
       const loadAnalysis=async()=>{
         try{
