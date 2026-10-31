@@ -64,3 +64,6 @@
 
 .request-identity .request-account-fill{border:0;background:transparent;padding:2px 4px;color:#697b96;font-size:13px;font-weight:400;cursor:pointer}
 .request-identity .request-account-fill:hover{text-decoration:underline;color:#805e00;background:transparent}
+.request-schedule-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 10px;color:#253950}
+.request-schedule-head button{border:0;background:transparent;padding:4px;color:#697b96;font-size:13px;cursor:pointer}
+.request-schedule-head button:hover{text-decoration:underline;color:#805e00}
