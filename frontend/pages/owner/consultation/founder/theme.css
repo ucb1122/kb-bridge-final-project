@@ -1,0 +1,27 @@
+.kb-header .header-actions{display:flex;align-items:center;gap:14px;margin-left:auto;white-space:nowrap}
+.kb-header .header-chatbot{display:flex;align-items:center;gap:5px;border:0;background:none;color:#152238;font-size:13px;font-weight:700}
+.kb-header .header-chatbot img{width:38px;height:38px;object-fit:contain}
+.kb-header .header-end{text-decoration:none;color:#475467;font-size:13px}
+main#app{display:grid;grid-template-columns:minmax(330px,42%) minmax(0,58%);max-width:1600px;min-height:calc(100dvh - 58px);height:auto;margin:auto}
+.context-pane,.flow-pane{min-width:0}
+.context-pane{padding:34px clamp(20px,3vw,50px)}
+.flow-pane{padding:32px clamp(20px,3vw,48px)}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.steps li{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:46px;border-radius:10px;color:#8b96a6;font-weight:700;white-space:nowrap}
+.steps li:first-letter,.steps li.active:first-letter,.steps li.done:first-letter{background:transparent;border-radius:0;padding:0}
+.steps li.active{background:#fff5d8;color:#152238}
+.steps li.done{color:#785900}
+.steps li span{overflow:hidden;text-overflow:ellipsis}
+.steps li b{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:#e9edf2;color:#8b96a6;font-size:14px}
+.steps li.active b{background:#ffbc00;color:#543e00}
+.steps li.done b{background:#ffe5a0;color:#785900}
+.step-card{margin-top:18px}
+.choice button.selected,.filters button.selected{border-color:#ffbc00;background:#ffbc00;color:#152238}
+.choice button:hover,.filters button:hover,.actions button:hover,.branch-option:hover{border-color:#e2ab00;background:#fff2c6}
+.choice button.selected:hover,.filters button.selected:hover,.actions .primary:hover{background:#e8aa00}
+.review-row{grid-template-columns:minmax(130px,26%) minmax(0,1fr)}
+#consult-map.map-error{display:grid;place-items:center;padding:20px;text-align:center;color:#667085}
+@media(max-width:1050px){.kb-header .header-actions{display:none}main#app{grid-template-columns:minmax(300px,40%) minmax(0,60%)}}
+@media(max-width:760px){main#app{grid-template-columns:1fr}.context-pane{border-right:0;border-bottom:1px solid #e7e3da}.flow-pane{padding-top:20px}.kb-header nav{overflow-x:auto}}
+@media(max-width:480px){.steps li{font-size:12px}.step-card{padding:18px}.actions{flex-direction:column}.review-row{grid-template-columns:110px minmax(0,1fr)}}
+@media print{.kb-header{display:none!important}main#app{display:block}.flow-pane{padding:0}}
