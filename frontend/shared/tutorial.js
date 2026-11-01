@@ -23,7 +23,7 @@ if(helpControl){
     ]},
   };
   const layer=document.createElement('div');layer.className='kb-tutorial-layer';layer.hidden=true;
-  layer.innerHTML=`<div class="kb-tutorial-shade"></div><div class="kb-tutorial-focus"></div><section class="kb-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="kb-tutorial-title"><button class="kb-tutorial-close" type="button" aria-label="튜토리얼 닫기">×</button><img class="kb-tutorial-kobi" src="/shared/characters/kobi-wow.png" alt="반갑게 인사하는 코비"><p class="kb-tutorial-eyebrow">코비와 함께 알아보기</p><h2 id="kb-tutorial-title"></h2><p class="kb-tutorial-description"></p><div class="kb-tutorial-choices"></div><div class="kb-tutorial-footer"></div></section>`;
+  layer.innerHTML=`<div class="kb-tutorial-shade"></div><div class="kb-tutorial-focus"></div><section class="kb-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="kb-tutorial-title"><button class="kb-tutorial-close" type="button" aria-label="튜토리얼 닫기">×</button><div class="kb-tutorial-hero"><img class="kb-tutorial-kobi" src="/shared/characters/kobi-wow.png" alt="반갑게 인사하는 코비"><div class="kb-tutorial-speech"><p class="kb-tutorial-eyebrow">코비와 함께 알아보기</p><h2 id="kb-tutorial-title"></h2><p class="kb-tutorial-description"></p></div></div><div class="kb-tutorial-choices"></div><div class="kb-tutorial-footer"></div></section>`;
   document.body.append(layer);
   const focus=layer.querySelector('.kb-tutorial-focus'),card=layer.querySelector('.kb-tutorial-card');
   const title=layer.querySelector('#kb-tutorial-title'),description=layer.querySelector('.kb-tutorial-description');
@@ -63,7 +63,7 @@ if(helpControl){
     active=key;index=0;showStep();
   };
   const showIntro=()=>{
-    active=null;layer.hidden=false;layer.classList.remove('is-step');layer.classList.add('is-intro');document.body.classList.add('kb-tutorial-open');
+    active=null;layer.hidden=false;layer.classList.remove('is-step','is-intro');void layer.offsetWidth;layer.classList.add('is-intro');document.body.classList.add('kb-tutorial-open');
     card.removeAttribute('style');focus.removeAttribute('style');
     title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
     choices.replaceChildren();footer.replaceChildren();
@@ -76,8 +76,7 @@ if(helpControl){
       const action=document.createElement('span');action.className='kb-tutorial-action';action.textContent='살펴보기';
       item.append(img,question,name,summary,action);choices.append(item);
     }
-    footer.append(button('닫기',close));
-    card.querySelector('.kb-tutorial-choices button')?.focus();
+    layer.querySelector('.kb-tutorial-close')?.focus();
   };
   helpControl.addEventListener('click',event=>{event.preventDefault();event.stopImmediatePropagation();lastFocus=helpControl;showIntro()},true);
   layer.querySelector('.kb-tutorial-close').addEventListener('click',close);
