@@ -2,19 +2,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const instructions=fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'instructions.md'),'utf8');
-export async function* ollamaReply({question,hits,history=[],signal}){
-  const base=new URL(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434');
-  const model=process.env.OLLAMA_MODEL||'gemma4:e2b';
+export function buildMessages({question,hits,history=[]}){
   const context=hits.map((hit,index)=>`[${index+1}] ${hit.title} (${hit.source})\n${hit.text}`).join('\n\n');
-  const messages=[
+  return [
     {role:'system',content:instructions},
     {role:'system',content:`참고 문서 발췌:\n${context}`},
     ...history.slice(-4).map(item=>({role:item.role,content:item.content})),
     {role:'user',content:question},
   ];
+}
+export async function* ollamaReply({question,hits,history=[],signal}){
+  const base=new URL(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434');
+  const model=process.env.OLLAMA_MODEL||'gemma4:e2b';
+  const messages=buildMessages({question,hits,history});
   const response=await fetch(new URL('/api/chat',base),{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model,messages,stream:true,think:false,options:{temperature:0.2,num_ctx:8192,num_predict:420}}),signal,
+    body:JSON.stringify({model,messages,stream:true,think:false,options:{temperature:0.2,num_ctx:16384,num_predict:420}}),signal,
   });
   if(!response.ok)throw Error(`Ollama 응답 ${response.status}`);
   const decoder=new TextDecoder();let buffer='';
