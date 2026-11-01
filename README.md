@@ -74,7 +74,7 @@ KB 상권브릿지는 서울시 공개 자료를 지역 코드·분기·지표 �
 
 ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) ![Python](https://img.shields.io/badge/Python%20%7C%20Data-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Ollama](https://img.shields.io/badge/Ollama%20%7C%20Optional-000000?style=for-the-badge&logo=ollama&logoColor=white)
 
-Node.js 내장 HTTP 서버와 SQLite 모듈이 API·정적 파일을 제공합니다. 프런트엔드는 별도 빌드 도구 없이 HTML·CSS·JavaScript로 실행됩니다. Python은 서울시 원본 자료를 준비·적재할 때 사용하며 **웹 앱 런타임에는 사용하지 않습니다.** Ollama는 선택형 종합의견과 사이트 안내 챗봇에 사용합니다. 챗봇은 허용된 Markdown 안내 문서를 검색해 답하며 Ollama가 꺼져 있으면 관련 문서 내용을 표시합니다.
+Node.js 내장 HTTP 서버와 SQLite 모듈이 API·정적 파일을 제공합니다. 프런트엔드는 별도 빌드 도구 없이 HTML·CSS·JavaScript로 실행됩니다. Python은 서울시 원본 자료를 준비·적재할 때 사용하며 **웹 앱 런타임에는 사용하지 않습니다.** Ollama는 선택형 종합의견과 사이트 안내 챗봇에 사용합니다. 챗봇은 지역 질문에 SQLite 원본 통계를 조회하고, 사용법 질문에는 허용된 Markdown 안내 문서를 검색합니다. Ollama가 꺼져 있어도 지역 수치와 짧은 문서 안내는 표시합니다.
 
 ```text
 kb-bridge-final-project/

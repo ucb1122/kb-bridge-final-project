@@ -1,5 +1,6 @@
 import {loadKnowledge,findKnowledge,documentFallback} from './knowledge.js';
 import {ollamaReply} from './ollama.js';
+import {regionReply} from './region.js';
 
 let cache;
 const send=(res,item)=>res.write(`${JSON.stringify(item)}\n`);
@@ -8,13 +9,18 @@ export async function handleChat(req,res,root){
   if(req.method!=='POST'){res.writeHead(405,{'Allow':'POST'});return res.end()}
   if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host){res.writeHead(403);return res.end()}
   let raw='';
-  for await(const piece of req){raw+=piece;if(raw.length>9000){res.writeHead(413);return res.end()}}
+  for await(const piece of req){raw+=piece;if(raw.length>50000){res.writeHead(413);return res.end()}}
   let input;
   try{input=JSON.parse(raw)}catch{res.writeHead(400);return res.end()}
   const question=String(input.question||'').trim();
   const history=Array.isArray(input.history)?input.history.slice(-4):[];
-  if(!question||question.length>800||history.some(item=>!['user','assistant'].includes(item?.role)||typeof item.content!=='string'||item.content.length>800)){
-    res.writeHead(400,{'Content-Type':'application/json; charset=utf-8'});return res.end(JSON.stringify({error:'질문을 800자 이내로 입력해 주세요.'}));
+  if(!question||question.length>8000||history.some(item=>!['user','assistant'].includes(item?.role)||typeof item.content!=='string'||item.content.length>8000)){
+    res.writeHead(400,{'Content-Type':'application/json; charset=utf-8'});return res.end(JSON.stringify({error:'질문을 8,000자 이내로 입력해 주세요.'}));
+  }
+  const region=regionReply(question);
+  if(region){
+    res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+    send(res,{type:'sources',sources:[region.source]});send(res,{type:'delta',text:region.text});send(res,{type:'done',mode:'data'});return res.end();
   }
   cache??=await loadKnowledge(root);
   const hits=findKnowledge(cache,question);

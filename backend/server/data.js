@@ -28,6 +28,17 @@ export function getFilters(){
   const db=open();if(!db)return {quarters:[],districts:[],available:false};
   try{return {quarters:db.prepare("SELECT quarter FROM observations GROUP BY quarter HAVING COUNT(DISTINCT kind || ':' || metric)=8 ORDER BY quarter DESC").all().map(x=>x.quarter),districts:db.prepare("SELECT DISTINCT district FROM observations WHERE district != '' ORDER BY district").all().map(x=>x.district),available:true}}finally{db.close()}
 }
+export function findChatRegion(question){
+  const db=open();if(!db)return null;
+  try{
+    const rows=db.prepare(`SELECT kind,region_code AS code,region_name AS name,district,MAX(quarter) AS quarter
+      FROM observations WHERE metric='stores' GROUP BY kind,region_code,region_name,district`).all();
+    const normalized=String(question).replace(/\s+/g,'');
+    const matches=rows.filter(row=>normalized.includes(row.name.replace(/\s+/g,'')));
+    matches.sort((a,b)=>b.name.length-a.name.length||(a.kind==='dong'?-1:1));
+    return matches[0]||null;
+  }finally{db.close()}
+}
 function customRankings(db,{kind,metric,quarter,district,criterion,comparison,industry,period,year}){
   const reference=period==='year'?String(Number(year)-1):comparison==='same'?`${Number(quarter.slice(0,4))-1}${quarter.slice(4)}`:
     String(Number(quarter.slice(4))===1?Number(quarter.slice(0,4))-1:Number(quarter.slice(0,4)))+String(Number(quarter.slice(4))===1?4:Number(quarter.slice(4))-1);

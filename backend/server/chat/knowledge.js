@@ -39,7 +39,8 @@ export function findKnowledge(chunks,question,limit=3){
 }
 
 export function documentFallback(hits){
-  if(!hits.length)return '안내 문서에서 해당 질문의 근거를 찾지 못했어요. 메뉴에서 관련 화면을 확인하거나 질문을 조금 더 구체적으로 적어 주세요.';
-  const best=hits[0].text.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'$1 ($2)');
-  return `${best}\n\n현재 AI 모델에 연결되지 않아 안내 문서의 관련 내용을 보여드렸어요.`;
+  if(!hits.length)return '이 질문에 맞는 자료를 찾지 못했어요. 지역이나 기능 이름을 조금 더 구체적으로 적어 주세요.';
+  const best=hits[0].text.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'$1').replace(/\s+/g,' ');
+  const short=best.slice(0,260).replace(/\s+\S*$/,'').trim();
+  return `• ${short}${best.length>260?'…':''}\n• 자세한 내용은 해당 화면에서 확인해 주세요.`;
 }
