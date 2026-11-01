@@ -1,6 +1,6 @@
 const helpControl=document.querySelector('body > header.kb-header .header-end');
 if(helpControl){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=2';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=3';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
       {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
@@ -31,7 +31,7 @@ if(helpControl){
       {target:'#rp-steps',title:'네 단계를 차례로 진행해요',text:'내 고민을 고르고 부담을 계산한 다음, 필요한 도움을 살펴보세요. 마지막에 영업점과 상담서 내용을 정리할 수 있어요.'},
       {target:'#rp-content',title:'내 금액과 상황을 입력해요',text:'예시값은 화면을 이해하는 데 쓰고 실제 계획에는 내 숫자를 입력하세요. 상담서 확인 전에 입력 내용을 다시 살펴볼 수 있어요.'},
     ]},
-    finance:{name:'금융상품 안내',image:'/shared/characters/kobi-face.png',question:'어떤 금융상품이 있는지 궁금하다면?',summary:'고객 유형과 용도에 맞는 상품을 찾아 조건을 비교하세요.',url:'/pages/guide/',steps:[
+    finance:{name:'금융상품 안내',image:'/shared/characters/kobi-tutorial-finance.png',question:'어떤 금융상품이 있는지 궁금하다면?',summary:'고객 유형과 용도에 맞는 상품을 찾아 조건을 비교하세요.',url:'/pages/guide/',steps:[
       {target:'.audience-switch',title:'고객 유형을 고르세요',text:'임차인 또는 임대인을 선택하면 관련 상품을 모아 보여줘요.'},
       {target:'#search-form',title:'필요한 상품을 검색하세요',text:'상품명이나 자금 용도를 입력해 목록을 좁힐 수 있어요.'},
       {target:'.category-tabs',title:'종류별로 살펴보세요',text:'사업자대출, 기업대출, 부동산담보, 정책자금 중 필요한 종류를 고르세요.'},
@@ -41,7 +41,7 @@ if(helpControl){
     ]},
   };
   const layer=document.createElement('div');layer.className='kb-tutorial-layer';layer.hidden=true;
-  layer.innerHTML=`<div class="kb-tutorial-shade"></div><div class="kb-tutorial-focus"></div><section class="kb-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="kb-tutorial-title"><button class="kb-tutorial-close" type="button" aria-label="튜토리얼 닫기">×</button><div class="kb-tutorial-hero"><img class="kb-tutorial-kobi" src="/shared/characters/kobi-wow.png" alt="반갑게 인사하는 코비"><div class="kb-tutorial-speech"><p class="kb-tutorial-eyebrow">코비와 함께 알아보기</p><h2 id="kb-tutorial-title"></h2><p class="kb-tutorial-description"></p></div></div><div class="kb-tutorial-choices"></div><div class="kb-tutorial-footer"></div></section>`;
+  layer.innerHTML=`<div class="kb-tutorial-shade"></div><div class="kb-tutorial-focus"></div><section class="kb-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="kb-tutorial-title"><button class="kb-tutorial-close" type="button" aria-label="튜토리얼 닫기">×</button><div class="kb-tutorial-hero"><img class="kb-tutorial-kobi" src="/shared/characters/kobi-tutorial-welcome.png" alt="반갑게 인사하는 코비"><div class="kb-tutorial-speech"><p class="kb-tutorial-eyebrow">코비와 함께 알아보기</p><h2 id="kb-tutorial-title"></h2><p class="kb-tutorial-description"></p></div></div><div class="kb-tutorial-choices"></div><div class="kb-tutorial-footer"></div></section>`;
   document.body.append(layer);
   const focus=layer.querySelector('.kb-tutorial-focus'),card=layer.querySelector('.kb-tutorial-card');
   const title=layer.querySelector('#kb-tutorial-title'),description=layer.querySelector('.kb-tutorial-description');
@@ -100,7 +100,7 @@ if(helpControl){
   const showIntro=()=>{
     active=null;layer.hidden=false;layer.classList.remove('is-step','is-intro');void layer.offsetWidth;layer.classList.add('is-intro');document.body.classList.add('kb-tutorial-open');
     card.removeAttribute('style');focus.removeAttribute('style');
-    kobi.src='/shared/characters/kobi-wow.png';title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
+    kobi.src='/shared/characters/kobi-tutorial-welcome.png';title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
     choices.replaceChildren();footer.replaceChildren();
     for(const [key,topic] of Object.entries(topics)){
       const item=button('',()=>start(key));item.classList.add('kb-tutorial-topic');
