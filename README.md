@@ -74,7 +74,7 @@ KB 상권브릿지는 서울시 공개 자료를 지역 코드·분기·지표 �
 
 ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) ![Python](https://img.shields.io/badge/Python%20%7C%20Data-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Ollama](https://img.shields.io/badge/Ollama%20%7C%20Optional-000000?style=for-the-badge&logo=ollama&logoColor=white)
 
-Node.js 내장 HTTP 서버와 SQLite 모듈이 API·정적 파일을 제공합니다. 프런트엔드는 별도 빌드 도구 없이 HTML·CSS·JavaScript로 실행됩니다. Python은 서울시 원본 자료를 준비·적재할 때 사용하며 **웹 앱 런타임에는 사용하지 않습니다.** Ollama는 선택형 종합의견 생성에 사용하고 실패 시 수치 기반 요약을 표시합니다.
+Node.js 내장 HTTP 서버와 SQLite 모듈이 API·정적 파일을 제공합니다. 프런트엔드는 별도 빌드 도구 없이 HTML·CSS·JavaScript로 실행됩니다. Python은 서울시 원본 자료를 준비·적재할 때 사용하며 **웹 앱 런타임에는 사용하지 않습니다.** Ollama는 선택형 종합의견과 사이트 안내 챗봇에 사용합니다. 챗봇은 허용된 Markdown 안내 문서를 검색해 답하며 Ollama가 꺼져 있으면 관련 문서 내용을 표시합니다.
 
 ```text
 kb-bridge-final-project/
@@ -111,7 +111,7 @@ npm run fetch:dong
 npm run import:raw
 ```
 
-`.env`의 `DB_PATH` 기본값은 `data/commerce.sqlite`입니다. 모든 지도 화면에 `KAKAO_MAP_JAVASCRIPT_KEY`가 필요합니다. 카카오 개발자 설정에 로컬 도메인 `http://localhost:5173`을 등록합니다. `SEOUL_API_KEY`는 공개 자료 수집에, `OLLAMA_BASE_URL`·`OLLAMA_MODEL`은 선택형 AI 의견에 사용합니다. 실제 키는 `.env`에만 보관합니다.
+`.env`의 `DB_PATH` 기본값은 `data/commerce.sqlite`입니다. 모든 지도 화면에 `KAKAO_MAP_JAVASCRIPT_KEY`가 필요합니다. 카카오 개발자 설정에 로컬 도메인 `http://localhost:5173`을 등록합니다. `SEOUL_API_KEY`는 공개 자료 수집에, `OLLAMA_BASE_URL`·`OLLAMA_MODEL`은 선택형 AI 의견과 문서 안내 챗봇에 사용합니다. 로컬 Ollama에서 `.env`의 모델을 준비해야 AI 답변이 나오며 모델이 없으면 챗봇은 관련 문서 내용을 표시합니다. 실제 키는 `.env`에만 보관합니다.
 
 ## 7. 검증
 

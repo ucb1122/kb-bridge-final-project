@@ -18,6 +18,7 @@
 | `backend/static-files.js` | 기존 화면 URL과 `frontend/`의 파일 경로 연결 |
 | `backend/server/data.js` | SQLite 읽기, 조건별 순위·보고서, 공식 확인값 우선 범위 |
 | `backend/server/analysis.js` | 선택형 Ollama 종합의견과 자료 기반 대체 문장 |
+| `backend/server/chat/` | Markdown 안내 문서 검색, Ollama 스트리밍 응답, 문서 기반 대체 답변 |
 | `backend/server/config.js` | 저장소 루트 `.env` 로딩 |
 | `frontend/pages/rising/` | 행정동·상권 순위, 지도, 5개 보고서와 PDF 저장 화면 |
 | `frontend/pages/owner/` | 현재 사업자 위치·업종·영역 분석과 상담 준비 시연 |
@@ -25,6 +26,7 @@
 | `frontend/pages/guide/` | 금융상품 공시 안내 화면 |
 | `frontend/pages/warning/`, `frontend/pages/products/` | 개발 중인 위험 진단·금융 연결 안내 |
 | `frontend/shared/` | 카카오 SDK 로더, 공용 화면 코드·폰트·브랜드·금융 자료 |
+| `frontend/shared/chatbot.js` | 공용 헤더의 챗봇 대화창과 타이핑 표시 |
 | `backend/scripts/` | 원본 다운로드·SQLite 적재·공식 순위 동기화 |
 | `data/` | 공개 원본, 생성 DB·경계, 출처가 구분된 공식 확인값 |
 
@@ -36,5 +38,6 @@
 
 - 카카오 JavaScript 지도 키는 브라우저 지도를 위해 제공되는 키입니다. 허용 도메인을 설정하고 서버 전용 비밀키와 구분합니다.
 - Ollama가 없거나 지연되면 검증된 수치에 근거한 대체 의견을 사용합니다.
+- 챗봇은 허용된 `docs/`와 README Markdown만 검색해 답변 근거로 전달합니다. 로컬 Ollama가 없으면 관련 문서 내용을 표시합니다. 요청 대화는 서버 DB에 저장하지 않으며, 향후 다른 모델은 `backend/server/chat/ollama.js` 제공부를 교체해 연동합니다.
 - 상담 흐름은 시연입니다. 입력한 사업자 정보의 실제 인증, 대출 심사, 상담 예약·접수는 연결되지 않았습니다.
 - 위험 진단 모델과 금융 상품 추천은 개발 중입니다. 지역 통계에서 개인 신용도나 승인 가능성을 추론하지 않습니다.
