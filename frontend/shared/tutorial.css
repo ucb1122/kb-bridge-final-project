@@ -112,6 +112,8 @@ body > header.kb-header .header-actions .header-end:hover,body > header.kb-heade
 }
 .kb-tutorial-layer.is-intro .kb-tutorial-hero{gap:32px}
 .kb-tutorial-layer.is-intro .kb-tutorial-speech{margin-left:0}
+.kb-tutorial-layer.is-intro .kb-tutorial-speech{border-width:3px}
+.kb-tutorial-layer.is-intro .kb-tutorial-speech::before{border-left-width:3px;border-bottom-width:3px;border-color:#e8aa00;background:#fffdf8}
 .kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-question{font-size:16px;line-height:1.4}
 .kb-tutorial-layer.is-intro .kb-tutorial-topic strong{font-size:26px}
 .kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-summary{font-size:17px;line-height:1.5}
