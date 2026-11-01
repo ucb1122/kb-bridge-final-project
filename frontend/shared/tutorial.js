@@ -1,6 +1,6 @@
 const helpControl=document.querySelector('body > header.kb-header .header-end');
 if(helpControl){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=6';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=7';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
       {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
@@ -60,9 +60,9 @@ if(helpControl){
     if(!active||layer.hidden)return;
     const node=document.querySelector(topics[active].steps[index].target);
     if(!node)return;
-    const rect=node.getBoundingClientRect(),pad=3;
-    const left=Math.max(pad,rect.left),top=Math.max(pad,rect.top);
-    const right=Math.min(innerWidth-pad,rect.right),bottom=Math.min(innerHeight-pad,rect.bottom);
+    const rect=node.getBoundingClientRect(),pad=12;
+    const left=Math.max(3,rect.left-pad),top=Math.max(3,rect.top-pad);
+    const right=Math.min(innerWidth-3,rect.right+pad),bottom=Math.min(innerHeight-3,rect.bottom+pad);
     if(right<=left||bottom<=top)return;
     focus.style.cssText=`left:${left}px;top:${top}px;width:${right-left}px;height:${bottom-top}px`;
     const cardWidth=card.getBoundingClientRect().width,gap=24;
@@ -89,7 +89,9 @@ if(helpControl){
       index++;showStep();
     },true);
     if(step.target==='#ranking'&&!reportReady())next.disabled=true;
-    footer.append(count,button(index?'이전':'기능 선택',()=>index? (index--,showStep()):showIntro()),next);
+    const actions=document.createElement('div');actions.className='kb-tutorial-footer-actions';
+    actions.append(button('이전',()=>index? (index--,showStep()):showIntro()),next);
+    footer.append(count,actions);
     node.scrollIntoView({block:'center',behavior:'auto'});requestAnimationFrame(()=>requestAnimationFrame(layout));
   };
   const start=(key)=>{
