@@ -53,12 +53,12 @@ body > header.kb-header .header-actions .header-end:hover,body > header.kb-heade
 .kb-tutorial-secondary:hover,.kb-tutorial-secondary:focus-visible{background:#fff7df;border-color:#ffbc00}
 .kb-tutorial-card button:focus-visible{outline:3px solid #8c6b00;outline-offset:2px}
 .kb-tutorial-layer.is-step .kb-tutorial-card{width:min(430px,calc(100vw - 32px));overflow:visible;padding:26px 26px 22px}
-.kb-tutorial-layer.is-step .kb-tutorial-kobi{position:absolute;left:-150px;top:24px;width:145px;height:145px;margin:0;filter:drop-shadow(0 12px 18px rgba(11,25,44,.18))}
-.kb-tutorial-layer.is-step .kb-tutorial-kobi-right .kb-tutorial-kobi{left:auto;right:-150px}
+.kb-tutorial-layer.is-step .kb-tutorial-kobi{position:absolute;left:-195px;top:18px;width:185px;height:185px;margin:0;filter:drop-shadow(0 12px 18px rgba(11,25,44,.18))}
+.kb-tutorial-layer.is-step .kb-tutorial-kobi-right .kb-tutorial-kobi{left:auto;right:-195px}
 .kb-tutorial-layer.is-step .kb-tutorial-kobi-top .kb-tutorial-kobi{left:auto;right:24px;top:-125px;width:120px;height:120px}
 .kb-tutorial-layer.is-step .kb-tutorial-eyebrow{display:none}
 .kb-tutorial-layer.is-step .kb-tutorial-card h2{margin:12px 30px 14px 0}
-.kb-tutorial-layer.is-step .kb-tutorial-description{margin:0;color:#273750;font-size:15px;line-height:1.75}
+.kb-tutorial-layer.is-step .kb-tutorial-description{margin:0;padding:12px 14px;border-left:5px solid #ffbc00;border-radius:0 9px 9px 0;background:#fff8e6;color:#273750;font-size:15px;line-height:1.75;white-space:pre-line}
 .kb-tutorial-layer.is-step .kb-tutorial-footer{padding-top:14px;border-top:1px solid #e7eaf0}
 @keyframes kb-kobi-hello{from{opacity:0;transform:translateY(15px) scale(.75)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes kb-tutorial-speech-enter{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}

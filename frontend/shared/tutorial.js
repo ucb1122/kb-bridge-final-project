@@ -1,6 +1,6 @@
 const helpControl=document.querySelector('body > header.kb-header .header-end');
 if(helpControl){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=7';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=8';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
       {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
@@ -11,7 +11,7 @@ if(helpControl){
       {target:'#ranking',title:'관심 지역을 직접 눌러보세요',text:'순위 목록에서 지역을 클릭해 보세요. 지도에서 그 위치를 확인하고, 오른쪽에 분석 보고서가 열리면 안내가 이어집니다.'},
       {target:'#region-card .report-head',title:'선택한 지역부터 확인해요',text:'오른쪽 보고서 맨 위에는 선택한 지역 이름과 분석 기준이 나옵니다. 다른 지역을 누르면 이 보고서도 함께 바뀝니다.'},
       {target:'#region-card .report-tabs',title:'보고서의 다섯 가지 주제를 골라요',text:'종합의견, 업종분석, 매출분석, 인구분석, 지역 분석 탭을 눌러 보세요. 궁금한 주제만 골라 자세히 읽을 수 있어요.'},
-      {target:'#report-body',title:'숫자의 흐름과 근거를 살펴봐요',text:'그래프는 분기별 변화를, 표는 실제 집계값을 보여줘요. 추정매출은 지역 전체의 값으로 개별 가게의 매출과 다를 수 있습니다.'},
+      {target:'#report-body .report-overview .analysis-box',title:'AI 종합의견과 원본 수치를 비교해요',text:'종합의견은 AI가 점포·매출·인구 자료를 읽고 요약한 내용이에요.\n아래 그래프와 표의 원본 수치를 함께 확인하며 해석해 주세요.'},
     ]},
     owner:{name:'내 상권 분석',image:'/shared/characters/kobi-coding.png',question:'우리 동네 상권이 궁금하다면?',summary:'지역과 업종을 골라 점포·매출·인구 보고서를 확인하세요.',url:'/pages/owner/',steps:[
       {target:'.owner-mode',title:'내 상황을 먼저 선택해요',text:'이미 가게를 운영하는지, 창업을 준비하는지 고르세요. 그 상황에 맞는 지역 분석과 상담 준비 흐름을 안내합니다.'},
@@ -27,7 +27,7 @@ if(helpControl){
     recovery:{name:'우리 가게 회복 플래너',image:'/shared/characters/kobi-warning.png',question:'가게 운영이 걱정된다면?',summary:'상권 위험을 보고 내 부담과 필요한 도움을 정리하세요.',url:'/pages/intended-owner/',steps:[
       {target:'#region-search-form',title:'동네나 상권을 찾아요',text:'관심 있는 동네·상권·역 이름을 검색하세요. 목록이나 지도에서 직접 골라도 됩니다.'},
       {target:'.risk-filter-wrap',title:'보고 싶은 지역을 좁혀요',text:'지역·표시 조건에서 행정동과 개별 상권을 바꾸거나 자치구를 선택할 수 있어요.'},
-      {target:'#region-results',title:'폐업 위험 순위를 읽어요',text:'목록의 예측 폐업률은 상권 단위 참고값이에요. 내 가게가 그 확률로 폐업한다는 뜻은 아니며, 관심 지역을 눌러 다음 단계로 이어가세요.'},
+      {target:'#region-results',title:'폐업 위험 순위를 읽어요',text:'예측 폐업률은 해당 상권에서 폐업할 점포의 비율을 추정한 값이에요.\n내 가게 한 곳이 폐업할 확률을 뜻하지는 않아요. 관심 지역을 눌러 다음 단계로 이어가세요.'},
       {target:'#rp-steps',title:'네 단계를 차례로 진행해요',text:'내 고민을 고르고 부담을 계산한 다음, 필요한 도움을 살펴보세요. 마지막에 영업점과 상담서 내용을 정리할 수 있어요.'},
       {target:'#rp-content',title:'내 금액과 상황을 입력해요',text:'예시값은 화면을 이해하는 데 쓰고 실제 계획에는 내 숫자를 입력하세요. 상담서 확인 전에 입력 내용을 다시 살펴볼 수 있어요.'},
     ]},
@@ -70,9 +70,9 @@ if(helpControl){
     let x=rightSpace>=cardWidth+gap?right+gap:leftSpace>=cardWidth+gap?left-cardWidth-gap:Math.max(16,(innerWidth-cardWidth)/2);
     let y=Math.max(16,Math.min(top,innerHeight-card.offsetHeight-16));
     const roomLeft=x,roomRight=innerWidth-(x+cardWidth);
-    const imageRight=x>=right&&roomRight>=155 || roomLeft<155&&roomRight>=155;
+    const imageRight=x>=right&&roomRight>=195 || roomLeft<195&&roomRight>=195;
     card.classList.toggle('kb-tutorial-kobi-right',imageRight);
-    const imageTop=!imageRight&&roomLeft<155;
+    const imageTop=!imageRight&&roomLeft<195;
     card.classList.toggle('kb-tutorial-kobi-top',imageTop);
     if(imageTop)y=Math.max(130,y);
     card.style.left=`${x}px`;card.style.top=`${y}px`;card.style.transform='none';
@@ -80,7 +80,7 @@ if(helpControl){
   const showStep=()=>{
     const step=topics[active].steps[index],node=document.querySelector(step.target);
     if(!node){close();return}
-    layer.classList.remove('is-intro');layer.classList.add('is-step');kobi.src='/shared/characters/kobi-tutorial-guide.png';title.textContent=step.title;description.textContent=step.text;
+    layer.classList.remove('is-intro');layer.classList.add('is-step');kobi.src='/shared/characters/kobi-tutorial-guide.png';title.textContent=step.title;description.textContent=step.text.replace(/\. (?=[^\s])/g,'.\n');
     choices.replaceChildren();footer.replaceChildren();
     const count=document.createElement('span');count.className='kb-tutorial-count';count.textContent=`${index+1} / ${topics[active].steps.length}`;
     const next=button(index===topics[active].steps.length-1?'완료':step.target==='#ranking'&&!reportReady()?'지역 선택 후 계속':'다음',()=>{
