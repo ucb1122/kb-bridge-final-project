@@ -9,6 +9,7 @@ import {resolvePublicFile} from './static-files.js';
 import {getWalkingRoute} from './server/walking-route.js';
 import {openUserDb,hashPassword,verifyPassword,publicUser,createSession,currentUser,revokeSession,sessionCookie} from './server/auth.js';
 import {randomBytes} from 'node:crypto';
+import {handleChat} from './server/chat/index.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 loadEnv(root);
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.geojson':'application/geo+json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.woff2':'font/woff2','.ttf':'font/ttf','.pdf':'application/pdf'};
@@ -22,6 +23,7 @@ function localDemoRequest(req){return process.env.NODE_ENV!=='production'&&['127
 http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,'http://localhost');
+    if(url.pathname==='/api/chat')return await handleChat(req,res,root);
     if(url.pathname.startsWith('/api/auth/')){
       if(req.method==='POST'&&req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return authResponse(res,403,{error:'허용되지 않은 요청입니다.'});
       const db=openUserDb(root);
