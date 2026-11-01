@@ -5,7 +5,7 @@ import {Readable} from 'node:stream';
 import {EventEmitter} from 'node:events';
 import {loadKnowledge,findKnowledge,documentFallback} from '../backend/server/chat/knowledge.js';
 import {regionReply,regionDetail} from '../backend/server/chat/region.js';
-import {buildMessages} from '../backend/server/chat/ollama.js';
+import {buildMessages,ollamaReply} from '../backend/server/chat/ollama.js';
 import {conversationalReply} from '../backend/server/chat/conversation.js';
 import {handleChat} from '../backend/server/chat/index.js';
 
@@ -24,6 +24,22 @@ test('정확성 지침을 참고 문서와 사용자 질문보다 먼저 전달�
   assert.match(messages[0].content,/지수, 준용, 채영, 정환, 희헌/);
   assert.match(messages[1].content,/참고 수치/);
   assert.equal(messages.at(-1).content,'동화동 점포수는?');
+});
+
+test('자유 질문은 모델을 30분 유지하며 스트리밍 응답을 받는다',async()=>{
+  const originalFetch=globalThis.fetch;
+  let request;
+  globalThis.fetch=async(_url,options)=>{
+    request=JSON.parse(options.body);
+    return new Response('{"message":{"content":"답변"}}\n');
+  };
+  try{
+    const parts=[];
+    for await(const part of ollamaReply({question:'이용 방법?',hits:[]}))parts.push(part);
+    assert.deepEqual(parts,['답변']);
+    assert.equal(request.keep_alive,process.env.OLLAMA_KEEP_ALIVE||'30m');
+    assert.equal(request.stream,true);
+  }finally{globalThis.fetch=originalFetch}
 });
 
 test('허용된 Markdown 문서에서 창업 상담 안내를 찾는다',async()=>{

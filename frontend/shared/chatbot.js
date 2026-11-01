@@ -60,6 +60,7 @@ if(button){
       }
     }
   }
+  const durationText=seconds=>seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;
   try{
     const previous=JSON.parse(sessionStorage.getItem(storageKey)||'[]');
     if(Array.isArray(previous)&&previous.length){
@@ -71,6 +72,9 @@ if(button){
         if(item.role==='bot'&&Array.isArray(item.sources)&&item.sources.length){
           const small=document.createElement('small');small.className='chat-source';small.textContent=`근거: ${item.sources.map(source=>source.title).join(' · ')}`;line.append(small);
         }
+        if(item.role==='bot'&&Number.isFinite(item.durationSeconds)){
+          const small=document.createElement('small');small.className='chat-duration';small.textContent=`답변 시간 ${durationText(item.durationSeconds)}`;line.append(small);
+        }
         saved.push(item);
       }
       for(const item of saved.slice(-4))history.push({role:item.role==='bot'?'assistant':'user',content:item.text});
@@ -80,6 +84,10 @@ if(button){
     if(busy)return;busy=true;input.value='';form.querySelector('button').disabled=true;
     addLine('user',question);saved.push({role:'user',text:question});persist();
     const {line,bubble}=addLine('bot','생각 중…');
+    const started=performance.now();
+    const duration=document.createElement('small');duration.className='chat-duration';line.append(duration);
+    const updateDuration=()=>{duration.textContent=`답변 중 · ${durationText(Math.floor((performance.now()-started)/1000))}`};
+    updateDuration();const durationTimer=setInterval(updateDuration,1000);
     let answer='',pending='',typing=false,sources=[];
     const render=()=>{
       if(!pending){typing=false;return}
@@ -111,9 +119,9 @@ if(button){
       formatAnswer(bubble,answer);
       if(sources.length){const small=document.createElement('small');small.className='chat-source';small.textContent=`근거: ${sources.map(item=>item.title).join(' · ')}`;line.append(small)}
       history.push({role:'user',content:question},{role:'assistant',content:answer});
-      saved.push({role:'bot',text:answer,sources});persist();
-    }catch(error){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message;saved.push({role:'bot',text:bubble.textContent});persist()}
-    finally{busy=false;form.querySelector('button').disabled=false;if(!overlay.hidden)input.focus()}
+      saved.push({role:'bot',text:answer,sources,durationSeconds:Math.floor((performance.now()-started)/1000)});persist();
+    }catch(error){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message;saved.push({role:'bot',text:bubble.textContent,durationSeconds:Math.floor((performance.now()-started)/1000)});persist()}
+    finally{clearInterval(durationTimer);duration.textContent=`답변 시간 ${durationText(Math.floor((performance.now()-started)/1000))}`;busy=false;form.querySelector('button').disabled=false;if(!overlay.hidden)input.focus()}
   }
   form.addEventListener('submit',event=>{event.preventDefault();const question=input.value.trim();if(question)ask(question)});
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();form.requestSubmit()}});

@@ -17,7 +17,7 @@ export async function* ollamaReply({question,hits,history=[],signal}){
   const messages=buildMessages({question,hits,history});
   const response=await fetch(new URL('/api/chat',base),{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model,messages,stream:true,think:false,options:{temperature:0.2,num_ctx:16384,num_predict:700}}),signal,
+    body:JSON.stringify({model,messages,stream:true,think:false,keep_alive:process.env.OLLAMA_KEEP_ALIVE||'30m',options:{temperature:0.2,num_ctx:16384,num_predict:700}}),signal,
   });
   if(!response.ok)throw Error(`Ollama 응답 ${response.status}`);
   const decoder=new TextDecoder();let buffer='';
