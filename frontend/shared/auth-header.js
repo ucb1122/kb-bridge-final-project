@@ -42,3 +42,4 @@ document.addEventListener('DOMContentLoaded',async()=>{
   document.addEventListener('click',e=>{if(!button.parentElement.contains(e.target)){menu.hidden=true;button.setAttribute('aria-expanded','false')}});render();
   if(new URLSearchParams(location.search).get('login')==='1'&&!user)dialog.open();
 });
+import('/shared/chatbot.js');
