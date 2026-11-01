@@ -92,6 +92,24 @@ test('지역 상세 질문은 같은 요약 대신 원본 분기 변화와 업�
   assert.match(detail.facts,/점포 개업 17개, 폐업 12개/);
   assert.match(detail.facts,/일반교습학원 40개/);
   assert.equal(detail.hit.source,'data/commerce.sqlite');
+  assert.match(detail.fallback,/점포:.*직전 분기/);
+  assert.match(detail.fallback,/매출:.*지역 전체의 3개월 합계/);
+  assert.match(detail.fallback,/유동인구:/);
+  assert.match(detail.fallback,/다음 확인:/);
+  assert.ok(detail.fallback.length>450);
+});
+
+test('지역 상세 질문은 Ollama를 기다리지 않고 DB 수치로 바로 답한다',async()=>{
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=()=>{throw Error('Ollama를 호출하면 안 됩니다')};
+  const req=Readable.from([JSON.stringify({question:'강북구 번2동 더 자세하게 설명해줘'})]);
+  req.method='POST';req.headers={host:'localhost:5173'};
+  const res=new EventEmitter();let output='';
+  res.writeHead=()=>{};res.write=part=>{output+=part};res.end=()=>{};
+  try{await handleChat(req,res,root)}finally{globalThis.fetch=originalFetch}
+  const events=output.trim().split('\n').map(line=>JSON.parse(line));
+  assert.match(events.find(event=>event.type==='delta').text,/강북구 번2동/);
+  assert.equal(events.at(-1).mode,'data');
 });
 
 test('후속 질문의 지역은 직전 사용자 질문에서만 이어받는다',()=>{

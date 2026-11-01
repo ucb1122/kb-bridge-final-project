@@ -83,7 +83,8 @@ if(button){
     let answer='',pending='',typing=false,sources=[];
     const render=()=>{
       if(!pending){typing=false;return}
-      answer+=pending.slice(0,6);pending=pending.slice(6);bubble.textContent=answer;
+      const size=Math.min(48,Math.max(12,Math.ceil(pending.length/8)));
+      answer+=pending.slice(0,size);pending=pending.slice(size);bubble.textContent=answer;
       messages.scrollTop=messages.scrollHeight;requestAnimationFrame(render);
     };
     const push=value=>{if(!answer)bubble.textContent='';pending+=value;if(!typing){typing=true;requestAnimationFrame(render)}};

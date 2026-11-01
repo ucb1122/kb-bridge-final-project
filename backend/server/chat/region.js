@@ -51,5 +51,24 @@ export function regionDetail(question,history=[]){
     industries.length?`• 점포가 많은 업종: ${industries.map(row=>`${row.name} ${row.stores}개`).join(', ')}`:null,
     '분기 추정매출은 지역 전체의 추정 총액입니다. 개별 가게의 매출이나 창업 성공 가능성을 뜻하지 않습니다.'].filter(Boolean);
   const facts=lines.join('\n');
-  return {source,facts,fallback:facts,hit:{source:source.source,title:source.title,text:facts}};
+  const byKey=Object.fromEntries(changes.map(row=>[row.key,row]));
+  const trend=row=>{
+    if(!row)return null;
+    if(!row.previous||!row.delta)return `현재 값은 ${row.current}입니다. 비교할 직전 분기 값은 확인되지 않습니다.`;
+    const change=parseFloat(row.delta);
+    if(change===0)return `직전 분기 ${row.previous}와 현재 ${row.current}로, 표시된 변화율은 0.0%입니다.`;
+    return `직전 분기 ${row.previous}에서 ${row.current}${row.key==='sales'?'으로':'로'} ${change<0?'줄었':'늘었'}습니다 (${Math.abs(change).toFixed(1)}%).`;
+  };
+  const detailLines=[
+    `${report.district} ${report.name}의 ${quarterText(report.quarter)} 자료를 점포, 매출, 인구 순서로 살펴보겠습니다. 분석 범위는 ${scope}입니다.`,
+    byKey.stores?`• 점포: ${trend(byKey.stores)} 이는 지역 전체의 점포 수 변화입니다.`:null,
+    byKey.sales?`• 매출: ${trend(byKey.sales)} 분기 추정매출은 지역 전체의 3개월 합계로, 한 가게의 매출이나 월매출이 아닙니다.`:null,
+    Number.isFinite(stores.opened)&&Number.isFinite(stores.closed)
+      ?`• 개업·폐업: 이 분기에 개업 ${count(stores.opened)}개, 폐업 ${count(stores.closed)}개가 집계됐습니다. 두 수치만으로 다음 분기의 점포 수나 창업 성공 가능성을 단정할 수 없습니다.`:null,
+    industries.length?`• 업종 구성: 점포가 많은 업종은 ${industries.map(row=>`${row.name} ${row.stores}개`).join(', ')} 순입니다. 업종별 점포 수는 경쟁 규모를 살펴볼 단서이며, 수익성 자체를 보여 주지는 않습니다.`:null,
+    byKey.footfall?`• 유동인구: ${trend(byKey.footfall)} 공개 자료의 지역 집계값으로, 실제 고객 수와는 다릅니다.`:null,
+    byKey.residents?`• 거주인구: ${trend(byKey.residents)} 상주 인구와 방문 인구는 서로 다른 지표입니다.`:null,
+    '• 다음 확인: 내 상권 분석에서 업종을 고른 뒤 매출과 점포 수의 분기 추이를 함께 보세요. 입지나 창업비용을 판단하려면 실제 임대료와 예상 운영비도 따로 확인해야 합니다.',
+  ].filter(Boolean);
+  return {source,facts,fallback:detailLines.join('\n'),hit:{source:source.source,title:source.title,text:facts}};
 }
