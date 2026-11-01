@@ -1,6 +1,6 @@
 const helpControl=document.querySelector('body > header.kb-header .header-end');
 if(helpControl){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=4';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=5';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
       {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
@@ -108,8 +108,7 @@ if(helpControl){
       const question=document.createElement('span');question.className='kb-tutorial-question';question.textContent=topic.question;
       const name=document.createElement('strong');name.textContent=topic.name;
       const summary=document.createElement('span');summary.className='kb-tutorial-summary';summary.textContent=topic.summary;
-      const action=document.createElement('span');action.className='kb-tutorial-action';action.textContent='살펴보기';
-      item.append(img,question,name,summary,action);choices.append(item);
+      item.append(img,question,name,summary);choices.append(item);
     }
     layer.querySelector('.kb-tutorial-close')?.focus();
   };
