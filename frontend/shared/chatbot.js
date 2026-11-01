@@ -4,12 +4,12 @@ if(button){
   const link=document.createElement('link');link.rel='stylesheet';link.href='/shared/chatbot.css';document.head.append(link);
   const overlay=document.createElement('div');overlay.className='chat-overlay';overlay.hidden=true;
   overlay.innerHTML=`<section class="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-title">
-    <header class="chat-top"><div class="chat-title-wrap"><img src="/shared/characters/kobi-face.png" alt=""><div><h2 id="chat-title">코비에게 물어보세요</h2></div></div><button class="chat-close" type="button" aria-label="챗봇 닫기">×</button></header>
+    <header class="chat-top"><div class="chat-title-wrap"><img src="/shared/characters/kobi-face.png" alt=""><div><h2 id="chat-title">코비에게 물어보세요</h2></div></div><div class="chat-actions"><button class="chat-reset" type="button">대화 초기화</button><button class="chat-close" type="button" aria-label="챗봇 닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div></header>
     <div class="chat-messages" role="log" aria-live="polite"><div class="chat-line bot"><img src="/shared/characters/kobi-face.png" alt=""><div class="chat-bubble">안녕하세요! 상권 분석, 회복 플래너, 상담 준비에 대해 궁금한 점을 물어보세요.</div></div></div>
     <form class="chat-form"><label class="chat-sr" for="chat-question">질문</label><textarea id="chat-question" rows="1" maxlength="800" placeholder="상권브릿지에 대해 질문해 주세요" required></textarea><button type="submit">보내기</button></form></section>`;
   document.body.append(overlay);
   const form=overlay.querySelector('form'),input=overlay.querySelector('textarea'),messages=overlay.querySelector('.chat-messages');
-  let before,controller,busy=false;const history=[];
+  let before,controller,busy=false,sessionVersion=0;const history=[];
   const dialog=overlay.querySelector('.chat-dialog'),header=overlay.querySelector('.chat-top');
   const storageKey='kb-bridge-chat-session';
   const saved=[];
@@ -18,6 +18,15 @@ if(button){
   function close(){overlay.hidden=true;before?.focus()}
   button.addEventListener('click',open);
   overlay.querySelector('.chat-close').addEventListener('click',close);
+  overlay.querySelector('.chat-reset').addEventListener('click',()=>{
+    sessionVersion++;
+    controller?.abort();
+    history.length=0;saved.length=0;
+    try{sessionStorage.removeItem(storageKey)}catch{}
+    messages.replaceChildren();
+    addLine('bot','안녕하세요! 상권 분석, 회복 플래너, 상담 준비에 대해 궁금한 점을 물어보세요.');
+    input.value='';input.focus();
+  });
   document.addEventListener('keydown',event=>{if(!overlay.hidden&&event.key==='Escape')close()});
   let drag;
   header.addEventListener('pointerdown',event=>{
@@ -46,17 +55,31 @@ if(button){
     const bubble=document.createElement('div');bubble.className='chat-bubble';bubble.textContent=text;line.append(bubble);messages.append(line);messages.scrollTop=messages.scrollHeight;
     return {line,bubble};
   }
-  function formatAnswer(bubble,value){
+  function formatAnswer(bubble,value,streaming=false){
     bubble.replaceChildren();let list;
+    const appendInline=(element,text)=>{
+      text=text.replace(/\\\*/g,'*');
+      if(streaming&&text.endsWith('*')&&!text.endsWith('**'))text=text.slice(0,-1);
+      let start=0;
+      while(start<text.length){
+        const opening=text.indexOf('**',start);
+        if(opening<0){element.append(document.createTextNode(text.slice(start)));break}
+        element.append(document.createTextNode(text.slice(start,opening)));
+        const closing=text.indexOf('**',opening+2);
+        const strong=document.createElement('strong');strong.textContent=text.slice(opening+2,closing<0?undefined:closing);element.append(strong);
+        if(closing<0)break;
+        start=closing+2;
+      }
+    };
     for(const raw of value.split('\n')){
       const line=raw.trim();if(!line)continue;
       const bullet=line.match(/^(?:[•*-]|\d+\.)\s+(.+)/);
       if(bullet){
         list??=document.createElement('ul');
-        const item=document.createElement('li');item.textContent=bullet[1];list.append(item);
+        const item=document.createElement('li');appendInline(item,bullet[1]);list.append(item);
         if(!list.isConnected)bubble.append(list);
       }else{
-        list=null;const paragraph=document.createElement('p');paragraph.textContent=line;bubble.append(paragraph);
+        list=null;const paragraph=document.createElement('p');appendInline(paragraph,line);bubble.append(paragraph);
       }
     }
   }
@@ -65,6 +88,7 @@ if(button){
     const labels=[...new Set(sources.map(item=>{
       if(item.source==='data/commerce.sqlite')return `서울시 공개 상권 통계 · ${item.title.replace(/ (?:원본 통계|지역 상세 통계)$/,'')}`;
       if(item.source==='frontend/shared/finance/products.json')return `${item.title}${item.verifiedAt?` (${item.verifiedAt} 확인)`:''}`;
+      if(item.source==='frontend/pages/intended-owner/assets/closure-risk.json')return `우리 가게 회복 플래너 · ${item.title}`;
       if(item.source==='docs/CHATBOT-KNOWLEDGE.md')return '상권브릿지 이용 안내';
       if(item.source==='docs/OWNER-FOUNDER-CONSULTATION.md')return 'KB 영업점 금융상담 안내';
       if(item.source==='docs/DATA-MODEL.md')return '상권 데이터 설명';
@@ -93,7 +117,7 @@ if(button){
     }
   }catch{}
   async function ask(question){
-    if(busy)return;busy=true;input.value='';form.querySelector('button').disabled=true;
+    if(busy)return;const version=sessionVersion;busy=true;input.value='';form.querySelector('button').disabled=true;
     addLine('user',question);saved.push({role:'user',text:question});persist();
     const {line,bubble}=addLine('bot','생각 중…');
     const started=performance.now();
@@ -102,9 +126,10 @@ if(button){
     updateDuration();const durationTimer=setInterval(updateDuration,1000);
     let answer='',pending='',typing=false,sources=[];
     const render=()=>{
+      if(version!==sessionVersion){pending='';typing=false;return}
       if(!pending){typing=false;return}
       const size=Math.min(48,Math.max(12,Math.ceil(pending.length/8)));
-      answer+=pending.slice(0,size);pending=pending.slice(size);bubble.textContent=answer;
+      answer+=pending.slice(0,size);pending=pending.slice(size);formatAnswer(bubble,answer,true);
       messages.scrollTop=messages.scrollHeight;requestAnimationFrame(render);
     };
     const push=value=>{if(!answer)bubble.textContent='';pending+=value;if(!typing){typing=true;requestAnimationFrame(render)}};
@@ -121,19 +146,20 @@ if(button){
           if(item.type==='delta')push(item.text);
           if(item.type==='replace'){
             pending='';typing=false;answer=item.text;
-            bubble.textContent=answer;
+            formatAnswer(bubble,answer,true);
           }
           if(item.type==='sources')sources=item.sources;
         }
       }
       while(typing)await new Promise(resolve=>setTimeout(resolve,20));
+      if(version!==sessionVersion)return;
       if(!answer)throw Error('답변이 비어 있어요. 다시 질문해 주세요.');
       formatAnswer(bubble,answer);
       if(sources.length){const small=document.createElement('small');small.className='chat-source';small.textContent=sourceText(sources);line.append(small)}
       history.push({role:'user',content:question},{role:'assistant',content:answer});
       saved.push({role:'bot',text:answer,sources,durationSeconds:Math.floor((performance.now()-started)/1000)});persist();
-    }catch(error){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message;saved.push({role:'bot',text:bubble.textContent,durationSeconds:Math.floor((performance.now()-started)/1000)});persist()}
-    finally{clearInterval(durationTimer);duration.textContent=`답변 시간 ${durationText(Math.floor((performance.now()-started)/1000))}`;busy=false;form.querySelector('button').disabled=false;if(!overlay.hidden)input.focus()}
+    }catch(error){if(version===sessionVersion){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message;saved.push({role:'bot',text:bubble.textContent,durationSeconds:Math.floor((performance.now()-started)/1000)});persist()}}
+    finally{clearInterval(durationTimer);if(version===sessionVersion)duration.textContent=`답변 시간 ${durationText(Math.floor((performance.now()-started)/1000))}`;busy=false;form.querySelector('button').disabled=false;if(!overlay.hidden)input.focus()}
   }
   form.addEventListener('submit',event=>{event.preventDefault();const question=input.value.trim();if(question)ask(question)});
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();form.requestSubmit()}});

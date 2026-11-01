@@ -48,6 +48,21 @@ export function findKnowledge(chunks,question,limit=3){
   }).slice(0,limit);
 }
 
+export function quickGuideReply(chunks,question){
+  const query=String(question).replace(/\s+/g,'').replace(/[?!。.]/g,'');
+  const guides=[
+    {pattern:/^(?:뜨는상권|뜨는동네)(?:기능)?(?:이|은)?(?:뭐야|무엇인가요|어떤기능이야|어떻게써|어떻게사용해)$/,title:'뜨는 상권은 무엇인가요?'},
+    {pattern:/^내상권분석(?:기능)?(?:이|은)?(?:뭐야|무엇인가요|어떤기능이야|어떻게써|어떻게사용해)$/,title:'내 상권 분석은 어떻게 사용하나요?'},
+    {pattern:/^우리가게회복플래너(?:기능)?(?:이|은)?(?:뭐야|무엇인가요|어떤기능이야|어떻게써|어떻게사용해)$/,title:'우리 가게 회복 플래너는 무엇을 하나요?'},
+    {pattern:/^금융상품안내(?:기능)?(?:이|은)?(?:뭐야|무엇인가요|어떤기능이야|어떻게써|어떻게사용해)$/,title:'금융상품 조건과 신청 가능 여부는 어디서 보나요?'},
+  ];
+  const guide=guides.find(item=>item.pattern.test(query));
+  if(!guide)return null;
+  const hit=chunks.find(item=>item.source==='docs/CHATBOT-KNOWLEDGE.md'&&item.title===guide.title);
+  if(!hit)return null;
+  return {text:hit.text.replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'),source:{source:hit.source,title:hit.title}};
+}
+
 export function documentFallback(hits){
   if(!hits.length)return '이 질문에 맞는 자료를 찾지 못했어요. 지역이나 기능 이름을 조금 더 구체적으로 적어 주세요.';
   const best=hits[0].text.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'$1').replace(/\s+/g,' ');

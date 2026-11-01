@@ -1,8 +1,10 @@
-import {loadKnowledge,findKnowledge,documentFallback} from './knowledge.js';
+import {loadKnowledge,findKnowledge,documentFallback,quickGuideReply} from './knowledge.js';
 import {ollamaReply} from './ollama.js';
 import {regionReply,regionDetail} from './region.js';
 import {conversationalReply} from './conversation.js';
 import {financeReply} from './finance.js';
+import {closureRiskReply} from './closure-risk.js';
+import {storeRankingReply} from './store-ranking.js';
 
 let cache;
 const send=(res,item)=>res.write(`${JSON.stringify(item)}\n`);
@@ -29,6 +31,16 @@ export async function handleChat(req,res,root){
     res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
     send(res,{type:'sources',sources:[finance.source]});send(res,{type:'delta',text:finance.text});send(res,{type:'done',mode:'catalog'});return res.end();
   }
+  const risk=await closureRiskReply(root,question);
+  if(risk){
+    res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+    send(res,{type:'sources',sources:[risk.source]});send(res,{type:'delta',text:risk.text});send(res,{type:'done',mode:'data'});return res.end();
+  }
+  const storeRanking=storeRankingReply(question,history);
+  if(storeRanking){
+    res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+    send(res,{type:'sources',sources:[storeRanking.source]});send(res,{type:'delta',text:storeRanking.text});send(res,{type:'done',mode:'data'});return res.end();
+  }
   const detail=regionDetail(question,history);
   if(detail){
     res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
@@ -40,9 +52,14 @@ export async function handleChat(req,res,root){
     send(res,{type:'sources',sources:[region.source]});send(res,{type:'delta',text:region.text});send(res,{type:'done',mode:'data'});return res.end();
   }
   cache??=await loadKnowledge(root);
+  const guide=quickGuideReply(cache,question);
+  if(guide){
+    res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+    send(res,{type:'sources',sources:[guide.source]});send(res,{type:'delta',text:guide.text});send(res,{type:'done',mode:'document'});return res.end();
+  }
   const previousQuestion=/^(?:좀|더|그거|그것).{0,20}(?:자세히|설명|알려)|^왜\??$/.test(question)
     ? history.filter(item=>item.role==='user').at(-1)?.content : null;
-  const hits=findKnowledge(cache,previousQuestion?`${previousQuestion} ${question}`:question);
+  const hits=findKnowledge(cache,previousQuestion?`${previousQuestion} ${question}`:question,2);
   res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
   send(res,{type:'sources',sources:hits.map(({source,title})=>({source,title}))});
   const controller=new AbortController();
@@ -50,7 +67,9 @@ export async function handleChat(req,res,root){
   res.on('close',()=>controller.abort());
   let produced=false;
   try{
-    for await(const delta of ollamaReply({question,hits,history,signal:controller.signal})){
+    for await(const delta of ollamaReply({question,hits,history,signal:controller.signal,onMetrics:metrics=>{
+      if(process.env.CHAT_TIMING_LOG==='1')console.info('[chat:ollama]',JSON.stringify(metrics));
+    }})){
       produced=true;send(res,{type:'delta',text:delta});
     }
     if(!produced)throw Error('빈 응답');
