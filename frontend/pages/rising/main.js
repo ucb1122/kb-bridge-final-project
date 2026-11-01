@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js?v=26';
+import {renderReportTab} from './full-report.js?v=27';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');

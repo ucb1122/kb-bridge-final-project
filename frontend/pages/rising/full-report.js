@@ -1,4 +1,4 @@
-import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=4';
+import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=5';
 
 const labels={stores:'점포수',sales:'추정매출액',footfall:'유동인구',residents:'상주인구'};
 const days=['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
@@ -33,7 +33,8 @@ function chart(values,labels,mode='bar',format=short){
     defs.append(gradient,lineGradient);graphic.append(defs);chartFill=`url(#${id})`;lineStroke=`url(#${id}-line)`;
   }
   [30,80,130,180].forEach(y=>graphic.append(svg('line',{x1:42,y1:y,x2:580,y2:y,stroke:'#e6e9ef'})));
-  const xs=values.map((_,i)=>65+(490*i/Math.max(values.length-1,1)));
+  const spread=mode==='bar'&&values.length<=2?150:mode==='bar'&&values.length===3?300:490;
+  const xs=values.map((_,i)=>300-spread/2+(spread*i/Math.max(values.length-1,1)));
   if(mode==='line'){
     const line=svg('polyline',{points:values.map((n,i)=>`${xs[i]},${yFor(n)}`).join(' '),fill:'none',stroke:lineStroke,'stroke-width':3});graphic.append(line);
     values.forEach((n,i)=>graphic.append(svg('circle',{cx:xs[i],cy:yFor(n),r:4,fill:ownerStyle?'#498ff0':'#c49200'})));
@@ -97,6 +98,7 @@ function topIndustries(report,field,title,unit='개'){
   ranking.classList.add('owner-top-industries-table');box.append(ranking);return box;
 }
 function industryComposition(report){
+  if(!(report.industries||[]).some(item=>item.stores!=null))return unavailable('업종별 자료가 없습니다.');
   const sums={외식업:0,서비스업:0,소매업:0};
   for(const item of report.industries||[])sums[groupName(item.code)]=(sums[groupName(item.code)]||0)+(item.stores||0);
   const box=panel('업종분포','서비스 업종 코드를 외식업·서비스업·소매업으로 묶었습니다.');
@@ -345,7 +347,6 @@ export function renderReportTab(target,report,tab,analysis){
   if(document.body.classList.contains('owner-unified')&&['industry','sales','population','hinterland'].includes(tab)){target.replaceChildren(ownerTab(report,tab));return}
   const content=make('div','full-report');
   if(report.scopeIndustry){const label={CS1:'외식업',CS2:'서비스업',CS3:'소매업'}[report.scopeIndustry];content.append(make('p','report-source',`${label} 점포수·매출은 선택 업종 기준입니다. 인구·주변 환경과 세부 요일·시간대 자료는 지역 전체 기준입니다.`))}
-  if(!report.detailAvailable)content.append(unavailable('세부 원본 데이터가 적재되지 않았습니다. npm run import:details를 실행하세요.'));
   if(tab==='overview'){
     const summary=make('div');renderOverview(summary,report,analysis);content.append(summary,make('h3','report-section-title','핵심 업종·고객'),bestSummary(report));
     const trends=make('div');renderTrends(trends,report);content.append(make('h3','report-section-title','주요 지표 추이'),trends);
@@ -357,7 +358,6 @@ export function renderReportTab(target,report,tab,analysis){
     content.append(trend(report,'개업 점포','stores','opened'),trend(report,'폐업 점포','stores','closed'));
     content.append(topIndustries(report,'stores','점포수 상위 업종'),topIndustries(report,'opened','개업 상위 업종'),topIndustries(report,'closed','폐업 상위 업종'));
     content.append(trend(report,'운영 영업기간 평균','operation','months','개월','상권변화지표 원본의 운영 영업 개월 평균이며 행정동 자료는 제공되지 않습니다.'));
-    const survival=panel('신생기업 3년 생존율');survival.append(unavailable('서울시 상권분석서비스 공식 화면에는 값이 있지만, 현재 프로젝트에 적재된 원본 ZIP·DB에는 생존율 자료가 없어 이 지역의 수치를 표시할 수 없습니다.'));content.append(survival);
   }
   if(tab==='sales'){
     content.append(metricTrend(report,'sales'));
@@ -403,8 +403,14 @@ export function renderReportTab(target,report,tab,analysis){
     content.append(breakdown(report,'상주 가구','residents',['apartment_households','other_households'],['아파트 가구','비아파트 가구'],'가구'));
     content.append(breakdown(report,'직장인구','workers',['male','female'],['남성','여성'],'명'));
     content.append(benchmark(report,'stores'),benchmark(report,'footfall'));
-    for(const title of ['소득수준','임대시세']){const box=panel(title);box.append(unavailable('제공된 ZIP·행정동 CSV에 이 지표의 원본이 없어 표시할 수 없습니다.'));content.append(box)}
   }
+  content.querySelectorAll('.report-block').forEach(box=>{if(box.querySelector('.report-unavailable')&&!box.querySelector('.detail-chart,.detail-table,.report-highlight'))box.remove()});
+  content.querySelectorAll('.best-card').forEach(box=>{if(box.textContent.includes('자료 없음'))box.remove()});
+  content.querySelectorAll('.report-metric,.trend-card').forEach(box=>{if(box.textContent.includes('자료 없음'))box.remove()});
+  content.querySelectorAll('.report-unavailable').forEach(item=>item.remove());
+  content.querySelectorAll('.detail-table tbody tr,.history-table tbody tr').forEach(row=>{if(row.textContent.includes('자료 없음'))row.remove()});
+  content.querySelectorAll('.detail-table,.history-table').forEach(item=>{if(!item.querySelector('tbody tr'))item.remove()});
+  content.querySelectorAll('.best-grid').forEach(item=>{if(!item.children.length)item.remove()});
   const chapter={overview:'종합의견',industry:'업종분석',sales:'매출분석',population:'인구분석',hinterland:'지역(배후지)분석'}[tab];
   target.replaceChildren(...(target.id?.startsWith('report-')?[make('h3','report-chapter-title',chapter)]:[]),content);
 }

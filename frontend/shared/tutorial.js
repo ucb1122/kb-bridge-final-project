@@ -1,6 +1,6 @@
 const helpControl=document.querySelector('body > header.kb-header .header-end');
 if(helpControl){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=2';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
       {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
@@ -8,7 +8,10 @@ if(helpControl){
       {target:'.metric',title:'비교할 숫자를 고르세요',text:'점포수·매출·유동인구·거주인구 중 궁금한 지표를 누르세요. 선택한 지표에 맞춰 지도와 순위가 바뀝니다.'},
       {target:'#filter-toggle',title:'기준을 더 자세히 바꿀 수 있어요',text:'상세조건에서 업종과 분기, 증가율 같은 비교 기준을 고를 수 있어요. 원하는 조건을 적용한 뒤 순위를 다시 확인하세요.'},
       {target:'.rank-panel .rank-head',title:'순위의 기준을 먼저 읽어요',text:'TOP 10은 지금 선택한 지표와 조건으로 정렬한 결과예요. 제목 옆 기준과 자료 분기를 확인하고 숫자를 비교하세요.'},
-      {target:'#ranking',title:'관심 지역을 눌러 보고서를 열어요',text:'목록의 지역을 클릭하면 지도에서 위치를 확인하고 상세 보고서를 볼 수 있어요. 점포와 매출의 변화도 함께 살펴보세요.'},
+      {target:'#ranking',title:'관심 지역을 직접 눌러보세요',text:'순위 목록에서 지역을 클릭해 보세요. 지도에서 그 위치를 확인하고, 오른쪽에 분석 보고서가 열리면 안내가 이어집니다.'},
+      {target:'#region-card .report-head',title:'선택한 지역부터 확인해요',text:'오른쪽 보고서 맨 위에는 선택한 지역 이름과 분석 기준이 나옵니다. 다른 지역을 누르면 이 보고서도 함께 바뀝니다.'},
+      {target:'#region-card .report-tabs',title:'보고서의 다섯 가지 주제를 골라요',text:'종합의견, 업종분석, 매출분석, 인구분석, 지역 분석 탭을 눌러 보세요. 궁금한 주제만 골라 자세히 읽을 수 있어요.'},
+      {target:'#report-body',title:'숫자의 흐름과 근거를 살펴봐요',text:'그래프는 분기별 변화를, 표는 실제 집계값을 보여줘요. 추정매출은 지역 전체의 값으로 개별 가게의 매출과 다를 수 있습니다.'},
     ]},
     owner:{name:'내 상권 분석',image:'/shared/characters/kobi-coding.png',question:'우리 동네 상권이 궁금하다면?',summary:'지역과 업종을 골라 점포·매출·인구 보고서를 확인하세요.',url:'/pages/owner/',steps:[
       {target:'.owner-mode',title:'내 상황을 먼저 선택해요',text:'이미 가게를 운영하는지, 창업을 준비하는지 고르세요. 그 상황에 맞는 지역 분석과 상담 준비 흐름을 안내합니다.'},
@@ -16,7 +19,10 @@ if(helpControl){
       {target:'#analysis-controls .metric',title:'궁금한 지표를 선택해요',text:'점포수·매출·유동인구·거주인구 중 하나를 누르세요. 지표를 바꾸면 비교하는 숫자와 순위도 달라집니다.'},
       {target:'.owner-details',title:'업종과 기준 분기를 조절해요',text:'상세조건에서 업종, 분석 단위, 기준 분기를 고를 수 있어요. 원하는 지역과 업종을 맞춘 뒤 결과를 비교하세요.'},
       {target:'.rank-panel .rank-head',title:'순위 기준을 확인해요',text:'정렬 기준에 따라 순서가 바뀝니다. 증가율이 높은 곳과 현재 매출이 큰 곳은 다를 수 있으니 기준을 함께 읽어 주세요.'},
-      {target:'#ranking',title:'지역을 누르면 보고서가 열려요',text:'관심 지역을 클릭해 점포·매출·인구 흐름을 확인하세요. 보고서의 지역 통계는 개별 가게의 실제 매출이 아닙니다.'},
+      {target:'#ranking',title:'지역을 눌러 보고서를 열어요',text:'관심 지역을 클릭해 보세요. 오른쪽에 선택 지역 보고서가 열리면 다음 설명으로 이어집니다.'},
+      {target:'#region-card .report-head',title:'선택한 지역과 조건을 확인해요',text:'오른쪽 보고서의 지역 이름과 업종, 기준 분기를 먼저 확인하세요. 고른 조건이 이 보고서에 반영됩니다.'},
+      {target:'#region-card .report-tabs',title:'궁금한 내용을 탭에서 고르세요',text:'한눈에 보기부터 업종·경쟁, 매출, 고객·인구, 주변 환경까지 나눠 보여줘요. 탭을 눌러 필요한 분석을 살펴보세요.'},
+      {target:'#report-body',title:'그래프와 계산 근거를 함께 읽어요',text:'분기별 변화와 지역 통계를 확인하고 원본 수치·계산 근거도 펼쳐보세요. 점포당 월평균 매출은 내 가게의 실제 매출이 아닌 참고값입니다.'},
     ]},
     recovery:{name:'우리 가게 회복 플래너',image:'/shared/characters/kobi-warning.png',question:'가게 운영이 걱정된다면?',summary:'상권 위험을 보고 내 부담과 필요한 도움을 정리하세요.',url:'/pages/intended-owner/',steps:[
       {target:'#region-search-form',title:'동네나 상권을 찾아요',text:'관심 있는 동네·상권·역 이름을 검색하세요. 목록이나 지도에서 직접 골라도 됩니다.'},
@@ -46,6 +52,8 @@ if(helpControl){
   const chatbot=helpControl.parentElement?.querySelector('.header-chatbot');
   if(chatbot)helpControl.parentElement.insertBefore(helpControl,chatbot);
   let active=null,index=0,lastFocus=null;
+  const reportCard=document.querySelector('#region-card');
+  const reportReady=()=>reportCard&&!reportCard.hidden;
   const close=()=>{layer.hidden=true;active=null;document.body.classList.remove('kb-tutorial-open');lastFocus?.focus()};
   const button=(label,action,primary=false)=>{const item=document.createElement('button');item.type='button';item.className=primary?'kb-tutorial-primary':'kb-tutorial-secondary';item.textContent=label;item.addEventListener('click',action);return item};
   const layout=()=>{
@@ -75,7 +83,13 @@ if(helpControl){
     layer.classList.remove('is-intro');layer.classList.add('is-step');kobi.src='/shared/characters/kobi-tutorial-guide.png';title.textContent=step.title;description.textContent=step.text;
     choices.replaceChildren();footer.replaceChildren();
     const count=document.createElement('span');count.className='kb-tutorial-count';count.textContent=`${index+1} / ${topics[active].steps.length}`;
-    footer.append(count,button(index?'이전':'기능 선택',()=>index? (index--,showStep()):showIntro()),button(index===topics[active].steps.length-1?'완료':'다음',()=>index===topics[active].steps.length-1?close():(index++,showStep()),true));
+    const next=button(index===topics[active].steps.length-1?'완료':step.target==='#ranking'&&!reportReady()?'지역 선택 후 계속':'다음',()=>{
+      if(index===topics[active].steps.length-1){close();return}
+      if(step.target==='#ranking'&&!reportReady())return;
+      index++;showStep();
+    },true);
+    if(step.target==='#ranking'&&!reportReady())next.disabled=true;
+    footer.append(count,button(index?'이전':'기능 선택',()=>index? (index--,showStep()):showIntro()),next);
     node.scrollIntoView({block:'center',behavior:'auto'});requestAnimationFrame(()=>requestAnimationFrame(layout));
   };
   const start=(key)=>{
@@ -104,6 +118,11 @@ if(helpControl){
   layer.querySelector('.kb-tutorial-shade').addEventListener('click',close);
   document.addEventListener('keydown',event=>{if(!layer.hidden&&event.key==='Escape')close()});
   addEventListener('resize',layout);addEventListener('scroll',layout,true);
+  if(reportCard)new MutationObserver(()=>{
+    if(!layer.hidden&&active&&topics[active].steps[index]?.target==='#ranking'&&reportReady()){
+      index++;showStep();
+    }
+  }).observe(reportCard,{attributes:true,attributeFilter:['hidden']});
   const pending=sessionStorage.getItem('kb-tutorial-pending');
   if(pending&&topics[pending]?.url===location.pathname){sessionStorage.removeItem('kb-tutorial-pending');lastFocus=helpControl;layer.hidden=false;document.body.classList.add('kb-tutorial-open');start(pending)}
 }

@@ -7,6 +7,8 @@ body > header.kb-header .header-actions .header-end:hover,body > header.kb-heade
 .kb-tutorial-shade{position:absolute;inset:0;background:rgba(15,26,45,.55)}
 .kb-tutorial-focus{display:none;position:fixed;box-sizing:border-box;border:3px solid #ffbc00;border-radius:12px;box-shadow:0 0 0 3px rgba(255,188,0,.22);pointer-events:none}
 .kb-tutorial-layer.is-step .kb-tutorial-shade{background:transparent}
+.kb-tutorial-layer.is-step{pointer-events:none}
+.kb-tutorial-layer.is-step .kb-tutorial-card{pointer-events:auto}
 .kb-tutorial-layer.is-step .kb-tutorial-focus{display:block;box-shadow:0 0 0 200vmax rgba(15,26,45,.48),0 0 0 3px rgba(255,188,0,.26)}
 .kb-tutorial-card{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);box-sizing:border-box;width:min(400px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:25px;border:1px solid #e9dfc7;border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(9,21,42,.25)}
 .kb-tutorial-layer.is-intro .kb-tutorial-card{width:min(1520px,calc(100vw - 48px));padding:32px 12px;overflow:visible;border:0;background:transparent;box-shadow:none}
@@ -47,6 +49,7 @@ body > header.kb-header .header-actions .header-end:hover,body > header.kb-heade
 .kb-tutorial-primary{border:1px solid #efb000;background:#ffbc00;color:#17243b}
 .kb-tutorial-secondary{border:1px solid #dbe2ed;background:#fff;color:#243651}
 .kb-tutorial-primary:hover,.kb-tutorial-primary:focus-visible{background:#f2ae00}
+.kb-tutorial-primary:disabled{background:#f5e8c2;border-color:#e6d8b1;color:#6f6b62;cursor:default}
 .kb-tutorial-secondary:hover,.kb-tutorial-secondary:focus-visible{background:#fff7df;border-color:#ffbc00}
 .kb-tutorial-card button:focus-visible{outline:3px solid #8c6b00;outline-offset:2px}
 .kb-tutorial-layer.is-step .kb-tutorial-card{width:min(430px,calc(100vw - 32px));overflow:visible;padding:26px 26px 22px}
