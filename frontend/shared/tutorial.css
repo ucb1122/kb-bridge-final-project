@@ -1,0 +1,48 @@
+@font-face{font-family:'KB Tutorial';src:url('/shared/fonts/NotoSansKR-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'KB Tutorial';src:url('/shared/fonts/NotoSansKR-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+body > header.kb-header .header-actions .header-end{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 16px;margin:0;border:1px solid #e9ad00;border-radius:10px;background:#ffbc00;color:#182238;font:700 14px/1.2 'KB Tutorial','Malgun Gothic',sans-serif;text-decoration:none;cursor:pointer;box-shadow:0 3px 8px rgba(122,83,0,.13)}
+body > header.kb-header .header-actions .header-end:hover,body > header.kb-header .header-actions .header-end:focus-visible{background:#ffcf43;outline:2px solid #8a6500;outline-offset:2px}
+.kb-tutorial-layer[hidden]{display:none}
+.kb-tutorial-layer{position:fixed;inset:0;z-index:2147483000;font-family:'KB Tutorial','Malgun Gothic',sans-serif;color:#17243b}
+.kb-tutorial-shade{position:absolute;inset:0;background:rgba(15,26,45,.55)}
+.kb-tutorial-focus{display:none;position:fixed;box-sizing:border-box;border:3px solid #ffbc00;border-radius:15px;box-shadow:0 0 0 5px rgba(255,188,0,.24);pointer-events:none}
+.kb-tutorial-layer.is-step .kb-tutorial-shade{background:transparent}
+.kb-tutorial-layer.is-step .kb-tutorial-focus{display:block;box-shadow:0 0 0 200vmax rgba(15,26,45,.48),0 0 0 5px rgba(255,188,0,.28)}
+.kb-tutorial-card{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);box-sizing:border-box;width:min(400px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:25px;border:1px solid #e9dfc7;border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(9,21,42,.25)}
+.kb-tutorial-layer.is-intro .kb-tutorial-card{width:min(1280px,calc(100vw - 48px));padding:34px 38px 28px}
+.kb-tutorial-close{position:absolute;right:16px;top:12px;width:34px;height:34px;display:grid;place-items:center;border:1px solid #dbe2ed;border-radius:9px;background:white;color:#23344c;font:26px/1 Arial,sans-serif;cursor:pointer}
+.kb-tutorial-kobi{width:92px;height:92px;object-fit:contain;display:block;margin:0 auto 9px;animation:kb-kobi-hello .55s both}
+.kb-tutorial-eyebrow{margin:0 0 7px;color:#996b00;font-size:12px;font-weight:700;letter-spacing:.04em}
+.kb-tutorial-card h2{margin:0 28px 10px 0;font-size:23px;line-height:1.35;font-weight:700;letter-spacing:-.04em}
+.kb-tutorial-description{margin:0 0 20px;color:#526177;font-size:15px;line-height:1.7;word-break:keep-all}
+.kb-tutorial-choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.kb-tutorial-choices button{min-height:54px;text-align:left}
+.kb-tutorial-layer.is-intro .kb-tutorial-kobi{width:105px;height:105px;margin-bottom:5px}
+.kb-tutorial-layer.is-intro .kb-tutorial-eyebrow,.kb-tutorial-layer.is-intro .kb-tutorial-card h2,.kb-tutorial-layer.is-intro .kb-tutorial-description{text-align:center}
+.kb-tutorial-layer.is-intro .kb-tutorial-card h2{font-size:30px;margin:0 0 8px}
+.kb-tutorial-layer.is-intro .kb-tutorial-description{margin-bottom:26px}
+.kb-tutorial-layer.is-intro .kb-tutorial-choices{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kb-tutorial-topic{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0;min-height:285px!important;padding:18px!important;border:1px solid #e2e6ed!important;border-radius:18px!important;background:#fff!important;box-shadow:0 8px 22px rgba(19,38,64,.06);transition:transform .18s,border-color .18s,box-shadow .18s}
+.kb-tutorial-topic:hover,.kb-tutorial-topic:focus-visible{transform:translateY(-4px);border-color:#ffbc00!important;box-shadow:0 16px 30px rgba(60,44,0,.13)}
+.kb-tutorial-topic img{width:78px;height:78px;object-fit:contain;align-self:center;margin:0 auto 3px}
+.kb-tutorial-topic .kb-tutorial-question{color:#8b6600;font-size:13px;line-height:1.5;font-weight:700;word-break:keep-all}
+.kb-tutorial-topic strong{color:#18263e;font-size:20px;line-height:1.4;word-break:keep-all}
+.kb-tutorial-topic .kb-tutorial-summary{color:#526177;font-size:14px;line-height:1.65;font-weight:400;word-break:keep-all}
+.kb-tutorial-topic .kb-tutorial-action{margin-top:auto;color:#9b7000;font-size:13px;font-weight:700}
+.kb-tutorial-footer{display:flex;align-items:center;gap:9px;margin-top:16px}
+.kb-tutorial-footer button:last-child{margin-left:auto}
+.kb-tutorial-count{margin-right:auto;color:#67768c;font-size:12px}
+.kb-tutorial-primary,.kb-tutorial-secondary{padding:11px 15px;border-radius:10px;font:700 14px/1.4 'KB Tutorial','Malgun Gothic',sans-serif;cursor:pointer}
+.kb-tutorial-primary{border:1px solid #efb000;background:#ffbc00;color:#17243b}
+.kb-tutorial-secondary{border:1px solid #dbe2ed;background:#fff;color:#243651}
+.kb-tutorial-primary:hover,.kb-tutorial-primary:focus-visible{background:#f2ae00}
+.kb-tutorial-secondary:hover,.kb-tutorial-secondary:focus-visible{background:#fff7df;border-color:#ffbc00}
+.kb-tutorial-card button:focus-visible{outline:3px solid #8c6b00;outline-offset:2px}
+.kb-tutorial-layer.is-step .kb-tutorial-kobi{width:65px;height:65px;margin:0 0 8px}
+.kb-tutorial-layer.is-step .kb-tutorial-description{padding:14px 16px;border:1px solid #f3d889;border-radius:14px;background:#fff9e8;color:#273750}
+@keyframes kb-kobi-hello{from{opacity:0;transform:translateY(15px) scale(.75)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.kb-tutorial-kobi{animation:none}}
+@media(max-width:1000px){.kb-tutorial-layer.is-intro .kb-tutorial-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.kb-tutorial-topic{min-height:245px!important}}
+@media(max-width:1100px){body > header.kb-header .header-actions .header-end{display:inline-flex}}
+@media(max-width:640px){.kb-tutorial-card{padding:19px}.kb-tutorial-card h2{font-size:20px}.kb-tutorial-description{font-size:14px}.kb-tutorial-choices{grid-template-columns:1fr}}
+@media(max-width:640px){.kb-tutorial-layer.is-intro .kb-tutorial-card{width:calc(100vw - 20px);padding:22px 16px}.kb-tutorial-layer.is-intro .kb-tutorial-card h2{font-size:22px}.kb-tutorial-layer.is-intro .kb-tutorial-choices{grid-template-columns:1fr;gap:10px}.kb-tutorial-topic{min-height:0!important;display:grid;grid-template-columns:65px 1fr;gap:3px 10px}.kb-tutorial-topic img{grid-row:1/5;width:60px;height:60px}.kb-tutorial-topic .kb-tutorial-action{margin-top:4px}}
