@@ -21,6 +21,7 @@ test('정확성 지침을 참고 문서와 사용자 질문보다 먼저 전달�
   assert.ok(messages[0].content.length>=7500);
   assert.match(messages[0].content,/근거가 전혀 없으면 모른다고 말합니다/);
   assert.match(messages[0].content,/직선거리와 실제 길찾기 경로 거리/);
+  assert.match(messages[0].content,/지수, 준용, 채영, 정환, 희헌/);
   assert.match(messages[1].content,/참고 수치/);
   assert.equal(messages.at(-1).content,'동화동 점포수는?');
 });
@@ -42,6 +43,11 @@ test('코비의 이름과 인사, 실시간 날씨의 한계를 자연스럽게 
   assert.match(conversationalReply('안녕하세요'),/코비/);
   assert.match(conversationalReply('오늘 날씨 어때?'),/실시간 날씨는.*확인할 수 없어요/);
   assert.equal(conversationalReply('내 상권 분석 기능이 뭐야?'),null);
+});
+
+test('코비의 탄생 배경을 설명하고 정해지지 않은 나이는 만들지 않는다',()=>{
+  assert.match(conversationalReply('코비는 왜 코끼리야?'),/다섯 사람/);
+  assert.match(conversationalReply('코비 나이가 몇 살이야?'),/아직 정해지지 않았어요/);
 });
 
 test('기능 질문에는 관련 안내만 근거로 제공하고 중복 근거를 제거한다',async()=>{
