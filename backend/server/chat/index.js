@@ -52,7 +52,9 @@ export async function handleChat(req,res,root){
     send(res,{type:'sources',sources:[region.source]});send(res,{type:'delta',text:region.text});send(res,{type:'done',mode:'data'});return res.end();
   }
   cache??=await loadKnowledge(root);
-  const hits=findKnowledge(cache,question);
+  const previousQuestion=/^(?:좀|더|그거|그것).{0,20}(?:자세히|설명|알려)|^왜\??$/.test(question)
+    ? history.filter(item=>item.role==='user').at(-1)?.content : null;
+  const hits=findKnowledge(cache,previousQuestion?`${previousQuestion} ${question}`:question);
   res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
   send(res,{type:'sources',sources:hits.map(({source,title})=>({source,title}))});
   const controller=new AbortController();

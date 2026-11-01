@@ -3,8 +3,8 @@ if(button){
   button.disabled=false;button.removeAttribute('title');button.setAttribute('aria-haspopup','dialog');
   const link=document.createElement('link');link.rel='stylesheet';link.href='/shared/chatbot.css';document.head.append(link);
   const overlay=document.createElement('div');overlay.className='chat-overlay';overlay.hidden=true;
-  overlay.innerHTML=`<section class="chat-dialog" role="dialog" aria-modal="true" aria-labelledby="chat-title">
-    <header class="chat-top"><div class="chat-title-wrap"><img src="/shared/characters/kobi-face.png" alt=""><div><h2 id="chat-title">코비에게 물어보세요</h2><p>상권브릿지 이용 안내</p></div></div><button class="chat-close" type="button" aria-label="챗봇 닫기">×</button></header>
+  overlay.innerHTML=`<section class="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-title">
+    <header class="chat-top"><div class="chat-title-wrap"><img src="/shared/characters/kobi-face.png" alt=""><div><h2 id="chat-title">코비에게 물어보세요</h2><p>상권브릿지 이용 안내 · 위쪽을 잡고 이동</p></div></div><button class="chat-close" type="button" aria-label="챗봇 닫기">×</button></header>
     <div class="chat-messages" role="log" aria-live="polite"><div class="chat-line bot"><img src="/shared/characters/kobi-face.png" alt=""><div class="chat-bubble">안녕하세요! 상권 분석, 회복 플래너, 상담 준비에 대해 궁금한 점을 물어보세요.</div></div></div>
     <div class="chat-suggestions"><button type="button">창업 상담은 어디서 시작해?</button><button type="button">보고서의 매출액은 무슨 뜻이야?</button><button type="button">PDF는 어디서 저장해?</button></div>
     <form class="chat-form"><label class="chat-sr" for="chat-question">질문</label><textarea id="chat-question" rows="1" maxlength="800" placeholder="상권브릿지에 대해 질문해 주세요" required></textarea><button type="submit">보내기</button></form>
@@ -12,12 +12,36 @@ if(button){
   document.body.append(overlay);
   const form=overlay.querySelector('form'),input=overlay.querySelector('textarea'),messages=overlay.querySelector('.chat-messages');
   let before,controller,busy=false;const history=[];
-  function open(){before=document.activeElement;overlay.hidden=false;document.body.classList.add('chat-open');input.focus()}
-  function close(){overlay.hidden=true;document.body.classList.remove('chat-open');before?.focus()}
+  const dialog=overlay.querySelector('.chat-dialog'),header=overlay.querySelector('.chat-top');
+  const storageKey='kb-bridge-chat-session';
+  const saved=[];
+  const persist=()=>{try{sessionStorage.setItem(storageKey,JSON.stringify(saved.slice(-30)))}catch{}};
+  function open(){before=document.activeElement;overlay.hidden=false;input.focus()}
+  function close(){overlay.hidden=true;before?.focus()}
   button.addEventListener('click',open);
   overlay.querySelector('.chat-close').addEventListener('click',close);
-  overlay.addEventListener('click',event=>{if(event.target===overlay)close()});
   document.addEventListener('keydown',event=>{if(!overlay.hidden&&event.key==='Escape')close()});
+  let drag;
+  header.addEventListener('pointerdown',event=>{
+    if(event.button!==0||event.target.closest('button'))return;
+    const rect=dialog.getBoundingClientRect();
+    drag={x:event.clientX-rect.left,y:event.clientY-rect.top};
+    header.setPointerCapture(event.pointerId);header.classList.add('dragging');
+  });
+  header.addEventListener('pointermove',event=>{
+    if(!drag)return;
+    const x=Math.max(0,Math.min(innerWidth-dialog.offsetWidth,event.clientX-drag.x));
+    const y=Math.max(0,Math.min(innerHeight-dialog.offsetHeight,event.clientY-drag.y));
+    dialog.style.left=`${x}px`;dialog.style.top=`${y}px`;
+    dialog.style.right='auto';dialog.style.bottom='auto';
+  });
+  const stopDrag=()=>{drag=null;header.classList.remove('dragging')};
+  header.addEventListener('pointerup',stopDrag);header.addEventListener('pointercancel',stopDrag);
+  window.addEventListener('resize',()=>{
+    if(!dialog.style.left)return;
+    dialog.style.left=`${Math.max(0,Math.min(innerWidth-dialog.offsetWidth,parseFloat(dialog.style.left)))}px`;
+    dialog.style.top=`${Math.max(0,Math.min(innerHeight-dialog.offsetHeight,parseFloat(dialog.style.top)))}px`;
+  });
   function addLine(role,text=''){
     const line=document.createElement('div');line.className=`chat-line ${role}`;
     if(role==='bot'){const image=document.createElement('img');image.src='/shared/characters/kobi-face.png';image.alt='';line.append(image)}
@@ -38,9 +62,26 @@ if(button){
       }
     }
   }
+  try{
+    const previous=JSON.parse(sessionStorage.getItem(storageKey)||'[]');
+    if(Array.isArray(previous)&&previous.length){
+      messages.replaceChildren();
+      for(const item of previous.slice(-30)){
+        if(!['user','bot'].includes(item?.role)||typeof item.text!=='string')continue;
+        const {line,bubble}=addLine(item.role,item.text);
+        if(item.role==='bot')formatAnswer(bubble,item.text);
+        if(item.role==='bot'&&Array.isArray(item.sources)&&item.sources.length){
+          const small=document.createElement('small');small.className='chat-source';small.textContent=`근거: ${item.sources.map(source=>source.title).join(' · ')}`;line.append(small);
+        }
+        saved.push(item);
+      }
+      for(const item of saved.slice(-4))history.push({role:item.role==='bot'?'assistant':'user',content:item.text});
+    }
+  }catch{}
   async function ask(question){
     if(busy)return;busy=true;input.value='';form.querySelector('button').disabled=true;
-    addLine('user',question);const {line,bubble}=addLine('bot','생각 중…');
+    addLine('user',question);saved.push({role:'user',text:question});persist();
+    const {line,bubble}=addLine('bot','생각 중…');
     let answer='',pending='',typing=false,sources=[];
     const render=()=>{
       if(!pending){typing=false;return}
@@ -71,8 +112,9 @@ if(button){
       formatAnswer(bubble,answer);
       if(sources.length){const small=document.createElement('small');small.className='chat-source';small.textContent=`근거: ${sources.map(item=>item.title).join(' · ')}`;line.append(small)}
       history.push({role:'user',content:question},{role:'assistant',content:answer});
-    }catch(error){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message}
-    finally{busy=false;form.querySelector('button').disabled=false;input.focus()}
+      saved.push({role:'bot',text:answer,sources});persist();
+    }catch(error){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message;saved.push({role:'bot',text:bubble.textContent});persist()}
+    finally{busy=false;form.querySelector('button').disabled=false;if(!overlay.hidden)input.focus()}
   }
   form.addEventListener('submit',event=>{event.preventDefault();const question=input.value.trim();if(question)ask(question)});
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();form.requestSubmit()}});
