@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import {loadKnowledge,findKnowledge,documentFallback} from '../backend/server/chat/knowledge.js';
-import {regionReply} from '../backend/server/chat/region.js';
+import {regionReply,regionDetail} from '../backend/server/chat/region.js';
 import {buildMessages} from '../backend/server/chat/ollama.js';
 
 const root=path.resolve(import.meta.dirname,'..');
@@ -41,6 +41,24 @@ test('동화동 질문은 실제 행정동 원본 수치와 기준 분기로 답
   assert.match(reply.text,/분기 유동인구 원본값: 3,577,959명/);
   assert.match(reply.text,/거주인구 원본값: 9,941명/);
   assert.equal(reply.source.source,'data/commerce.sqlite');
+});
+
+test('지역 상세 질문은 같은 요약 대신 원본 분기 변화와 업종을 검색한다',()=>{
+  const detail=regionDetail('청림동 더 자세하게 설명');
+  assert.match(detail.facts,/관악구 청림동 · 행정동 전체 · 2026년 2분기/);
+  assert.match(detail.facts,/점포 수: 394개.*직전 자료 20261: 389개/);
+  assert.match(detail.facts,/점포 개업 17개, 폐업 12개/);
+  assert.match(detail.facts,/일반교습학원 40개/);
+  assert.equal(detail.hit.source,'data/commerce.sqlite');
+});
+
+test('후속 질문의 지역은 직전 사용자 질문에서만 이어받는다',()=>{
+  const detail=regionDetail('더 자세하게 설명해줘',[
+    {role:'user',content:'청림동 점포수와 매출을 알려줘'},
+    {role:'assistant',content:'관악구 청림동 원본 통계'},
+  ]);
+  assert.match(detail.facts,/관악구 청림동/);
+  assert.equal(regionDetail('더 자세하게 설명해줘',[]),null);
 });
 
 test('상권 이름을 쓰면 같은 이름의 행정동과 혼동하지 않는다',()=>{
