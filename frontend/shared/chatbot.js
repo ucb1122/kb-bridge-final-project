@@ -59,6 +59,10 @@ if(button){
           const raw=buffer.slice(0,index).trim();buffer=buffer.slice(index+1);if(!raw)continue;
           const item=JSON.parse(raw);
           if(item.type==='delta')push(item.text);
+          if(item.type==='replace'){
+            pending='';typing=false;answer=item.text;
+            bubble.textContent=answer;
+          }
           if(item.type==='sources')sources=item.sources;
         }
       }
