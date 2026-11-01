@@ -61,6 +61,18 @@ if(button){
     }
   }
   const durationText=seconds=>seconds>=60?`${Math.floor(seconds/60)}분 ${seconds%60}초`:`${seconds}초`;
+  function sourceText(sources){
+    const labels=[...new Set(sources.map(item=>{
+      if(item.source==='data/commerce.sqlite')return `서울시 공개 상권 통계 · ${item.title.replace(/ (?:원본 통계|지역 상세 통계)$/,'')}`;
+      if(item.source==='frontend/shared/finance/products.json')return `${item.title}${item.verifiedAt?` (${item.verifiedAt} 확인)`:''}`;
+      if(item.source==='docs/CHATBOT-KNOWLEDGE.md')return '상권브릿지 이용 안내';
+      if(item.source==='docs/OWNER-FOUNDER-CONSULTATION.md')return 'KB 영업점 금융상담 안내';
+      if(item.source==='docs/DATA-MODEL.md')return '상권 데이터 설명';
+      if(item.source==='README.md')return '상권브릿지 프로젝트 안내';
+      return '상권브릿지 안내 자료';
+    }))];
+    return `참고 자료: ${labels.join(' · ')}`;
+  }
   try{
     const previous=JSON.parse(sessionStorage.getItem(storageKey)||'[]');
     if(Array.isArray(previous)&&previous.length){
@@ -70,7 +82,7 @@ if(button){
         const {line,bubble}=addLine(item.role,item.text);
         if(item.role==='bot')formatAnswer(bubble,item.text);
         if(item.role==='bot'&&Array.isArray(item.sources)&&item.sources.length){
-          const small=document.createElement('small');small.className='chat-source';small.textContent=`근거: ${item.sources.map(source=>source.title).join(' · ')}`;line.append(small);
+          const small=document.createElement('small');small.className='chat-source';small.textContent=sourceText(item.sources);line.append(small);
         }
         if(item.role==='bot'&&Number.isFinite(item.durationSeconds)){
           const small=document.createElement('small');small.className='chat-duration';small.textContent=`답변 시간 ${durationText(item.durationSeconds)}`;line.append(small);
@@ -117,7 +129,7 @@ if(button){
       while(typing)await new Promise(resolve=>setTimeout(resolve,20));
       if(!answer)throw Error('답변이 비어 있어요. 다시 질문해 주세요.');
       formatAnswer(bubble,answer);
-      if(sources.length){const small=document.createElement('small');small.className='chat-source';small.textContent=`근거: ${sources.map(item=>item.title).join(' · ')}`;line.append(small)}
+      if(sources.length){const small=document.createElement('small');small.className='chat-source';small.textContent=sourceText(sources);line.append(small)}
       history.push({role:'user',content:question},{role:'assistant',content:answer});
       saved.push({role:'bot',text:answer,sources,durationSeconds:Math.floor((performance.now()-started)/1000)});persist();
     }catch(error){bubble.textContent=error.name==='AbortError'?'답변을 중단했어요.':error.message;saved.push({role:'bot',text:bubble.textContent,durationSeconds:Math.floor((performance.now()-started)/1000)});persist()}

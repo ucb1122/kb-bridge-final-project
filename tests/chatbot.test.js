@@ -7,6 +7,7 @@ import {loadKnowledge,findKnowledge,documentFallback} from '../backend/server/ch
 import {regionReply,regionDetail} from '../backend/server/chat/region.js';
 import {buildMessages,ollamaReply} from '../backend/server/chat/ollama.js';
 import {conversationalReply} from '../backend/server/chat/conversation.js';
+import {financeReply} from '../backend/server/chat/finance.js';
 import {handleChat} from '../backend/server/chat/index.js';
 
 const root=path.resolve(import.meta.dirname,'..');
@@ -63,7 +64,16 @@ test('코비의 이름과 인사, 실시간 날씨의 한계를 자연스럽게 
 
 test('코비의 탄생 배경을 설명하고 정해지지 않은 나이는 만들지 않는다',()=>{
   assert.match(conversationalReply('코비는 왜 코끼리야?'),/다섯 사람/);
+  assert.match(conversationalReply('너는 어떻게 태어났어?'),/다섯 사람/);
   assert.match(conversationalReply('코비 나이가 몇 살이야?'),/아직 정해지지 않았어요/);
+});
+
+test('금융상품의 정확한 이름은 검증된 사이트 목록에서 즉시 답한다',()=>{
+  const answer=financeReply('일시적경영애로자금이 뭐야?');
+  assert.match(answer.text,/연매출 1억 4백만원 미만/);
+  assert.match(answer.text,/현재 접수 여부/);
+  assert.equal(answer.source.source,'frontend/shared/finance/products.json');
+  assert.match(answer.source.url,/semas.or.kr/);
 });
 
 test('기능 질문에는 관련 안내만 근거로 제공하고 중복 근거를 제거한다',async()=>{

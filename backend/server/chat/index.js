@@ -2,6 +2,7 @@ import {loadKnowledge,findKnowledge,documentFallback} from './knowledge.js';
 import {ollamaReply} from './ollama.js';
 import {regionReply,regionDetail} from './region.js';
 import {conversationalReply} from './conversation.js';
+import {financeReply} from './finance.js';
 
 let cache;
 const send=(res,item)=>res.write(`${JSON.stringify(item)}\n`);
@@ -22,6 +23,11 @@ export async function handleChat(req,res,root){
   if(conversational){
     res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
     send(res,{type:'delta',text:conversational});send(res,{type:'done',mode:'conversation'});return res.end();
+  }
+  const finance=financeReply(question);
+  if(finance){
+    res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+    send(res,{type:'sources',sources:[finance.source]});send(res,{type:'delta',text:finance.text});send(res,{type:'done',mode:'catalog'});return res.end();
   }
   const detail=regionDetail(question,history);
   if(detail){
