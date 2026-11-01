@@ -6,8 +6,7 @@ if(button){
   overlay.innerHTML=`<section class="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-title">
     <header class="chat-top"><div class="chat-title-wrap"><img src="/shared/characters/kobi-face.png" alt=""><div><h2 id="chat-title">코비에게 물어보세요</h2></div></div><button class="chat-close" type="button" aria-label="챗봇 닫기">×</button></header>
     <div class="chat-messages" role="log" aria-live="polite"><div class="chat-line bot"><img src="/shared/characters/kobi-face.png" alt=""><div class="chat-bubble">안녕하세요! 상권 분석, 회복 플래너, 상담 준비에 대해 궁금한 점을 물어보세요.</div></div></div>
-    <form class="chat-form"><label class="chat-sr" for="chat-question">질문</label><textarea id="chat-question" rows="1" maxlength="800" placeholder="상권브릿지에 대해 질문해 주세요" required></textarea><button type="submit">보내기</button></form>
-    <p class="chat-note">안내 문서를 바탕으로 답합니다. 비밀번호와 계좌번호는 입력하지 마세요.</p></section>`;
+    <form class="chat-form"><label class="chat-sr" for="chat-question">질문</label><textarea id="chat-question" rows="1" maxlength="800" placeholder="상권브릿지에 대해 질문해 주세요" required></textarea><button type="submit">보내기</button></form></section>`;
   document.body.append(overlay);
   const form=overlay.querySelector('form'),input=overlay.querySelector('textarea'),messages=overlay.querySelector('.chat-messages');
   let before,controller,busy=false;const history=[];
