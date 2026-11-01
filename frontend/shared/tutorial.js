@@ -3,21 +3,33 @@ if(helpControl){
   const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
-      {target:'.rank-panel',title:'먼저 순위를 살펴보세요',text:'선택한 지표에서 눈에 띄는 지역을 한눈에 볼 수 있어요.'},
-      {target:'#map',title:'지도에서 지역을 고르세요',text:'지도나 순위 목록의 지역을 클릭하면 해당 지역 분석이 열려요.'},
+      {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
+      {target:'.segmented',title:'지역 단위를 골라요',text:'뜨는 동네는 행정동을, 뜨는 상권은 실제 상권 구역을 살펴봅니다. 같은 위치라도 선택한 단위에 따라 결과가 달라져요.'},
+      {target:'.metric',title:'비교할 숫자를 고르세요',text:'점포수·매출·유동인구·거주인구 중 궁금한 지표를 누르세요. 선택한 지표에 맞춰 지도와 순위가 바뀝니다.'},
+      {target:'#filter-toggle',title:'기준을 더 자세히 바꿀 수 있어요',text:'상세조건에서 업종과 분기, 증가율 같은 비교 기준을 고를 수 있어요. 원하는 조건을 적용한 뒤 순위를 다시 확인하세요.'},
+      {target:'.rank-panel .rank-head',title:'순위의 기준을 먼저 읽어요',text:'TOP 10은 지금 선택한 지표와 조건으로 정렬한 결과예요. 제목 옆 기준과 자료 분기를 확인하고 숫자를 비교하세요.'},
+      {target:'#ranking',title:'관심 지역을 눌러 보고서를 열어요',text:'목록의 지역을 클릭하면 지도에서 위치를 확인하고 상세 보고서를 볼 수 있어요. 점포와 매출의 변화도 함께 살펴보세요.'},
     ]},
     owner:{name:'내 상권 분석',image:'/shared/characters/kobi-coding.png',question:'우리 동네 상권이 궁금하다면?',summary:'지역과 업종을 골라 점포·매출·인구 보고서를 확인하세요.',url:'/pages/owner/',steps:[
-      {target:'#analysis-controls',title:'내 상황을 먼저 선택하세요',text:'사업 운영 중인지, 창업을 준비 중인지에 따라 보고서가 달라져요.'},
-      {target:'.rank-panel',title:'지역을 비교해 보세요',text:'지표와 순위를 확인한 뒤 지역을 클릭하면 상세 보고서를 볼 수 있어요.'},
+      {target:'.owner-mode',title:'내 상황을 먼저 선택해요',text:'이미 가게를 운영하는지, 창업을 준비하는지 고르세요. 그 상황에 맞는 지역 분석과 상담 준비 흐름을 안내합니다.'},
+      {target:'.owner-find',title:'지역을 찾는 방법을 골라요',text:'알고 있는 동네를 직접 찾거나, 매출과 상권 순위를 둘러보며 후보 지역을 고를 수 있어요.'},
+      {target:'#analysis-controls .metric',title:'궁금한 지표를 선택해요',text:'점포수·매출·유동인구·거주인구 중 하나를 누르세요. 지표를 바꾸면 비교하는 숫자와 순위도 달라집니다.'},
+      {target:'.owner-details',title:'업종과 기준 분기를 조절해요',text:'상세조건에서 업종, 분석 단위, 기준 분기를 고를 수 있어요. 원하는 지역과 업종을 맞춘 뒤 결과를 비교하세요.'},
+      {target:'.rank-panel .rank-head',title:'순위 기준을 확인해요',text:'정렬 기준에 따라 순서가 바뀝니다. 증가율이 높은 곳과 현재 매출이 큰 곳은 다를 수 있으니 기준을 함께 읽어 주세요.'},
+      {target:'#ranking',title:'지역을 누르면 보고서가 열려요',text:'관심 지역을 클릭해 점포·매출·인구 흐름을 확인하세요. 보고서의 지역 통계는 개별 가게의 실제 매출이 아닙니다.'},
     ]},
     recovery:{name:'우리 가게 회복 플래너',image:'/shared/characters/kobi-warning.png',question:'가게 운영이 걱정된다면?',summary:'상권 위험을 보고 내 부담과 필요한 도움을 정리하세요.',url:'/pages/intended-owner/',steps:[
-      {target:'#region-panel',title:'관심 상권부터 선택하세요',text:'지도나 목록에서 지역을 고르면 그 상권을 기준으로 계획을 세울 수 있어요.'},
-      {target:'#recovery-panel',title:'고민을 단계별로 정리하세요',text:'부담 계산과 필요한 도움을 살펴보고 상담서를 확인할 수 있어요.'},
+      {target:'#region-search-form',title:'동네나 상권을 찾아요',text:'관심 있는 동네·상권·역 이름을 검색하세요. 목록이나 지도에서 직접 골라도 됩니다.'},
+      {target:'.risk-filter-wrap',title:'보고 싶은 지역을 좁혀요',text:'지역·표시 조건에서 행정동과 개별 상권을 바꾸거나 자치구를 선택할 수 있어요.'},
+      {target:'#region-results',title:'폐업 위험 순위를 읽어요',text:'목록의 예측 폐업률은 상권 단위 참고값이에요. 내 가게가 그 확률로 폐업한다는 뜻은 아니며, 관심 지역을 눌러 다음 단계로 이어가세요.'},
+      {target:'#rp-steps',title:'네 단계를 차례로 진행해요',text:'내 고민을 고르고 부담을 계산한 다음, 필요한 도움을 살펴보세요. 마지막에 영업점과 상담서 내용을 정리할 수 있어요.'},
+      {target:'#rp-content',title:'내 금액과 상황을 입력해요',text:'예시값은 화면을 이해하는 데 쓰고 실제 계획에는 내 숫자를 입력하세요. 상담서 확인 전에 입력 내용을 다시 살펴볼 수 있어요.'},
     ]},
     finance:{name:'금융상품 안내',image:'/shared/characters/kobi-face.png',question:'어떤 금융상품이 있는지 궁금하다면?',summary:'고객 유형과 용도에 맞는 상품을 찾아 조건을 비교하세요.',url:'/pages/guide/',steps:[
       {target:'.audience-switch',title:'고객 유형을 고르세요',text:'임차인 또는 임대인을 선택하면 관련 상품을 모아 보여줘요.'},
       {target:'#search-form',title:'필요한 상품을 검색하세요',text:'상품명이나 자금 용도를 입력해 목록을 좁힐 수 있어요.'},
       {target:'.category-tabs',title:'종류별로 살펴보세요',text:'사업자대출, 기업대출, 부동산담보, 정책자금 중 필요한 종류를 고르세요.'},
+      {target:'.filter-panel',title:'용도와 기관으로 좁혀보세요',text:'필요하면 상세 조건을 열어 자금 용도나 제공기관을 선택하세요. 조건을 적용하면 상품 목록을 더 쉽게 비교할 수 있어요.'},
       {target:'#product-list',title:'상품을 선택하세요',text:'목록에서 상품을 누르면 오른쪽에 상세정보가 나타나요.'},
       {target:'#product-detail',title:'조건을 확인하세요',text:'대상과 금리·한도 등 공개 정보를 살펴보고, 신청 전 공식 안내에서 최신 조건을 확인하세요.'},
     ]},
@@ -27,6 +39,7 @@ if(helpControl){
   document.body.append(layer);
   const focus=layer.querySelector('.kb-tutorial-focus'),card=layer.querySelector('.kb-tutorial-card');
   const title=layer.querySelector('#kb-tutorial-title'),description=layer.querySelector('.kb-tutorial-description');
+  const kobi=layer.querySelector('.kb-tutorial-kobi');
   const choices=layer.querySelector('.kb-tutorial-choices'),footer=layer.querySelector('.kb-tutorial-footer');
   helpControl.textContent='튜토리얼 모드';
   helpControl.setAttribute('aria-label','튜토리얼 모드 열기');
@@ -39,23 +52,31 @@ if(helpControl){
     if(!active||layer.hidden)return;
     const node=document.querySelector(topics[active].steps[index].target);
     if(!node)return;
-    const rect=node.getBoundingClientRect();
-    const left=Math.max(6,rect.left-7),top=Math.max(6,rect.top-7);
-    focus.style.cssText=`left:${left}px;top:${top}px;width:${Math.max(0,Math.min(innerWidth-left-6,rect.width+14))}px;height:${Math.max(0,Math.min(innerHeight-top-6,rect.height+14))}px`;
-    const cardWidth=Math.min(380,innerWidth-32),gap=16;
-    const rightSpace=innerWidth-rect.right,leftSpace=rect.left;
-    let x=rightSpace>=cardWidth+gap?rect.right+gap:leftSpace>=cardWidth+gap?rect.left-cardWidth-gap:Math.max(16,(innerWidth-cardWidth)/2);
-    let y=rightSpace>=cardWidth+gap||leftSpace>=cardWidth+gap?Math.max(16,Math.min(rect.top,innerHeight-card.offsetHeight-16)):(rect.bottom+card.offsetHeight+gap<innerHeight?rect.bottom+gap:Math.max(16,rect.top-card.offsetHeight-gap));
+    const rect=node.getBoundingClientRect(),pad=3;
+    const left=Math.max(pad,rect.left),top=Math.max(pad,rect.top);
+    const right=Math.min(innerWidth-pad,rect.right),bottom=Math.min(innerHeight-pad,rect.bottom);
+    if(right<=left||bottom<=top)return;
+    focus.style.cssText=`left:${left}px;top:${top}px;width:${right-left}px;height:${bottom-top}px`;
+    const cardWidth=card.getBoundingClientRect().width,gap=24;
+    const rightSpace=innerWidth-right,leftSpace=left;
+    let x=rightSpace>=cardWidth+gap?right+gap:leftSpace>=cardWidth+gap?left-cardWidth-gap:Math.max(16,(innerWidth-cardWidth)/2);
+    let y=Math.max(16,Math.min(top,innerHeight-card.offsetHeight-16));
+    const roomLeft=x,roomRight=innerWidth-(x+cardWidth);
+    const imageRight=x>=right&&roomRight>=155 || roomLeft<155&&roomRight>=155;
+    card.classList.toggle('kb-tutorial-kobi-right',imageRight);
+    const imageTop=!imageRight&&roomLeft<155;
+    card.classList.toggle('kb-tutorial-kobi-top',imageTop);
+    if(imageTop)y=Math.max(130,y);
     card.style.left=`${x}px`;card.style.top=`${y}px`;card.style.transform='none';
   };
   const showStep=()=>{
     const step=topics[active].steps[index],node=document.querySelector(step.target);
     if(!node){close();return}
-    layer.classList.remove('is-intro');layer.classList.add('is-step');title.textContent=step.title;description.textContent=step.text;
+    layer.classList.remove('is-intro');layer.classList.add('is-step');kobi.src='/shared/characters/kobi-tutorial-guide.png';title.textContent=step.title;description.textContent=step.text;
     choices.replaceChildren();footer.replaceChildren();
     const count=document.createElement('span');count.className='kb-tutorial-count';count.textContent=`${index+1} / ${topics[active].steps.length}`;
     footer.append(count,button(index?'이전':'기능 선택',()=>index? (index--,showStep()):showIntro()),button(index===topics[active].steps.length-1?'완료':'다음',()=>index===topics[active].steps.length-1?close():(index++,showStep()),true));
-    node.scrollIntoView({block:'nearest',behavior:'auto'});requestAnimationFrame(layout);
+    node.scrollIntoView({block:'center',behavior:'auto'});requestAnimationFrame(()=>requestAnimationFrame(layout));
   };
   const start=(key)=>{
     if(!topics[key])return;
@@ -65,7 +86,7 @@ if(helpControl){
   const showIntro=()=>{
     active=null;layer.hidden=false;layer.classList.remove('is-step','is-intro');void layer.offsetWidth;layer.classList.add('is-intro');document.body.classList.add('kb-tutorial-open');
     card.removeAttribute('style');focus.removeAttribute('style');
-    title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
+    kobi.src='/shared/characters/kobi-wow.png';title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
     choices.replaceChildren();footer.replaceChildren();
     for(const [key,topic] of Object.entries(topics)){
       const item=button('',()=>start(key));item.classList.add('kb-tutorial-topic');
