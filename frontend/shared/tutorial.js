@@ -1,6 +1,6 @@
 const helpControl=document.querySelector('body > header.kb-header .header-end');
 if(helpControl){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=3';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/tutorial.css?v=4';document.head.append(css);
   const topics={
     rising:{name:'뜨는 상권',image:'/shared/characters/kobi-magnifying-glass.png',question:'요즘 어디가 뜨는지 궁금하다면?',summary:'서울 상권의 순위와 변화를 지도에서 살펴보세요.',url:'/pages/rising/',steps:[
       {target:'.district-fields',title:'살펴볼 동네를 정해요',text:'자치구와 행정동을 고르면 보고 싶은 지역으로 범위를 좁힐 수 있어요. 전체를 유지하면 서울의 여러 지역을 비교합니다.'},
@@ -41,7 +41,7 @@ if(helpControl){
     ]},
   };
   const layer=document.createElement('div');layer.className='kb-tutorial-layer';layer.hidden=true;
-  layer.innerHTML=`<div class="kb-tutorial-shade"></div><div class="kb-tutorial-focus"></div><section class="kb-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="kb-tutorial-title"><button class="kb-tutorial-close" type="button" aria-label="튜토리얼 닫기">×</button><div class="kb-tutorial-hero"><img class="kb-tutorial-kobi" src="/shared/characters/kobi-tutorial-welcome.png" alt="반갑게 인사하는 코비"><div class="kb-tutorial-speech"><p class="kb-tutorial-eyebrow">코비와 함께 알아보기</p><h2 id="kb-tutorial-title"></h2><p class="kb-tutorial-description"></p></div></div><div class="kb-tutorial-choices"></div><div class="kb-tutorial-footer"></div></section>`;
+  layer.innerHTML=`<div class="kb-tutorial-shade"></div><div class="kb-tutorial-focus"></div><section class="kb-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="kb-tutorial-title"><button class="kb-tutorial-close" type="button" aria-label="튜토리얼 닫기">×</button><div class="kb-tutorial-hero"><img class="kb-tutorial-kobi" src="/shared/characters/kobi-tutorial-delighted.png" alt="반갑게 인사하는 코비"><div class="kb-tutorial-speech"><p class="kb-tutorial-eyebrow">코비와 함께 알아보기</p><h2 id="kb-tutorial-title"></h2><p class="kb-tutorial-description"></p></div></div><div class="kb-tutorial-choices"></div><div class="kb-tutorial-footer"></div></section>`;
   document.body.append(layer);
   const focus=layer.querySelector('.kb-tutorial-focus'),card=layer.querySelector('.kb-tutorial-card');
   const title=layer.querySelector('#kb-tutorial-title'),description=layer.querySelector('.kb-tutorial-description');
@@ -100,7 +100,7 @@ if(helpControl){
   const showIntro=()=>{
     active=null;layer.hidden=false;layer.classList.remove('is-step','is-intro');void layer.offsetWidth;layer.classList.add('is-intro');document.body.classList.add('kb-tutorial-open');
     card.removeAttribute('style');focus.removeAttribute('style');
-    kobi.src='/shared/characters/kobi-tutorial-welcome.png';title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
+    kobi.src='/shared/characters/kobi-tutorial-delighted.png';title.textContent='안녕하세요! 코비와 함께 둘러봐요';description.textContent='궁금한 기능을 선택하면 해당 화면에서 하나씩 알려드릴게요.';
     choices.replaceChildren();footer.replaceChildren();
     for(const [key,topic] of Object.entries(topics)){
       const item=button('',()=>start(key));item.classList.add('kb-tutorial-topic');

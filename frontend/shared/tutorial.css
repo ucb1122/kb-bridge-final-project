@@ -91,3 +91,22 @@ body > header.kb-header .header-actions .header-end:hover,body > header.kb-heade
 .kb-tutorial-layer.is-step .kb-tutorial-count{font-weight:700;color:#836000}
 @media(max-width:1100px){.kb-tutorial-layer.is-intro .kb-tutorial-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.kb-tutorial-layer.is-intro .kb-tutorial-kobi{width:300px;height:260px}.kb-tutorial-layer.is-intro .kb-tutorial-topic{min-height:350px!important}}
 @media(max-width:640px){.kb-tutorial-layer.is-intro .kb-tutorial-card{width:calc(100vw - 20px);padding:48px 6px 12px}.kb-tutorial-layer.is-intro .kb-tutorial-hero{margin-bottom:16px}.kb-tutorial-layer.is-intro .kb-tutorial-kobi{width:110px;height:110px}.kb-tutorial-layer.is-intro .kb-tutorial-speech{padding:12px 15px}.kb-tutorial-layer.is-intro .kb-tutorial-choices{grid-template-columns:1fr;gap:10px}.kb-tutorial-layer.is-intro .kb-tutorial-topic{display:grid;grid-template-columns:82px 1fr;min-height:0!important;gap:4px 12px;padding:14px!important}.kb-tutorial-layer.is-intro .kb-tutorial-topic img{grid-row:1/5;width:78px;height:78px}.kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-question,.kb-tutorial-layer.is-intro .kb-tutorial-topic strong,.kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-summary{text-align:left;min-height:0}.kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-action{grid-column:2;margin-top:5px;padding:9px}}
+
+/* Keep the desktop introduction on one screen while retaining a scrollable mobile layout. */
+@media(min-width:1101px){
+  .kb-tutorial-layer.is-intro .kb-tutorial-card{max-height:none;overflow:visible;padding:12px 12px 16px}
+  .kb-tutorial-layer.is-intro .kb-tutorial-hero{height:250px;margin-bottom:12px}
+  .kb-tutorial-layer.is-intro .kb-tutorial-kobi{width:285px;height:250px}
+  .kb-tutorial-layer.is-intro .kb-tutorial-speech{padding:20px 28px}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic{min-height:308px!important;gap:7px;padding:15px 18px!important}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic img{width:110px;height:104px;margin-bottom:0}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-question{min-height:0;text-align:center}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-summary{min-height:0}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic .kb-tutorial-action{padding:9px 14px}
+}
+@media(min-width:1101px) and (max-height:700px){
+  .kb-tutorial-layer.is-intro .kb-tutorial-hero{height:190px;margin-bottom:8px}
+  .kb-tutorial-layer.is-intro .kb-tutorial-kobi{width:220px;height:190px}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic{min-height:258px!important;padding:12px 16px!important}
+  .kb-tutorial-layer.is-intro .kb-tutorial-topic img{width:80px;height:74px}
+}
