@@ -70,6 +70,7 @@ export function renderOverview(target,report,analysis){
 export function renderTrends(target,report){
   const wrap=el('div','trend-grid');
   for(const [key,[label]] of Object.entries(metrics)){
+    if(key==='residents')continue;
     const points=report.history.filter(x=>x.metric===key);const card=el('section','trend-card');
     card.append(el('h3','',label));
     if(!points.length)continue;
