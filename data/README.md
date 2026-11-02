@@ -34,7 +34,7 @@ Copy-Item .env.example .env
 npm run dev
 ```
 
-브라우저 주소는 `http://localhost:5173`입니다. 카카오 지도를 사용하려면 `.env`에 `KAKAO_MAP_JAVASCRIPT_KEY`를 입력하고 카카오 개발자 콘솔에 이 로컬 주소를 허용 도메인으로 등록합니다. 도보 경로 조회에는 `KAKAO_REST_API_KEY`가 별도로 필요합니다. API 키가 들어 있는 `.env`는 전달·커밋하지 않습니다. 로그인 시연은 받는 사람이 `npm run setup:test-user`로 자신의 테스트 계정을 생성할 수 있습니다.
+브라우저 주소는 `http://localhost:5173`입니다. 카카오 지도를 사용하려면 `.env`에 `KAKAO_MAP_JAVASCRIPT_KEY`를 입력하고 카카오 개발자 콘솔에 이 로컬 주소를 허용 도메인으로 등록합니다. 도보 경로 조회에는 `KAKAO_REST_API_KEY`가 별도로 필요합니다. 키는 받는 사람에게 별도로 전달하되 `.env`를 Git에 커밋하지 않습니다. 로그인 시연은 받는 사람이 `npm run setup:test-user`로 자신의 테스트 계정을 생성할 수 있습니다.
 
 ## 원본에서 재구성: DB를 전달받지 않은 경우
 
