@@ -36,7 +36,7 @@ export function findKnowledge(chunks,question,limit=3){
     const title=terms(chunk.title),body=terms(chunk.text);
     const score=query.reduce((sum,word)=>sum+(title.some(item=>item.includes(word)||word.includes(item))?4:0)+(body.some(item=>item.includes(word)||word.includes(item))?1:0),0);
     return {...chunk,score};
-  }).filter(chunk=>chunk.score>0).sort((a,b)=>b.score-a.score||a.text.length-b.text.length);
+  }).filter(chunk=>chunk.score>0).sort((a,b)=>b.score-a.score||Number(b.source===sources[0])-Number(a.source===sources[0])||a.text.length-b.text.length);
   if(!scored.length)return [];
   const best=scored[0].score;
   const seen=new Set();
