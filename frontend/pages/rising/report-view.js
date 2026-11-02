@@ -59,7 +59,9 @@ export function renderOverview(target,report,analysis){
   }else box.append(el('p','',analysis?.note?'요약을 불러오지 못했습니다. 아래 지역 지표를 확인해 주세요.':'지역 지표가 준비되었습니다. 아래 핵심 수치를 확인해 주세요.'));
   if(analysis?.note)box.append(el('small','',analysis.note));wrap.append(box);
   const grid=el('div','report-metric-grid');
-  for(const [key,title] of [['stores','점포수'],['sales','매출액 (점포당 월평균)'],['footfall',report.analysisAreaM2>0?'유동인구 (3개월간 1ha당 인구수)':'유동인구 (분기 합계)']])grid.append(reportCard(report,key,title));
+  for(const [key,title] of [['stores','점포수'],['sales','매출액 (점포당 월평균)'],['footfall',report.analysisAreaM2>0?'유동인구 (3개월간 1ha당 인구수)':'유동인구 (분기 합계)']]){
+    if(report.metrics[key]?.value!=null)grid.append(reportCard(report,key,title));
+  }
   const source=`자료: 서울시 상권분석서비스 ${report.kind==='dong'?'행정동별':'상권별'} 원본 CSV · ${quarter(report.quarter)}. ${report.officialReportSales?'매출 요약은 서울시 분석보고서 표시값입니다. ':`매출액은 분기 합계를 3개월과 해당 분기 점포수로 나눴습니다. ${report.officialSalesEok!=null?'현재 매출은 서울시 순위 표시값을 사용하며 과거 분기는 원본 CSV 기준입니다. ':''}원본과 서울시 화면의 반올림·자료 차이로 증감액이 다를 수 있습니다. `}${report.analysisAreaM2>0?'유동인구는 서울시 분석 면적 기준으로 환산했습니다. ':''}`;
   wrap.append(grid,el('p','report-source',source));
   target.replaceChildren(wrap);
@@ -68,9 +70,10 @@ export function renderOverview(target,report,analysis){
 export function renderTrends(target,report){
   const wrap=el('div','trend-grid');
   for(const [key,[label]] of Object.entries(metrics)){
+    if(key==='residents')continue;
     const points=report.history.filter(x=>x.metric===key);const card=el('section','trend-card');
     card.append(el('h3','',label));
-    if(!points.length){card.append(el('p','','추이 자료가 없습니다.'));wrap.append(card);continue}
+    if(!points.length)continue;
     const values=points.map(x=>x.value),min=Math.min(...values),max=Math.max(...values),span=max-min||1;
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 360 145');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${label} 분기별 추이`);
     for(const y of [24,65,106]){const line=document.createElementNS(svg.namespaceURI,'line');for(const [name,v] of Object.entries({x1:16,x2:344,y1:y,y2:y}))line.setAttribute(name,v);line.setAttribute('stroke','#e6e8f0');svg.append(line)}
@@ -89,11 +92,12 @@ export function renderTrends(target,report){
 
 export function renderTable(target,report){
   const table=el('table','history-table'),head=el('thead'),heading=el('tr');
-  for(const name of ['분기',...Object.values(metrics).map(x=>x[0])])heading.append(el('th','',name));head.append(heading);table.append(head);
+  const available=Object.keys(metrics).filter(key=>report.history.some(row=>row.metric===key));
+  for(const name of ['분기',...available.map(key=>metrics[key][0])])heading.append(el('th','',name));head.append(heading);table.append(head);
   const body=el('tbody');
   for(const q of [...new Set(report.history.map(x=>x.quarter))].reverse()){
     const tr=el('tr');tr.append(el('th','',quarter(q)));
-    for(const key of Object.keys(metrics)){const row=report.history.find(x=>x.quarter===q&&x.metric===key);tr.append(el('td','',row?value(row.value,key):'—'))}body.append(tr);
+    for(const key of available){const row=report.history.find(x=>x.quarter===q&&x.metric===key);tr.append(el('td','',row?value(row.value,key):''))}body.append(tr);
   }
   table.append(body);target.replaceChildren(table,el('p','report-source','표의 값은 CSV 원본 수치입니다. 추이와 순위는 서로 다른 지표일 수 있습니다.'));
 }

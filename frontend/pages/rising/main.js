@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js?v=26';
+import {renderReportTab} from './full-report.js?v=28';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
@@ -13,7 +13,7 @@ function syncOwnerConsultation(){
   $('owner-consult-link').href='/pages/owner/consultation/founder/?'+new URLSearchParams({kind,code:selectedCode,quarter:$('quarter').value,industry:appliedFilters.industry});
 }
 const labels={stores:'점포수',sales:'매출',salesPerStore:'점포당 월평균 매출',footfall:'유동인구',residents:'상주인구'};
-let kind='dong',metric=ownerMode?'salesPerStore':'stores',map,requestId=0,summaryId=0,rows=[],selectedCode,pinned=false;
+let kind='dong',metric=ownerMode?'sales':'stores',map,requestId=0,summaryId=0,rows=[],selectedCode,pinned=false;
 const appliedFilters={criterion:'growth',comparison:'previous',industry:'all',period:'quarter',quarter:'',year:''};
 let draftFilters={...appliedFilters},availableQuarters=[];
 let badges,provider='leaflet';
@@ -67,28 +67,27 @@ function resetMapView(){
   drawMap();
 }
 $('reset-map').onclick=resetMapView;
-$('reset-conditions').onclick=async()=>{
-  kind='dong';metric=ownerMode?'salesPerStore':'stores';
+function resetDetailConditions(){
   Object.assign(appliedFilters,{criterion:'growth',comparison:'previous',industry:'all',period:'quarter',quarter:availableQuarters[0]??'',year:(availableQuarters[0]??'').slice(0,4)});
   draftFilters={...appliedFilters};
-  $('district').value='';$('map-district').value='';populateDongs();
   $('quarter').value=appliedFilters.quarter;
-  select('[data-kind]',document.querySelector('[data-kind="dong"]'));
   if(ownerMode){
-    const salesButton=document.querySelector('[data-metric="salesPerStore"], .owner-unified .metric button:nth-child(2)');
-    salesButton.dataset.metric='salesPerStore';
-    $('owner-kind').value='dong';$('owner-industry').value='all';$('owner-industry').disabled=false;
-    $('owner-sales-basis').value='average';$('owner-sales-basis').hidden=false;
-    $('owner-rank-sort').value='growth';$('owner-search').value='';$('owner-search-results').hidden=true;
-    document.querySelectorAll('[data-owner-mode]').forEach(button=>{const active=button.dataset.ownerMode==='operating';button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active))});
-    select('[data-find]',document.querySelector('[data-find="browse"]'));
+    $('owner-industry').value='all';$('owner-rank-sort').value='growth';
   }
-  select('[data-metric]',document.querySelector(`[data-metric="${metric}"]`));
-  syncFilterUi();resetMapView();drawDistrictOutline();await load();
+  syncFilterUi();
+}
+$('reset-conditions').onclick=async()=>{
+  resetDetailConditions();
+  await load();
 };
 
 document.querySelectorAll('[data-kind]').forEach(button=>button.onclick=()=>{kind=button.dataset.kind;select('[data-kind]',button);load()});
-document.querySelectorAll('[data-metric]').forEach(button=>button.onclick=()=>{metric=button.dataset.metric;select('[data-metric]',button);if(!['stores','sales','salesPerStore'].includes(metric)){appliedFilters.industry='all';draftFilters.industry='all'}syncFilterUi();load()});
+document.querySelectorAll('[data-metric]').forEach(button=>button.onclick=()=>{
+  if(metric!==button.dataset.metric)resetDetailConditions();
+  metric=button.dataset.metric;
+  select('[data-metric]',button);
+  syncFilterUi();load();
+});
 function select(selector,button){document.querySelectorAll(selector).forEach(item=>item.classList.toggle('selected',item===button))}
 function syncFilterUi(){
   for(const button of document.querySelectorAll('[data-filter]')){
@@ -353,9 +352,9 @@ function render(list){
 }
 function updateSource(rankingSource){
   const scope=kind==='dong'?'행정동별':'상권별';
-  const notes={stores:'업종별 전체 점포 수 합계',sales:'업종별 당월 추정매출액 합계',salesPerStore:'분기 추정매출 ÷ 3개월 ÷ 선택 업종 점포수',footfall:`${scope} 분기 유동인구 수`,residents:`${scope} 상주인구 수`};
+  const notes={stores:'업종별 전체 점포 수 합계',sales:'지역 전체 분기 추정매출',salesPerStore:'분기 추정매출 ÷ 3개월 ÷ 선택 업종 점포수',footfall:`${scope} 분기 유동인구 수`,residents:`${scope} 상주인구 수`};
   if($('rank-metric'))$('rank-metric').textContent=labels[metric]+' 기준';
-  if(ownerMode)$('owner-rank-title').textContent=(metric==='salesPerStore'?'월평균 매출':labels[metric])+' 비교';
+  if(ownerMode)$('owner-rank-title').textContent=(metric==='salesPerStore'?'점포당 월평균 매출':metric==='sales'?'분기 추정매출':labels[metric])+' 비교';
   $('source-note').textContent=`자료: 서울시 상권분석서비스 ${kind==='dong'?'행정동별':'상권별'} 원본 CSV · ${notes[metric]}. ${rankingSource==='official'?`순위와 증감률은 서울시 화면 기준${metric==='sales'?'이며 매출액도 서울시 표시값을 따릅니다':''}.`:'선택한 상세조건으로 원본 CSV를 집계한 순위입니다.'}`;
 }
 async function api(url){const response=await fetch(url),data=await response.json();if(!response.ok)throw Error(data.error||'데이터 조회 실패');return data}

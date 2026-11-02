@@ -1,4 +1,4 @@
-import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=4';
+import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=6';
 
 const labels={stores:'점포수',sales:'추정매출액',footfall:'유동인구',residents:'상주인구'};
 const days=['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
@@ -33,7 +33,8 @@ function chart(values,labels,mode='bar',format=short){
     defs.append(gradient,lineGradient);graphic.append(defs);chartFill=`url(#${id})`;lineStroke=`url(#${id}-line)`;
   }
   [30,80,130,180].forEach(y=>graphic.append(svg('line',{x1:42,y1:y,x2:580,y2:y,stroke:'#e6e9ef'})));
-  const xs=values.map((_,i)=>65+(490*i/Math.max(values.length-1,1)));
+  const spread=mode==='bar'&&values.length<=2?150:mode==='bar'&&values.length===3?300:490;
+  const xs=values.map((_,i)=>300-spread/2+(spread*i/Math.max(values.length-1,1)));
   if(mode==='line'){
     const line=svg('polyline',{points:values.map((n,i)=>`${xs[i]},${yFor(n)}`).join(' '),fill:'none',stroke:lineStroke,'stroke-width':3});graphic.append(line);
     values.forEach((n,i)=>graphic.append(svg('circle',{cx:xs[i],cy:yFor(n),r:4,fill:ownerStyle?'#498ff0':'#c49200'})));
@@ -97,6 +98,7 @@ function topIndustries(report,field,title,unit='개'){
   ranking.classList.add('owner-top-industries-table');box.append(ranking);return box;
 }
 function industryComposition(report){
+  if(!(report.industries||[]).some(item=>item.stores!=null))return unavailable('업종별 자료가 없습니다.');
   const sums={외식업:0,서비스업:0,소매업:0};
   for(const item of report.industries||[])sums[groupName(item.code)]=(sums[groupName(item.code)]||0)+(item.stores||0);
   const box=panel('업종분포','서비스 업종 코드를 외식업·서비스업·소매업으로 묶었습니다.');
@@ -147,11 +149,10 @@ function bestSummary(report){
     const first=[...(report.industries||[])].sort((a,b)=>(b[field]||0)-(a[field]||0))[0];
     const card=make('div','best-card');card.append(make('small','',title),make('strong','',first?first.name:'자료 없음'),make('span','',first?amount(first[field]):''));wrap.append(card);
   }
-  const sales=current(report).sales,footfall=current(report).footfall;
-  for(const [title,source,names,prefix] of [['매출이 가장 높은 요일',sales,days,'day_'],['유동인구가 가장 많은 시간대',footfall,hours,'hour_']]){
-    const card=make('div','best-card'),pairs=names.map((name,i)=>({name,n:source?.[prefix+i]||0})),best=pairs.reduce((a,b)=>a.n>=b.n?a:b);
-    card.append(make('small','',title),make('strong','',source?best.name:'자료 없음'));wrap.append(card);
-  }
+  const sales=current(report).sales;
+  const salesDay=make('div','best-card'),salesDays=days.map((name,i)=>({name,n:sales?.[`day_${i}`]||0}));
+  const bestSalesDay=salesDays.reduce((a,b)=>a.n>=b.n?a:b);
+  salesDay.append(make('small','','매출이 가장 높은 요일'),make('strong','',sales?bestSalesDay.name:'자료 없음'));wrap.append(salesDay);
   return wrap;
 }
 function ownerConditionTable(report,comparison){
@@ -323,9 +324,6 @@ function ownerTab(report,tab){
     content.append(ownerCards([['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change],['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':'']]));
     content.append(ownerBars('시간대별 유동인구',hours.map((label,i)=>({label,n:now.footfall?.[`hour_${i}`]})),'명'));
     content.append(ownerBars('연령대별 유동인구',ages.map((label,i)=>({label,n:now.footfall?.[`age_${i===5?60:(i+1)*10}`]})),'명'));
-    const workerHistory=Object.keys(report.details||{}).sort().filter(q=>qs.includes(q)).map(q=>({q,n:report.details[q]?.workers?.total??(report.details[q]?.workers?.male!=null&&report.details[q]?.workers?.female!=null?report.details[q].workers.male+report.details[q].workers.female:null)}));
-    if(workerHistory.some(x=>x.n!=null))content.append(ownerLine(report,'직장인구 추이',workerHistory));
-    else content.append(ownerDetail('직장인구 추이 · 행정동 자료 미제공','현재 원본에는 공식 상권별 직장인구만 있어 행정동 추이를 표시할 수 없습니다.'));
     const extra=ownerDetail('인구 세부 자료 더 보기');extra.append(ownerLine(report,'유동인구 추이',history('footfall')),ownerLine(report,'상주인구 추이',history('residents')));content.append(extra);
   }
   if(tab==='hinterland'){
@@ -345,7 +343,6 @@ export function renderReportTab(target,report,tab,analysis){
   if(document.body.classList.contains('owner-unified')&&['industry','sales','population','hinterland'].includes(tab)){target.replaceChildren(ownerTab(report,tab));return}
   const content=make('div','full-report');
   if(report.scopeIndustry){const label={CS1:'외식업',CS2:'서비스업',CS3:'소매업'}[report.scopeIndustry];content.append(make('p','report-source',`${label} 점포수·매출은 선택 업종 기준입니다. 인구·주변 환경과 세부 요일·시간대 자료는 지역 전체 기준입니다.`))}
-  if(!report.detailAvailable)content.append(unavailable('세부 원본 데이터가 적재되지 않았습니다. npm run import:details를 실행하세요.'));
   if(tab==='overview'){
     const summary=make('div');renderOverview(summary,report,analysis);content.append(summary,make('h3','report-section-title','핵심 업종·고객'),bestSummary(report));
     const trends=make('div');renderTrends(trends,report);content.append(make('h3','report-section-title','주요 지표 추이'),trends);
@@ -357,7 +354,6 @@ export function renderReportTab(target,report,tab,analysis){
     content.append(trend(report,'개업 점포','stores','opened'),trend(report,'폐업 점포','stores','closed'));
     content.append(topIndustries(report,'stores','점포수 상위 업종'),topIndustries(report,'opened','개업 상위 업종'),topIndustries(report,'closed','폐업 상위 업종'));
     content.append(trend(report,'운영 영업기간 평균','operation','months','개월','상권변화지표 원본의 운영 영업 개월 평균이며 행정동 자료는 제공되지 않습니다.'));
-    const survival=panel('신생기업 3년 생존율');survival.append(unavailable('서울시 상권분석서비스 공식 화면에는 값이 있지만, 현재 프로젝트에 적재된 원본 ZIP·DB에는 생존율 자료가 없어 이 지역의 수치를 표시할 수 없습니다.'));content.append(survival);
   }
   if(tab==='sales'){
     content.append(metricTrend(report,'sales'));
@@ -375,23 +371,13 @@ export function renderReportTab(target,report,tab,analysis){
   }
   if(tab==='population'){
     content.append(metricTrend(report,'footfall'));
-    if(report.analysisAreaM2>0){
-      const density=panel('유동인구 밀도 (3개월, 1ha당)','원본 CSV의 분기 유동인구를 서울시 분석 면적(ha)으로 나눈 값입니다.');
-      density.append(make('p','report-highlight',`${number(report.metrics.footfall.value/(report.analysisAreaM2/10000))}명/ha`));
-      content.append(density);
-    }
-    const daily=panel('일평균 유동인구','분기 유동인구 수를 해당 분기의 일수로 나눈 참고값입니다.');
-    const year=Number(report.quarter.slice(0,4)),q=Number(report.quarter.slice(4));
-    const daysInQuarter=Math.round((Date.UTC(year,3*q,1)-Date.UTC(year,3*(q-1),1))/86400000);
-    daily.append(make('p','report-highlight',amount(report.metrics.footfall?.value/daysInQuarter,'명')));content.append(daily);
     content.append(benchmark(report,'footfall'),breakdown(report,'성별 유동인구','footfall',['male','female'],['남성','여성']));
     content.append(breakdown(report,'연령대별 유동인구','footfall',ages.map((_,i)=>`age_${i===5?60:(i+1)*10}`),ages));
     content.append(breakdown(report,'요일별 유동인구','footfall',days.map((_,i)=>`day_${i}`),days));
     content.append(breakdown(report,'시간대별 유동인구','footfall',hours.map((_,i)=>`hour_${i}`),hours));
-    content.append(metricTrend(report,'residents'),benchmark(report,'residents'),breakdown(report,'성별 상주인구','residents',['male','female'],['남성','여성']));
+    content.append(benchmark(report,'residents'),breakdown(report,'성별 상주인구','residents',['male','female'],['남성','여성']));
     content.append(breakdown(report,'연령대별 상주인구','residents',ages.map((_,i)=>`age_${i===5?60:(i+1)*10}`),ages));
     content.append(sexAge(report,'residents','성별·연령대별 상주인구'));
-    content.append(breakdown(report,'가구 현황','residents',['apartment_households','other_households'],['아파트 가구','비아파트 가구'],'가구'));
     content.append(breakdown(report,'직장인구','workers',['male','female'],['남성','여성'],'명','직장인구는 상권별 원본에만 있습니다.'));
     content.append(breakdown(report,'연령대별 직장인구','workers',ages.map((_,i)=>`age_${i===5?60:(i+1)*10}`),ages));
   }
@@ -400,11 +386,16 @@ export function renderReportTab(target,report,tab,analysis){
     content.append(breakdown(report,'집객시설 현황','facilities',['office','bank','general_hospital','hospital','pharmacy','kindergarten','school','middle_school','high_school','university','department_store','supermarket','theater','lodging','railway','subway','bus'],['관공서','은행','종합병원','일반병원','약국','유치원','초등학교','중학교','고등학교','대학교','백화점','슈퍼마켓','극장','숙박시설','철도역','지하철역','버스정거장'],'개','원본 CSV가 제공하는 시설 유형입니다.'));
     content.append(breakdown(report,'아파트 면적별 세대','apartments',['under_66','size_66','size_99','size_132','size_165'],['66㎡ 미만','66㎡대','99㎡대','132㎡대','165㎡대'],'세대'));
     content.append(breakdown(report,'아파트 가격대별 세대','apartments',['price_under_1','price_1','price_2','price_3','price_4','price_5','price_6_plus'],['1억 미만','1억대','2억대','3억대','4억대','5억대','6억 이상'],'세대'));
-    content.append(breakdown(report,'상주 가구','residents',['apartment_households','other_households'],['아파트 가구','비아파트 가구'],'가구'));
     content.append(breakdown(report,'직장인구','workers',['male','female'],['남성','여성'],'명'));
     content.append(benchmark(report,'stores'),benchmark(report,'footfall'));
-    for(const title of ['소득수준','임대시세']){const box=panel(title);box.append(unavailable('제공된 ZIP·행정동 CSV에 이 지표의 원본이 없어 표시할 수 없습니다.'));content.append(box)}
   }
+  content.querySelectorAll('.report-block').forEach(box=>{if(box.querySelector('.report-unavailable')&&!box.querySelector('.detail-chart,.detail-table,.report-highlight'))box.remove()});
+  content.querySelectorAll('.best-card').forEach(box=>{if(box.textContent.includes('자료 없음'))box.remove()});
+  content.querySelectorAll('.report-metric,.trend-card').forEach(box=>{if(box.textContent.includes('자료 없음'))box.remove()});
+  content.querySelectorAll('.report-unavailable').forEach(item=>item.remove());
+  content.querySelectorAll('.detail-table tbody tr,.history-table tbody tr').forEach(row=>{if(row.textContent.includes('자료 없음'))row.remove()});
+  content.querySelectorAll('.detail-table,.history-table').forEach(item=>{if(!item.querySelector('tbody tr'))item.remove()});
+  content.querySelectorAll('.best-grid').forEach(item=>{if(!item.children.length)item.remove()});
   const chapter={overview:'종합의견',industry:'업종분석',sales:'매출분석',population:'인구분석',hinterland:'지역(배후지)분석'}[tab];
   target.replaceChildren(...(target.id?.startsWith('report-')?[make('h3','report-chapter-title',chapter)]:[]),content);
 }

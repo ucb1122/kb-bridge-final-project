@@ -29,7 +29,7 @@
 .region-card .owner-mini-trend{min-width:0}
 .region-card .owner-mini-trend:last-child{grid-column:1/-1}
 .region-card .owner-mini-trend h4{margin:0 0 6px;font-size:13px}
-.region-card .owner-gender-visual{width:min(100%,540px);margin:8px auto}
+.region-card .owner-gender-visual{width:min(100%,300px);margin:8px auto}
 .region-card .owner-gender-image{display:block;width:100%;height:auto;filter:brightness(1.05)}
 .region-card .owner-gender-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;width:70%;margin:8px auto 0;text-align:center}
 .region-card .owner-gender-stat{display:grid;justify-items:center;gap:4px;min-width:0}
