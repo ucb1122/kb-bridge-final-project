@@ -200,7 +200,9 @@ npm run dev
 
 ![최종 발표 자료의 KO-B 튜토리얼과 서비스 시연 화면](docs/images/ko-b-final-demo.png)
 
-로컬 DB `data/commerce.sqlite`가 없는 새 복제본에서는 원본 ZIP을 `data/raw/seoul_public_data.zip`에 놓고 행정동 CSV·경계를 `data/raw/dong/`에 준비한 뒤 다음 명령으로 적재합니다. 원본 수집 조건은 [데이터 안내](data/README.md)를 확인하세요.
+**새로 Git clone한 폴더에는 `data/commerce.sqlite`와 지도 경계 GeoJSON이 없습니다.** 바로 실행하려면 기존 개발 PC에서 `commerce.sqlite`, `commerce.geojson`, `commerce-dong.geojson` 세 파일을 별도로 받아 `data/`에 넣습니다. 사용자·상담 기록이 담길 수 있는 `users.sqlite`와 API 키가 담긴 `.env`는 전달하지 않습니다. 파일별 위치와 실행 순서는 [데이터 안내](data/README.md)에 있습니다.
+
+DB를 전달받지 않았다면 서울시 상권별 원본 ZIP을 **별도로 확보**해 `data/raw/seoul_public_data.zip`에 둔 뒤 Python 3으로 다음 명령을 실행합니다. `fetch:dong`은 행정동 자료만 내려받으며 상권 ZIP을 만들어 주지 않습니다.
 
 ```powershell
 npm run fetch:dong
@@ -208,7 +210,7 @@ npm run import:raw
 npm run import:details
 ```
 
-`.env`의 `DB_PATH` 기본값은 `data/commerce.sqlite`입니다. 모든 지도 화면에 `KAKAO_MAP_JAVASCRIPT_KEY`가 필요합니다. 카카오 개발자 설정에 로컬 도메인 `http://localhost:5173`을 등록합니다. `SEOUL_API_KEY`는 공개 자료 수집에, `OLLAMA_BASE_URL`·`OLLAMA_MODEL`은 선택형 AI 의견과 문서 안내 챗봇에 사용합니다. 로컬 Ollama에서 `.env`의 모델을 준비해야 AI 답변이 나오며 모델이 없으면 챗봇은 관련 문서 내용을 표시합니다. 실제 키는 `.env`에만 보관합니다.
+`.env`의 `DB_PATH` 기본값은 `data/commerce.sqlite`입니다. 카카오 지도 화면을 사용하려면 `KAKAO_MAP_JAVASCRIPT_KEY`를 설정하고 카카오 개발자 콘솔에 `http://localhost:5173`을 허용 도메인으로 등록합니다. 도보 경로에는 `KAKAO_REST_API_KEY`가 별도로 필요합니다. `OLLAMA_BASE_URL`·`OLLAMA_MODEL`은 선택형 AI 의견과 문서 안내 챗봇에 사용합니다. 로컬 Ollama에서 모델을 준비하지 않으면 챗봇은 관련 문서 내용을 표시합니다. 실제 키는 `.env`에만 보관합니다.
 
 ## 7. 검증
 
