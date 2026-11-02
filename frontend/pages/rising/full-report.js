@@ -1,4 +1,4 @@
-import {renderOverview,renderTrends,renderTable,quarter,number,value,rate} from './report-view.js?v=6';
+import {renderOverview,renderTrends,renderTable,quarter,number,value,rate,monthlySalesPerStore} from './report-view.js?v=6';
 
 const labels={stores:'점포수',sales:'추정매출액',footfall:'유동인구',residents:'상주인구'};
 const days=['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
@@ -71,6 +71,11 @@ function breakdown(report,title,group,keys,names,unit='명',description=''){
   const box=panel(title,description),source=current(report)[group];
   if(!source||!keys.some(k=>source[k]!=null)){box.append(unavailable('이 지역·분기의 세부 자료가 원본 CSV에 없습니다.'));return box}
   const data=keys.map((key,i)=>({name:names[i],n:source[key]})).filter(x=>x.n!=null),total=data.reduce((sum,x)=>sum+x.n,0),top=data.reduce((a,b)=>a.n>=b.n?a:b);
+  if(group==='footfall'&&keys.length===7&&keys[0]==='day_0'){
+    const observed=report.metrics.footfall?.value;
+    const matches=observed!=null&&Math.abs(total-observed)<=Math.max(1,observed*0.001);
+    box.append(make('p','report-caption',`요일별 원본 합계 ${number(total)}명${matches?' · 분기 유동인구 집계와 일치합니다.':observed!=null?` · 분기 유동인구 집계 ${number(observed)}명과 차이가 있어 원본을 확인해 주세요.`:'.'}`));
+  }
   if(data.length<keys.length)box.append(make('p','report-caption','일부 항목의 원본 값이 없어 비율은 값이 제공된 항목 사이에서만 계산했습니다.'));
   box.append(make('p','report-highlight',`${top.name} 비중이 가장 높습니다 (${total?((top.n/total)*100).toFixed(1):'0.0'}%).`));
   if(keys.length===2&&keys[0]==='male'&&keys[1]==='female'){
@@ -87,7 +92,7 @@ function breakdown(report,title,group,keys,names,unit='명',description=''){
     return box;
   }
   const visual=data.length>10?[...data].sort((a,b)=>b.n-a.n).slice(0,8):data;
-  box.append(chart(visual.map(x=>x.n),visual.map(x=>x.name)));
+  box.append(chart(visual.map(x=>x.n),visual.map(x=>x.name),'bar',group==='footfall'?number:short));
   box.append(table(['구분',unit==='원'?'금액':`수치 (${unit})`,'비율'],data.map(x=>[x.name,amount(x.n,unit),`${total?((x.n/total)*100).toFixed(1):'0.0'}%`])));
   return box;
 }
@@ -179,18 +184,8 @@ function ownerOverview(report){
     let note='';
     if(key==='stores'&&currentValue!=null){displayed=`${number(currentValue)}개`;note='선택 지역·업종의 분기 점포수 원본값입니다.'}
     if(key==='sales'){
-      const monthly=report.officialReportSales?.current;
-      const stores=observation(report.quarter,'stores')??report.metrics.stores?.value;
-      if(monthly!=null){displayed=`${number(monthly)}만 원`;note='서울시 공식 화면의 점포당 월평균 매출 표시값입니다.'}
-      else if(report.officialSalesEok!=null&&stores>0){
-        displayed=`${number(Math.round(report.officialSalesEok*1e8/3/stores/1e4))}만 원`;
-        note='서울시 순위 분기 추정매출 ÷ 3개월 ÷ 전체 점포수로 계산한 점포당 월평균 매출 참고값입니다.';
-      }
-      else if(currentValue!=null&&stores>0){
-        const coveredStores=(report.industries||[]).reduce((sum,row)=>sum+(row.sales!=null?(row.stores||0):0),0);
-        if(coveredStores>=stores){displayed=`${number(Math.round(currentValue/3/stores/1e4))}만 원`;note='공개 원본 분기 추정매출 ÷ 3개월 ÷ 점포수로 계산한 점포당 월평균 참고값입니다.'}
-        else {displayed='자료 부족';note='일부 업종의 매출만 제공되어 산정할 수 없습니다.'}
-      }
+      const total=report.officialSalesEok!=null?Math.round(report.officialSalesEok*1e8):currentValue;
+      if(total!=null){displayed=value(total,'sales');note=report.officialSalesEok!=null?'서울시 순위 화면의 분기 추정매출 표시값입니다.':'공개 원본에서 제공된 업종의 분기 추정매출 합계입니다. 일부 업종의 매출이 빠졌을 수 있습니다.'}
     }
     if(key==='footfall'&&currentValue!=null&&report.analysisAreaM2>0){displayed=`${number(Math.round(currentValue/(report.analysisAreaM2/10000)))}명/ha`;note='분기 유동인구 집계 ÷ 분석 면적(ha)으로 계산한 유동인구 밀도입니다.'}
     if(!note)note={stores:'선택 지역·업종의 분기 점포수 원본 자료가 없습니다.',sales:'점포당 월평균 매출을 계산할 자료가 없습니다.',footfall:'유동인구 밀도 계산에 필요한 분기 집계 또는 분석 면적 자료가 없습니다.'}[key];
@@ -227,7 +222,7 @@ function ownerOverview(report){
 }
 function ownerMetricCard(title,n,unit='개'){
   const card=make('article','owner-overview-card');
-  card.append(make('span','owner-card-title',title),make('strong','owner-card-value',n==null?'행정동 자료 미제공':amount(n,unit)));
+  card.append(make('span','owner-card-title',title),make('strong','owner-card-value',n==null?'자료 없음':amount(n,unit)));
   return card;
 }
 function ownerCards(items){
@@ -237,7 +232,7 @@ function ownerCards(items){
     '개업 점포수':'선택 지역·업종의 해당 분기 개업 점포수 원본값입니다.',
     '폐업 점포수':'선택 지역·업종의 해당 분기 폐업 점포수 원본값입니다.',
     '분기 추정매출':'선택 지역·업종의 한 분기 추정매출입니다.',
-    '점포당 월평균 참고값':'지역 매출을 점포당 월평균으로 나타낸 값입니다.',
+    '점포당 월평균 참고값':'자료 제공 범위와 점포 수를 확인해 해석하는 월평균 참고값입니다.',
     '분기 매출건수':'선택 지역·업종의 분기 매출건수 원본값입니다.',
     '유동인구 집계':'선택 지역의 분기 유동인구 관측 집계입니다.',
     '상주인구':'선택 지역의 분기 상주인구 원본값입니다.',
@@ -280,7 +275,7 @@ function ownerBasis(report,tab,now){
   if(tab==='industry')rows.push(['점포수·개폐업','선택 지역·업종의 분기별 공개 원본 점포 수와 개업·폐업 점포 수입니다.'],['상위 업종','현재 분기 업종 코드별 점포 수를 내림차순으로 정렬했습니다.']);
   if(tab==='sales'){
     const stores=report.metrics.stores?.value,covered=(report.industries||[]).reduce((n,x)=>n+(x.sales!=null?(x.stores||0):0),0);
-    rows.push(['분기 추정매출',report.officialSalesEok!=null?'서울시 순위 화면의 분기 표시값을 우선 사용합니다. 그래프·원본 표는 공개 CSV 집계값입니다.':'공개 CSV의 선택 지역·업종 분기 추정매출 집계값입니다.'],['점포당 월평균',report.officialReportSales?.current!=null?'서울시 공식 화면의 월평균 표시값입니다.':report.officialSalesEok!=null?'서울시 순위 분기 매출액 ÷ 3개월 ÷ 선택 업종 점포 수로 계산한 참고값입니다.':stores>0&&covered>=stores?'공개 CSV의 분기 추정매출 ÷ 3개월 ÷ 점포 수로 계산한 참고값입니다.':`매출 제공 업종의 점포 ${number(covered)}개 / 전체 ${number(stores??0)}개로 범위가 일치하지 않아 계산하지 않습니다.`],['요일·시간대·성별','공개 CSV에 매출이 제공된 업종의 추정매출을 해당 항목별로 합산했습니다. 실제 개별 점포 매출은 아닙니다.']);
+    rows.push(['분기 추정매출',report.officialSalesEok!=null?'서울시 순위 화면의 분기 표시값을 우선 사용합니다. 그래프·원본 표는 공개 CSV 집계값입니다.':'공개 CSV의 선택 지역·업종 분기 추정매출 집계값입니다.'],['점포당 월평균',report.officialReportSales?.current!=null?'서울시 공식 화면의 월평균 표시값입니다.':report.officialSalesEok!=null?'서울시 순위 분기 매출액 ÷ 3개월 ÷ 선택 업종 점포 수로 계산한 참고값입니다.':covered>0?`공개 CSV에서 매출이 제공된 업종의 분기 추정매출 ÷ 3개월 ÷ 해당 업종 점포 ${number(covered)}개로 계산했습니다. 전체 점포 ${number(stores??0)}개의 평균이 아닙니다.`:'매출 제공 업종의 점포 수가 없어 계산할 수 없습니다.'],['요일·시간대·성별','공개 CSV에 매출이 제공된 업종의 추정매출을 해당 항목별로 합산했습니다. 실제 개별 점포 매출은 아닙니다.']);
   }
   if(tab==='population'||tab==='hinterland')rows.push(['유동인구','공개 원본의 해당 분기 지역 전체 유동인구 합계입니다. 같은 사람의 반복 관측이 포함될 수 있습니다.'],['상주인구','공개 원본의 해당 분기 지역 상주인구입니다. 동일 값이 여러 분기에 제공될 수 있습니다.'],['직장인구',report.kind==='dong'?'서울 열린데이터광장의 행정동별 직장인구 원본을 지역 코드·분기로 결합했습니다. 같은 값이 연속 분기에 나타나면 원본 제공값의 반복이며 실제 인구가 변하지 않았다는 뜻은 아닙니다.':'공식 상권 기준 직장인구 원본입니다.']);
   if(tab==='hinterland')rows.push(['집객시설',now.facilities?.subway!=null||now.facilities?.bus!=null?'원본에 제공된 시설 유형별 수치이며 지도 중심 반경 집계가 아닙니다.':'현재 적재된 집객시설 원본은 공식 상권 단위입니다. 행정동 전체 시설 수로 환산할 근거가 없어 표시하지 않습니다.']);
@@ -309,9 +304,9 @@ function ownerTab(report,tab){
     const sales=metric('sales'),stores=metric('stores'),covered=(report.industries||[]).reduce((n,x)=>n+(x.sales!=null?(x.stores||0):0),0);
     const official=report.officialReportSales?.current;
     const officialQuarter=report.officialSalesEok!=null?Math.round(report.officialSalesEok*1e8):null;
-    const perStore=official!=null?official*1e4:officialQuarter!=null&&stores>0?officialQuarter/3/stores:sales!=null&&stores>0&&covered>=stores?sales/3/stores:null;
+    const perStore=official!=null?official*1e4:officialQuarter!=null?monthlySalesPerStore(officialQuarter,stores):monthlySalesPerStore(sales,covered);
     const transactions=now.sales?.transactions;
-    content.append(ownerCards([['분기 추정매출',officialQuarter??sales,'원',null,officialQuarter!=null?'서울시 순위 화면 표시값입니다.':'공개 원본 집계값입니다.'],['점포당 월평균 참고값',perStore,'원',null,official!=null?'서울시 공식 화면의 표시값입니다.':officialQuarter!=null?'서울시 순위 분기 추정매출 ÷ 3개월 ÷ 점포수로 계산했습니다.':perStore==null?'일부 업종의 매출만 제공되어 산정하지 않습니다.':'공개 원본 분기 추정매출 ÷ 3개월 ÷ 점포수로 계산했습니다.'],['분기 매출건수',transactions,'건']]));
+    content.append(ownerCards([['분기 추정매출',officialQuarter??sales,'원',null,officialQuarter!=null?'서울시 순위 화면 표시값입니다.':'공개 원본 집계값입니다.'],['점포당 월평균 참고값',perStore,'원',null,official!=null?'서울시 공식 화면의 표시값입니다.':officialQuarter!=null?'서울시 순위 분기 추정매출 ÷ 3개월 ÷ 전체 점포수로 계산했습니다.':perStore==null?'매출 제공 업종 점포 수가 없어 계산하지 않습니다.':`매출 제공 업종의 분기 추정매출 ÷ 3개월 ÷ 해당 업종 점포 ${number(covered)}개로 계산했습니다. 전체 점포 ${number(stores??0)}개의 평균이 아닙니다.`],['분기 매출건수',transactions,'건']]));
     content.append(ownerBars('요일별 추정매출',days.map((label,i)=>({label,n:now.sales?.[`day_${i}`]})),'원','전체 업종·매출 자료가 제공된 범위의 집계입니다.'));
     content.append(ownerBars('시간대별 추정매출',hours.map((label,i)=>({label,n:now.sales?.[`hour_${i}`]})),'원'));
     content.append(ownerLine(report,officialQuarter!=null?'분기 원본 매출 집계 추이':'분기 추정매출 추이',history('sales'),'원'));
@@ -321,14 +316,14 @@ function ownerTab(report,tab){
   }
   if(tab==='population'){
     const workers=now.workers?.total??(now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null);
-    content.append(ownerCards([['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change],['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':'']]));
+    content.append(ownerCards([['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change],['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'선택 지역·분기에 제공된 직장인구 값이 없습니다.':'']]));
     content.append(ownerBars('시간대별 유동인구',hours.map((label,i)=>({label,n:now.footfall?.[`hour_${i}`]})),'명'));
     content.append(ownerBars('연령대별 유동인구',ages.map((label,i)=>({label,n:now.footfall?.[`age_${i===5?60:(i+1)*10}`]})),'명'));
     const extra=ownerDetail('인구 세부 자료 더 보기');extra.append(ownerLine(report,'유동인구 추이',history('footfall')),ownerLine(report,'상주인구 추이',history('residents')));content.append(extra);
   }
   if(tab==='hinterland'){
     const workers=now.workers?.total??(now.workers?.male!=null&&now.workers?.female!=null?now.workers.male+now.workers.female:null);
-    content.append(ownerCards([['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'현재 원본에는 공식 상권별 직장인구만 있습니다.':''],['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change]]));
+    content.append(ownerCards([['상주인구',metric('residents'),'명',report.metrics.residents?.change],['직장인구',workers,'명',null,workers==null?'선택 지역·분기에 제공된 직장인구 값이 없습니다.':''],['유동인구 집계',metric('footfall'),'명',report.metrics.footfall?.change]]));
     if(now.facilities?.subway!=null||now.facilities?.bus!=null)content.append(ownerBars('집객시설 현황',[['지하철역',now.facilities?.subway],['버스 정류소',now.facilities?.bus]].map(([label,n])=>({label,n})),'개','원본 CSV에 제공된 시설 수이며 지도 기준점 반경 집계와 다릅니다.'));
     const extra=ownerDetail('그래프 더 보기');extra.append(ownerLine(report,'상주인구 추이',history('residents')),ownerLine(report,'유동인구 추이',history('footfall')));content.append(extra);
   }
@@ -359,7 +354,7 @@ export function renderReportTab(target,report,tab,analysis){
     content.append(metricTrend(report,'sales'));
     const sales=report.officialSalesEok!=null?Math.round(report.officialSalesEok*1e8):report.metrics.sales?.value;
     const stores=report.metrics.stores?.value;
-    const box=panel('점포당 월평균 추정매출',report.officialReportSales?'서울시 분석보고서 표시값입니다.':report.officialSalesEok!=null?'서울시 순위 화면의 매출액을 3개월과 점포수로 나눈 값입니다.':'원본 CSV의 분기 매출액을 3개월과 점포수로 나눈 참고값입니다. 서울시 화면과 다를 수 있습니다.');
+    const box=panel('점포당 월평균 추정매출',report.officialReportSales?'서울시 분석보고서 표시값입니다.':report.officialSalesEok!=null?'서울시 순위 화면의 매출액을 3개월과 점포수로 나눈 값입니다.':'원본 CSV의 분기 매출액을 3개월과 점포수로 나눈 참고값입니다.');
     box.append(make('p','report-highlight',report.officialReportSales?.current!=null?`${number(report.officialReportSales.current)}만 원`:sales!=null&&stores?amount(sales/3/stores,'원'):'자료 없음'));content.append(box);
     content.append(trend(report,'월평균 매출건수','sales','transactions','건','분기 매출건수를 3개월로 나눈 참고값입니다.',3),topIndustries(report,'sales','추정매출 상위 업종','원'));
     content.append(breakdown(report,'요일별 매출','sales',days.map((_,i)=>`day_${i}`),days,'원'));

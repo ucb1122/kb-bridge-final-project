@@ -6,7 +6,7 @@ if(button){
   overlay.innerHTML=`<section class="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-title">
     <header class="chat-top"><div class="chat-title-wrap"><img src="/shared/characters/kobi-face.png" alt=""><div><h2 id="chat-title">코비에게 물어보세요</h2></div></div><div class="chat-actions"><button class="chat-reset" type="button">대화 초기화</button><button class="chat-close" type="button" aria-label="챗봇 닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div></header>
     <div class="chat-messages" role="log" aria-live="polite"><div class="chat-line bot"><img src="/shared/characters/kobi-face.png" alt=""><div class="chat-bubble">안녕하세요! 상권 분석, 회복 플래너, 상담 준비에 대해 궁금한 점을 물어보세요.</div></div></div>
-    <form class="chat-form"><label class="chat-sr" for="chat-question">질문</label><textarea id="chat-question" rows="1" maxlength="800" placeholder="상권브릿지에 대해 질문해 주세요" required></textarea><button type="submit">보내기</button></form></section>`;
+    <form class="chat-form"><label class="chat-sr" for="chat-question">질문</label><textarea id="chat-question" rows="1" maxlength="800" placeholder="KO-B에 대해 질문해 주세요" required></textarea><button type="submit">보내기</button></form></section>`;
   document.body.append(overlay);
   const form=overlay.querySelector('form'),input=overlay.querySelector('textarea'),messages=overlay.querySelector('.chat-messages');
   let before,controller,busy=false,sessionVersion=0;const history=[];
@@ -89,11 +89,11 @@ if(button){
       if(item.source==='data/commerce.sqlite')return `서울시 공개 상권 통계 · ${item.title.replace(/ (?:원본 통계|지역 상세 통계)$/,'')}`;
       if(item.source==='frontend/shared/finance/products.json')return `${item.title}${item.verifiedAt?` (${item.verifiedAt} 확인)`:''}`;
       if(item.source==='frontend/pages/intended-owner/assets/closure-risk.json')return `우리 가게 회복 플래너 · ${item.title}`;
-      if(item.source==='docs/CHATBOT-KNOWLEDGE.md')return '상권브릿지 이용 안내';
+      if(item.source==='docs/CHATBOT-KNOWLEDGE.md')return 'KO-B 이용 안내';
       if(item.source==='docs/OWNER-FOUNDER-CONSULTATION.md')return 'KB 영업점 금융상담 안내';
       if(item.source==='docs/DATA-MODEL.md')return '상권 데이터 설명';
-      if(item.source==='README.md')return '상권브릿지 프로젝트 안내';
-      return '상권브릿지 안내 자료';
+      if(item.source==='README.md')return 'KO-B 프로젝트 안내';
+      return 'KO-B 안내 자료';
     }))];
     return `참고 자료: ${labels.join(' · ')}`;
   }

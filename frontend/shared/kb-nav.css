@@ -28,3 +28,5 @@ body .consult-header{height:100px;padding:0 44px;gap:38px;box-sizing:border-box}
 .kb-header nav a.active{border-bottom-color:#ffbc00!important}
 @media(max-width:1300px){.kb-header nav{grid-template-columns:repeat(4,126px)}.kb-header nav a{width:126px;font-size:14px!important}}
 @media(max-width:760px){.kb-header nav{grid-template-columns:repeat(4,112px)}.kb-header nav a{width:112px;font-size:12px!important}body .kb-header nav a:first-child,body .kb-header nav a:last-child{display:flex!important}}
+.kb-name-yellow { color: #ffbc00 !important; -webkit-text-stroke-color: #ffbc00; }
+.kb-product-name { font-weight: 900 !important; -webkit-text-stroke: .35px currentColor; }

@@ -159,7 +159,7 @@ export function getRegionSummary({kind,code,quarter}={}){
       metrics:Object.fromEntries(rows.map(x=>[x.metric,{value:x.value,change:x.previous>0?(x.value-x.previous)/x.previous:null}])),history};
   }finally{db.close()}
 }
-export function getRegionReport(query={}){
+function buildRegionReport(query={}){
   const selectedIndustry=query.industry||'all';
   if(!industries.has(selectedIndustry))throw Error('잘못된 업종 조건입니다.');
   const summary=getRegionSummary(query);
@@ -214,4 +214,19 @@ export function getRegionReport(query={}){
     return {...summary,details,industries,industryHistory,groupSales,
       benchmarks:Object.fromEntries(benchmarks.map(x=>[x.metric,{district:x.district,city:x.city}])),detailAvailable:rows.length>0};
   }finally{db.close()}
+}
+const reportCache=new Map();
+export function getRegionReport(query={}){
+  const dbPath=path.resolve(root,process.env.DB_PATH||'data/commerce.sqlite');
+  const workersPath=path.join(root,'data/official-dong-workers-20252-20262.json');
+  const snapshotPaths=[dbPath,workersPath,path.join(root,'data',`official-rankings-${query.quarter}.json`),path.join(root,'data',`official-report-sales-${query.quarter}.json`)];
+  const signature=snapshotPaths.map(file=>fs.existsSync(file)?fs.statSync(file).mtimeMs:0).join(':');
+  const key=JSON.stringify([dbPath,signature,query.kind,query.code,query.quarter,query.industry||'all']);
+  if(reportCache.has(key))return reportCache.get(key);
+  const report=buildRegionReport(query);
+  if(report){
+    if(reportCache.size>=250)reportCache.delete(reportCache.keys().next().value);
+    reportCache.set(key,report);
+  }
+  return report;
 }

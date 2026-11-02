@@ -1,6 +1,6 @@
 import {parseAmount,fundingSummary,nearestBranches,founderSupport} from './model.js';
 import {loadKakaoMaps} from '../../../../shared/kakao-bootstrap.js';
-import {buildFounderReviewPDF} from './review-pdf.js?v=4';
+import {buildFounderReviewPDF} from './review-pdf.js?v=5';
 
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
@@ -141,7 +141,7 @@ function reviewRow(dl,label,value){const row=add(dl,'div','', 'review-row');add(
 function reviewSection(parent,title){const section=add(parent,'section','','review-section');add(section,'h3',title);const dl=add(section,'dl','','review-list');return dl}
 function renderReview(personalUser){
   const box=$('review-content');box.replaceChildren();const paper=add(box,'article','','review-paper');
-  add(paper,'p','KB 상권브릿지 · 영업점 상담 준비서','review-kicker');
+  add(paper,'p','KO-B · 영업점 상담 준비서','review-kicker');
   add(paper,'h3','상담 전에 확인할 내용','review-paper-title');
   if(personalUser){const applicant=reviewSection(paper,'01 · 신청인 정보');reviewRow(applicant,'이름',personalUser.name);reviewRow(applicant,'이메일',personalUser.email);reviewRow(applicant,'전화번호',personalUser.phone||'미등록');reviewRow(applicant,'아이디',personalUser.loginId)}
   const place=reviewSection(paper,personalUser?'02 · 선택한 상권':'01 · 선택한 상권');

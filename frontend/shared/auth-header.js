@@ -1,9 +1,9 @@
 async function authState(){try{const r=await fetch('/api/auth/me',{cache:'no-store'});if(r.ok)return(await r.json()).user}catch{}return null}
 function makeDialog(onLogin){
-  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/auth-modal.css';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='/shared/auth-modal.css?v=2';document.head.append(css);
   const overlay=document.createElement('div');overlay.className='auth-overlay';overlay.hidden=true;
   overlay.innerHTML=`<section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-    <button class="auth-close" type="button" aria-label="닫기">×</button><div class="auth-brand"><span class="auth-brand-mark"><img src="/shared/kb-bank-brand-source.png" alt=""></span><strong>상권브릿지</strong></div>
+    <button class="auth-close" type="button" aria-label="닫기">×</button><div class="auth-brand"><span class="auth-brand-mark"><img src="/shared/kb-bank-brand-source.png" alt=""></span><strong><span class="kb-name-yellow">K</span>O-<span class="kb-name-yellow">B</span></strong></div>
     <h2 id="auth-title">로그인</h2>
     <form class="auth-form"><label class="auth-sr" for="auth-id">아이디 또는 이메일</label><input id="auth-id" name="loginId" autocomplete="username" placeholder="아이디 또는 이메일" required>
     <label class="auth-sr" for="auth-password">비밀번호</label><input id="auth-password" name="password" type="password" autocomplete="current-password" placeholder="비밀번호" required>

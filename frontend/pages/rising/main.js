@@ -1,5 +1,5 @@
 import {districts,populateDistricts,focusDistrict} from '../../shared/districts.js';
-import {renderReportTab} from './full-report.js?v=28';
+import {renderReportTab} from './full-report.js?v=30';
 
 const $=id=>document.getElementById(id);
 const ownerMode=document.body.classList.contains('owner-unified');
@@ -329,7 +329,10 @@ async function showSummary(row,rank,clicked=false){
     if(!ownerMode&&!analysisCache.has(key)){
       const loadAnalysis=async()=>{
         try{
-          const analysis=await api('/api/rising/analysis?'+new URLSearchParams({kind,code:row.code,quarter:$('quarter').value}));
+          const query=new URLSearchParams({kind,code:row.code,quarter:$('quarter').value});
+          const local=await api('/api/rising/analysis?'+new URLSearchParams({...Object.fromEntries(query),mode:'local'}));
+          if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',local);
+          const analysis=await api('/api/rising/analysis?'+query);
           analysisCache.set(key,analysis);
           if(current===summaryId)renderReportTab($('report-overview'),summary,'overview',analysis);
         }catch(error){
@@ -357,7 +360,7 @@ function updateSource(rankingSource){
   if(ownerMode)$('owner-rank-title').textContent=(metric==='salesPerStore'?'점포당 월평균 매출':metric==='sales'?'분기 추정매출':labels[metric])+' 비교';
   $('source-note').textContent=`자료: 서울시 상권분석서비스 ${kind==='dong'?'행정동별':'상권별'} 원본 CSV · ${notes[metric]}. ${rankingSource==='official'?`순위와 증감률은 서울시 화면 기준${metric==='sales'?'이며 매출액도 서울시 표시값을 따릅니다':''}.`:'선택한 상세조건으로 원본 CSV를 집계한 순위입니다.'}`;
 }
-async function api(url){const response=await fetch(url),data=await response.json();if(!response.ok)throw Error(data.error||'데이터 조회 실패');return data}
+async function api(url){const response=await fetch(url,{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error||'데이터 조회 실패');return data}
 async function init(){
   try{
     try{await initializeMap()}catch(mapError){$('map-legend').textContent=mapError.message;if(ownerMode&&$('owner-map-hint'))$('owner-map-hint').textContent=mapError.message}
