@@ -43,3 +43,4 @@ document.addEventListener('DOMContentLoaded',async()=>{
   if(new URLSearchParams(location.search).get('login')==='1'&&!user)dialog.open();
 });
 import('/shared/chatbot.js');
+import('/shared/tutorial.js?v=5');
