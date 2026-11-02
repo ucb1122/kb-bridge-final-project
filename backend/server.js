@@ -10,10 +10,11 @@ import {getWalkingRoute} from './server/walking-route.js';
 import {openUserDb,hashPassword,verifyPassword,publicUser,createSession,currentUser,revokeSession,sessionCookie} from './server/auth.js';
 import {randomBytes} from 'node:crypto';
 import {handleChat} from './server/chat/index.js';
+import {saveConsultationRequest} from './server/consultation-request.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 loadEnv(root);
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.geojson':'application/geo+json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.woff2':'font/woff2','.ttf':'font/ttf','.pdf':'application/pdf'};
-function json(res,status,data){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(data))}
+function json(res,status,data){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data))}
 async function readJson(req){
   let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>4096)throw Error('요청 크기가 너무 큽니다.')}
   try{return JSON.parse(raw)}catch{throw Error('요청 형식이 올바르지 않습니다.')}
@@ -24,6 +25,17 @@ http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,'http://localhost');
     if(url.pathname==='/api/chat')return await handleChat(req,res,root);
+    if(url.pathname==='/api/consultation-requests'&&req.method==='POST'){
+      if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'허용되지 않은 요청입니다.'});
+      const db=openUserDb(root);
+      try{
+        const user=currentUser(db,req.headers.cookie);
+        if(!user)return json(res,401,{error:'로그인 후 상담서를 저장해 주세요.'});
+        const saved=saveConsultationRequest(db,root,user,await readJson(req));
+        return json(res,201,saved);
+      }catch(error){return json(res,error.status||400,{error:error.message})}
+      finally{db.close()}
+    }
     if(url.pathname.startsWith('/api/auth/')){
       if(req.method==='POST'&&req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return authResponse(res,403,{error:'허용되지 않은 요청입니다.'});
       const db=openUserDb(root);

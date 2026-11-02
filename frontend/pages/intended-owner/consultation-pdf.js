@@ -13,7 +13,8 @@ export async function buildConsultationPDF({summary,branch,form},dependencies={}
  function paint(command,target=page){const i=pdf.getPages().indexOf(target);(paintings[i]??=[]).push(command);}
  function rect(x,y,width,height,color){page.drawRectangle({x,y,width,height,color});paint({kind:'rect',x,y,width,height,color});}
  function draw(text,x,baseline,size,color,target=page){for(const ch of text){target.drawText(ch,{x,y:baseline,size,font,color});paint({kind:'text',text:ch,x,y:baseline,size,color},target);x+=font.widthOfTextAtSize(ch,size);}}
- function header(){rect(36,792,523,5,gold);draw('상권브릿지  |  우리 가게 회복 플래너',38,811,10,muted);draw('소상공인 금융상담 신청서',38,757,23,ink);draw('고객 상황과 상담 희망 내용을 미리 정리하는 사전 상담서',38,735,10.5,muted);y=708;}
+ function brand(text,x,baseline,size,target=page){draw('K',x,baseline,size,gold,target);x+=font.widthOfTextAtSize('K',size);draw('O-',x,baseline,size,muted,target);x+=font.widthOfTextAtSize('O-',size);draw('B',x,baseline,size,gold,target);x+=font.widthOfTextAtSize('B',size);draw(text,x,baseline,size,muted,target)}
+ function header(){rect(36,792,523,5,gold);brand('  |  우리 가게 회복 플래너',38,811,10);draw('소상공인 금융상담 신청서',38,757,23,ink);draw('고객 상황과 상담 희망 내용을 미리 정리하는 사전 상담서',38,735,10.5,muted);y=708;}
  header();
  function wrapped(text,size,max=510){const lines=[];let line='';for(const ch of String(text).replaceAll('→',' -> ').replaceAll('−','-')){if(font.widthOfTextAtSize(line+ch,size)>max&&line){lines.push(line);line=ch;}else line+=ch;}if(line)lines.push(line);return lines;}
  function line(text,size=10.5,color=ink){for(const value of wrapped(text,size)){if(y<63){page=pdf.addPage([595.28,841.89]);header();}draw(value,40,y,size,color);y-=18;}y-=5;}
@@ -69,8 +70,8 @@ export async function buildConsultationPDF({summary,branch,form},dependencies={}
  y-=13;line('상담 참고: '+(values.get('상권 신호')||'상권 신호는 상담에서 확인'),8.5,muted);
  line('고객 입력과 가정의 비교이며, 지원·상환 조정·공제 가입은 별도 확인합니다.',8.5,muted);
  line('시연용 사전 상담서입니다. 실제 은행 접수·예약 또는 정식 신청서를 대신하지 않습니다.',8.5,muted);
- const pages=pdf.getPages();for(const [i,p] of pages.entries())draw(`상권브릿지  |  ${i+1} / ${pages.length}`,40,30,9,muted,p);
- pdf.setTitle('우리 가게 회복 플래너 - 영업점 상담서');
+ const pages=pdf.getPages();for(const [i,p] of pages.entries())brand(`  |  ${i+1} / ${pages.length}`,40,30,9,p);
+ pdf.setTitle('KO-B - 우리 가게 회복 플래너 영업점 상담서');
  if(dependencies.onPreview)await dependencies.onPreview(paintings,fontBytes);
  return pdf.save();
 }

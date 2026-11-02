@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const sources=['docs/CHATBOT-KNOWLEDGE.md','README.md','docs/DATA-MODEL.md','docs/OWNER-FOUNDER-CONSULTATION.md'];
-const stop=new Set(['그리고','어떻게','있나요','있어','우리','상권','상권브릿지','알려줘','해주세요','대한','무엇','어디','이거','저거','합니다','사용자','기능','뭐야','무슨','설명','자세히']);
+const stop=new Set(['그리고','어떻게','있나요','있어','우리','상권','kb','ko','알려줘','해주세요','대한','무엇','어디','이거','저거','합니다','사용자','기능','뭐야','무슨','설명','자세히']);
 
 export function terms(text){
   return [...new Set((String(text).toLowerCase().match(/[가-힣a-z0-9]{2,}/g)||[]).filter(word=>!stop.has(word)))];

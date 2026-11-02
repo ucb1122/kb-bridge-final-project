@@ -1,4 +1,4 @@
-import {appointmentHTML,initAppointment,reviewRequest,invalidateRequest} from './appointment-request.js?v=20261101-split-modals';
+import {appointmentHTML,initAppointment,reviewRequest,invalidateRequest} from './appointment-request.js?v=20261102-brand';
 import {CUSTOMER_STEPS as STEPS,CUSTOMER_CONCERNS as CONCERNS,customerComparison as compare} from './customer-flow-model.js?v=20261028-rr5';
 import {escapeHTML as esc} from './navigator-model.js';
 import {METHODS,GROUPS,compareRepayment,findPattern,groupIndustries,worstQuarterRatio} from './revenue-repayment.js?v=20261028-rr5';

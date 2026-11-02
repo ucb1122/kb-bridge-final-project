@@ -13,7 +13,8 @@ export async function buildFounderReviewPDF(sections){
   function rect(x,top,width,height,color){const bottom=top-height;page.drawRectangle({x,y:bottom,width,height,color});paint({kind:'rect',x,y:bottom,width,height,color})}
   function draw(value,x,baseline,size,color){for(const char of String(value)){page.drawText(char,{x,y:baseline,size,font,color});paint({kind:'text',text:char,x,y:baseline,size,color});x+=font.widthOfTextAtSize(char,size)}}
   function wrap(value,size,width){const lines=[];let current='';for(const char of String(value||'')){if(char==='\n'){lines.push(current);current='';continue}if(current&&font.widthOfTextAtSize(current+char,size)>width){lines.push(current);current=char}else current+=char}lines.push(current);return lines}
-  function startPage(){page=pdf.addPage([595.28,841.89]);rect(36,792,523,5,gold);draw('상권브릿지  |  KB 영업점 금융상담',38,811,10,muted);draw('상담 준비 내용',38,757,24,ink);draw('선택한 상권과 직접 입력한 예상 창업비용을 정리했습니다.',38,735,10,muted);y=708}
+  function brand(text,x,baseline,size){draw('K',x,baseline,size,gold);x+=font.widthOfTextAtSize('K',size);draw('O-',x,baseline,size,muted);x+=font.widthOfTextAtSize('O-',size);draw('B',x,baseline,size,gold);x+=font.widthOfTextAtSize('B',size);draw(text,x,baseline,size,muted)}
+  function startPage(){page=pdf.addPage([595.28,841.89]);rect(36,792,523,5,gold);brand('  |  KB 영업점 금융상담',38,811,10);draw('상담 준비 내용',38,757,24,ink);draw('선택한 상권과 직접 입력한 예상 창업비용을 정리했습니다.',38,735,10,muted);y=708}
   function ensure(height){if(y-height<76)startPage()}
   function heading(title){ensure(42);rect(36,y,523,29,pale);draw(title,45,y-20,12,ink);y-=35}
   function rowCells(entries){
@@ -67,8 +68,8 @@ export async function buildFounderReviewPDF(sections){
       else rowCells([first]);
     }
   }
-  const pages=pdf.getPages();for(const [index,target] of pages.entries()){page=target;draw(`상권브릿지  |  ${index+1} / ${pages.length}`,40,30,9,muted)}
-  pdf.setTitle('상권브릿지 - KB 영업점 상담 준비 내용');
+  const pages=pdf.getPages();for(const [index,target] of pages.entries()){page=target;brand(`  |  ${index+1} / ${pages.length}`,40,30,9)}
+  pdf.setTitle('KO-B - KB 영업점 상담 준비 내용');
   const preview=await renderPagePreviews(paintings,fontBytes);
   return {bytes:await pdf.save(),preview};
 }
