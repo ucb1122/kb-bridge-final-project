@@ -1,4 +1,4 @@
-import {initRecoveryPlanner} from './recovery-planner.js?v=20261101-split-modals';
+import {initRecoveryPlanner} from './recovery-planner.js?v=20261102-brand';
 import {createMap,createLayerGroup,drawFeature} from './commercial-map.js';
 import {calculateImpact} from './impact-model.js';
 import {validateHeatResults,classificationFor,HEAT_LABELS} from './heat-adapter.js';
@@ -209,7 +209,7 @@ try{view=createMap();view.map.setView(SEOUL,INITIAL_ZOOM);baseLayer=createLayerG
 
 function summaryRows(){const r=lastResult,d=draft(),ready=r?.status==='ready';return[['고객 유형',state.role==='tenant'?'임차인(개인사업자)':'임대인(건물주)'],['관심 지역',state.selected?state.selected.district+' '+state.selected.name:'선택하지 않음'],['입력 구분',d.example?'설명용 예시':'고객 직접 입력'],['현재 월세·임대수입',ready?fmt(r.rentAmount)+'만원':'입력하지 않음'],['임대료 변동 가정',String(d.rentChangePercent??'').trim()?d.rentChangePercent+'%':'입력하지 않음'],['월 수입·지출 영향',ready?fmt(r.monthlyDifference)+'만원 (잔여현금에 미치는 변화)':'계산하지 않음'],['현재 월 잔여현금',ready&&r.currentMonthlyCashflow!==null?fmt(r.currentMonthlyCashflow)+'만원':'입력하지 않음'],['변경 후 월 잔여현금',ready&&r.scenarioMonthlyCashflow!==null?fmt(r.scenarioMonthlyCashflow)+'만원':'계산하지 않음'],['금리 변화',d.rateEnabled?(String(d.rateChangePp??'').trim()?d.rateChangePp+'%p':'입력 필요'):'선택하지 않음'],...(state.role==='landlord'?[['추가 공실 가정',d.vacancyEnabled?'임대수입 '+(d.vacancySharePercent??'미입력')+'% / '+(d.vacancyMonths??'미입력')+'개월':'선택하지 않음']]:[])];}
 $('prepare-consultation').onclick=()=>{const panel=document.querySelector('.finance-details');panel.open=true;panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});};
-$('download-summary').onclick=()=>{const content='상권브릿지 상담 준비 메모 (은행 미접수)\n\n'+summaryRows().map(([label,value])=>label+': '+value).join('\n')+'\n\n입력한 가정에 따른 단순 비교입니다. 실제 매출·상환 이력은 검증되지 않았고 은행에 전송되지 않았습니다.';const url=URL.createObjectURL(new Blob(['\uFEFF'+content],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='상생네비게이터_상담준비.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+$('download-summary').onclick=()=>{const content='KO-B 상담 준비 메모 (은행 미접수)\n\n'+summaryRows().map(([label,value])=>label+': '+value).join('\n')+'\n\n입력한 가정에 따른 단순 비교입니다. 실제 매출·상환 이력은 검증되지 않았고 은행에 전송되지 않았습니다.';const url=URL.createObjectURL(new Blob(['\uFEFF'+content],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='상생네비게이터_상담준비.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 function setComparison(open){$('simulator-dialog').hidden=!open;document.querySelector('.map-workspace').classList.toggle('comparison-open',open);$('open-simulator').setAttribute('aria-expanded',String(open));requestAnimationFrame(()=>view?.map.invalidateSize());}
 $('open-simulator').onclick=()=>setComparison(true);
 $('close-comparison').onclick=()=>setComparison(false);

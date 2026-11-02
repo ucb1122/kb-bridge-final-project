@@ -31,6 +31,6 @@ if(!analysis){show('main-content',false);show('empty-context',true);}else{
  $('branch-next').onclick=()=>{if(!selectedBranch){$('branch-error').textContent='공식 영업점을 먼저 선택해 주세요.';return;}setPhase('request');};
  $('request-section').onsubmit=e=>{e.preventDefault();const error=validateRequest({name:$('request-name').value,phone:$('request-phone').value,purpose:$('request-type').value,date:$('request-date').value,branch:selectedBranch},today);$('request-error').textContent=error;if(error)return;renderReview();setPhase('review');};
  for(const [id,next] of [['edit-business','business'],['back-business','business'],['edit-profile','profile'],['back-profile','profile'],['back-branch','branch'],['edit-request','request']])$(id).onclick=()=>setPhase(next);
- $('print-request').onclick=()=>window.print();$('download-request').onclick=()=>{if(!summary)return;const text=JSON.stringify(summary,null,2),url=URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='KB상권브릿지_상담요청서_시연_미접수.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);};
+ $('print-request').onclick=()=>window.print();$('download-request').onclick=()=>{if(!summary)return;const text=JSON.stringify(summary,null,2),url=URL.createObjectURL(new Blob([text],{type:'application/json;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='KO-B_상담요청서_시연_미접수.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);};
  loadBranches();
 }

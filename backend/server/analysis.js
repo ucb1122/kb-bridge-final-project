@@ -1,6 +1,23 @@
 import {getRegionReport} from './data.js';
+import {DatabaseSync} from 'node:sqlite';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 const cache=new Map();
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+const cachePath=path.resolve(root,process.env.ANALYSIS_CACHE_PATH||'data/analysis-cache.sqlite');
+function cachedAnalysis(key,result){
+  try{
+    const db=new DatabaseSync(cachePath);
+    try{
+      db.exec('CREATE TABLE IF NOT EXISTS summaries (cache_key TEXT PRIMARY KEY, result_json TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)');
+      if(result)db.prepare('INSERT OR REPLACE INTO summaries(cache_key,result_json) VALUES(?,?)').run(key,JSON.stringify(result));
+      else return JSON.parse(db.prepare('SELECT result_json FROM summaries WHERE cache_key=?').get(key)?.result_json||'null');
+    }finally{db.close()}
+  }catch(error){console.warn('분석 캐시 접근 실패:',error.message)}
+  return null;
+}
 const names={stores:'점포수',sales:'추정매출액',footfall:'유동인구',residents:'상주인구'};
 const number=value=>Math.round(value).toLocaleString('ko-KR');
 const days=['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
@@ -50,13 +67,17 @@ function localSummary(report){
   return lines.slice(0,4);
 }
 
-export async function getRegionAnalysis(query){
+async function generateRegionAnalysis(query){
   const report=getRegionReport(query);
   if(!report)return null;
   const model=process.env.OLLAMA_MODEL||'gemma4:e2b';
   const fallback={mode:'data',lines:localSummary(report),note:'Ollama 종합의견을 사용할 수 없어 원본 CSV의 핵심 수치를 표시합니다. Ollama를 실행하고 설정된 모델을 내려받으세요.'};
-  const key=`${model}:${report.kind}:${report.code}:${report.quarter}`;
+  if(query.mode==='local')return {mode:'data',lines:fallback.lines,note:'공개 원본의 핵심 수치로 만든 즉시 요약입니다. AI 종합의견을 준비하는 중입니다.'};
+  const facts=JSON.stringify(analysisFacts(report));
+  const key=createHash('sha256').update(`analysis-v2:${model}:${facts}`).digest('hex');
   if(cache.has(key))return cache.get(key);
+  const stored=cachedAnalysis(key);
+  if(stored){cache.set(key,stored);return stored}
   try{
     const base=new URL(process.env.OLLAMA_BASE_URL||'http://127.0.0.1:11434');
     const response=await fetch(new URL('/api/generate',base),{
@@ -64,7 +85,7 @@ export async function getRegionAnalysis(query){
       body:JSON.stringify({model,stream:false,think:false,
         format:{type:'object',properties:{opinions:{type:'array',minItems:4,maxItems:4,items:{type:'string'}}},required:['opinions'],additionalProperties:false},
         system:'서울시 상권분석 보고서의 종합의견을 작성합니다. JSON opinions 배열에 한국어 문장 정확히 4개를 넣으세요. 각 문장은 화면의 글머리표 하나로 표시되므로 1~2문장, 110자 이내로 씁니다. 1번: 점포수의 전분기 변화와 개폐업. 2번: 추정매출액의 전분기 변화와 최고 요일 또는 시간대. 3번: 유동인구와 상주인구의 변화. 4번: 앞의 지표를 함께 본 신중한 종합 판단 또는 추가 확인할 점. 입력된 수치와 단위만 사용하고 자릿수를 바꾸지 마세요. 제공되지 않은 순위·소득·임대료·수익성·창업 성공률을 만들지 마세요. 유동인구 증가가 매출 증가를 일으켰다고 단정하지 마세요. 월평균과 분기 합계를 혼동하지 말고 과장된 조언을 피하세요. 마크다운·번호·제목은 쓰지 마세요.',
-        prompt:JSON.stringify(analysisFacts(report)),
+        prompt:facts,
         options:{temperature:0.2,num_ctx:8192,num_predict:420}}),
       signal:AbortSignal.timeout(120000),
     });
@@ -77,10 +98,18 @@ export async function getRegionAnalysis(query){
     if(!Array.isArray(summary.opinions)||summary.opinions.length!==4||summary.opinions.some(line=>typeof line!=='string'||!line.trim()))
       throw Error('Ollama 응답에 4개 종합의견이 없습니다.');
     const result={mode:'ai',lines:summary.opinions.map(line=>line.trim()),note:`로컬 Ollama ${model} 생성 · 원본 CSV와 비교해 활용하세요.`};
-    cache.set(key,result);return result;
+    cache.set(key,result);cachedAnalysis(key,result);return result;
   }catch(error){
     const reason=error.name==='TimeoutError'?'2분 안에 응답하지 않았습니다. 더 작은 모델을 선택해 보세요.':
       error instanceof TypeError?'Ollama 서버에 연결할 수 없습니다. Ollama가 실행 중인지 확인하세요.':error.message;
     return {...fallback,note:`${reason} 원본 CSV 수치 요약을 표시합니다.`};
   }
+}
+const pending=new Map();
+export function getRegionAnalysis(query){
+  const key=JSON.stringify([query.kind,query.code,query.quarter,query.mode||'ai',process.env.OLLAMA_MODEL||'gemma4:e2b']);
+  if(pending.has(key))return pending.get(key);
+  const task=generateRegionAnalysis(query).finally(()=>pending.delete(key));
+  pending.set(key,task);
+  return task;
 }

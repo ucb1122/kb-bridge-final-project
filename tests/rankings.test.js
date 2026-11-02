@@ -1,13 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {DatabaseSync} from 'node:sqlite';
+import {fileURLToPath} from 'node:url';
 import {getRankings,getRegionReport} from '../backend/server/data.js';
 import {monthlySalesPerStore} from '../frontend/pages/rising/report-view.js';
 
 const hasData=fs.existsSync(new URL('../data/commerce.sqlite',import.meta.url));
 
+test('행정동 유동·상주인구는 적재된 모든 분기의 점포수 지역과 연결된다',{skip:!hasData},()=>{
+  const db=new DatabaseSync(fileURLToPath(new URL('../data/commerce.sqlite',import.meta.url)),{readOnly:true});
+  try{
+    for(const metric of ['footfall','residents']){
+      const missing=db.prepare(`SELECT count(*) AS count FROM observations s LEFT JOIN observations o
+        ON o.kind=s.kind AND o.quarter=s.quarter AND o.region_code=s.region_code AND o.metric=?
+        WHERE s.kind='dong' AND s.metric='stores' AND o.value IS NULL`).get(metric).count;
+      assert.equal(missing,0,`${metric} 행정동 원본 결측`);
+    }
+  }finally{db.close()}
+});
+
 test('행정동 직장인구는 별도 공개자료의 지역 전체 값으로 표시한다',{skip:!hasData},()=>{
-  for(const [code,expected] of [['11140580',4450],['11260580',1611],['11305603',364]]){
+  for(const [code,expected] of [['11140580',4450],['11260580',1611],['11305603',364],['11500620',5425]]){
     const report=getRegionReport({kind:'dong',code,quarter:'20262'});
     assert.equal(report.details['20262'].workers.total,expected);
   }
@@ -103,6 +117,14 @@ test('내 상권 분석의 점포당 월평균은 분기 매출과 점포수로 
   const hang=result.rows.find(row=>row.name==='항동');
   assert.ok(hang);
   assert.equal(Math.round(hang.value/1e4*10)/10,10.9);
+});
+
+test('매출 제공 업종만 있는 지역은 같은 업종의 점포를 분모로 사용한다',{skip:!hasData},()=>{
+  const report=getRegionReport({kind:'dong',code:'11590660',quarter:'20262'});
+  const covered=report.industries.reduce((sum,row)=>sum+(row.sales!=null?(row.stores||0):0),0);
+  assert.equal(covered,1069);
+  assert.equal(report.metrics.stores.value,1449);
+  assert.equal(Math.round(monthlySalesPerStore(report.metrics.sales.value,covered)/1e4),1681);
 });
 
 test('선택 업종 보고서의 매출과 점포수는 해당 업종만 집계한다',{skip:!hasData},()=>{
