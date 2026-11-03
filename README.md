@@ -199,7 +199,7 @@ cd .\kb-bridge-final-project
 Copy-Item .env.example .env
 ```
 
-Ollama 설치 후 새 PowerShell 창을 열어 모델 다운로드 명령을 실행하세요. 프로젝트 ZIP을 받았다면 `git clone` 대신 압축을 풀고 해당 프로젝트 폴더로 이동합니다. 전달받은 `data` 폴더를 프로젝트에 넣어 `data/commerce.sqlite`와 두 GeoJSON 파일이 있는지 확인합니다. `.env`의 두 카카오 키를 입력하고, 카카오 앱의 JavaScript SDK 도메인에 `http://localhost:5173`을 등록합니다. 실제 키가 담긴 `.env`는 Git에 올리지 않습니다.
+Ollama 설치 후 새 PowerShell 창을 열어 모델 다운로드 명령을 실행하세요. 프로젝트 ZIP을 받았다면 `git clone` 대신 압축을 풀고 해당 프로젝트 폴더로 이동합니다. Google Drive **공유 문서함 → 3조 → DATA → 진희헌** 폴더의 `data.zip`을 받아 압축을 풀고, 나온 실행용 파일을 프로젝트 `data/`에 복사합니다. `data/commerce.sqlite`와 두 GeoJSON 파일이 있는지 확인하세요. 같은 폴더의 `SECRET.txt`에서 카카오 키 두 개를 확인해 로컬 `.env`에 입력합니다. `SECRET.txt`와 실제 키가 담긴 `.env`는 Git에 올리지 않습니다. 카카오 앱의 JavaScript SDK 도메인에는 `http://localhost:5173`을 등록합니다.
 
 Ollama 앱을 실행한 상태에서 **`package.json`이 있는 프로젝트 폴더**에서 웹 서버를 시작합니다.
 
@@ -207,7 +207,7 @@ Ollama 앱을 실행한 상태에서 **`package.json`이 있는 프로젝트 폴
 npm run dev
 ```
 
-브라우저에서 `http://localhost:5173`을 엽니다. `ollama pull`은 모델 다운로드, `ollama run`은 선택적인 직접 테스트, `npm run dev`는 KO-B 서버 실행 명령입니다. 전체 폴더 구조와 전달받은 데이터 배치 방법은 [실행 방법 및 안내](실행-방법-및-안내.md)에 정리했습니다. 원본에서 DB를 다시 만드는 경우에만 [데이터 안내](data/README.md)를 따릅니다.
+브라우저에서 `http://localhost:5173`을 엽니다. `ollama pull`은 모델 다운로드, `ollama run`은 선택적인 직접 테스트, `npm run dev`는 KO-B 서버 실행 명령입니다. 전체 폴더 구조와 전달받은 데이터 배치 방법은 [실행 방법 및 안내](실행%20방법%20및%20안내.md)에 정리했습니다. 원본에서 DB를 다시 만드는 경우에만 [데이터 안내](data/README.md)를 따릅니다.
 
 ![최종 발표 자료의 KO-B 튜토리얼과 서비스 시연 화면](docs/images/ko-b-final-demo.png)
 
