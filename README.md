@@ -189,16 +189,17 @@ GitHub 화면에 표시됐던 **Jupyter Notebook 92.9%**는 이 웹 앱의 실�
 
 ## 6. 로컬 실행
 
-**필요 환경:** Node.js 22.13 이상. 공개 원본 자료를 처음부터 적재할 때만 Python 3이 필요합니다.
+**필요 환경:** Node.js 22.13 이상. AI 챗봇과 지역 종합의견까지 실행하려면 Ollama와 `gemma4:e2b` 모델도 준비합니다. 공개 원본 자료를 처음부터 적재할 때만 Python 3이 필요합니다.
+
+저장소를 새로 복제했다면 먼저 프로젝트 폴더로 이동합니다. 아래 명령은 `package.json`이 있는 프로젝트 루트에서 실행합니다.
 
 ```powershell
+git clone https://github.com/ucb1122/kb-bridge-final-project.git
+cd .\kb-bridge-final-project
 Copy-Item .env.example .env
-npm run dev
 ```
 
-브라우저에서 `http://localhost:5173`을 엽니다. 개발 서버는 `node --watch backend/server.js`로 실행되며, 한 번만 실행할 때는 `npm start`를 사용합니다. 브라우저 주소 `/pages/`와 `/shared/`는 유지됩니다. 이 프로젝트 루트에는 `package.json`이 있으므로 이 위치에서 명령을 실행하세요.
-
-![최종 발표 자료의 KO-B 튜토리얼과 서비스 시연 화면](docs/images/ko-b-final-demo.png)
+`.env`의 `KAKAO_MAP_JAVASCRIPT_KEY`, `KAKAO_REST_API_KEY`에 자신의 키를 입력합니다. 실제 키가 담긴 `.env`는 Git에 올리지 않습니다.
 
 **새로 Git clone한 폴더에는 `data/commerce.sqlite`와 지도 경계 GeoJSON이 없습니다.** 바로 실행하려면 기존 개발 PC에서 `commerce.sqlite`, `commerce.geojson`, `commerce-dong.geojson` 세 파일을 별도로 받아 `data/`에 넣습니다. 사용자·상담 기록이 담길 수 있는 `users.sqlite`와 API 키가 담긴 `.env`는 전달하지 않습니다. 파일별 위치와 실행 순서는 [데이터 안내](data/README.md)에 있습니다.
 
@@ -210,7 +211,41 @@ npm run import:raw
 npm run import:details
 ```
 
-`.env`의 `DB_PATH` 기본값은 `data/commerce.sqlite`입니다. 카카오 지도 화면을 사용하려면 `KAKAO_MAP_JAVASCRIPT_KEY`를 설정하고 카카오 개발자 콘솔에 `http://localhost:5173`을 허용 도메인으로 등록합니다. 도보 경로에는 `KAKAO_REST_API_KEY`가 별도로 필요합니다. `OLLAMA_BASE_URL`·`OLLAMA_MODEL`은 선택형 AI 의견과 문서 안내 챗봇에 사용합니다. 로컬 Ollama에서 모델을 준비하지 않으면 챗봇은 관련 문서 내용을 표시합니다. 실제 키는 `.env`에만 보관합니다.
+### Ollama 설치와 모델 준비
+
+프로젝트의 AI 챗봇과 지역 종합의견 생성에는 로컬 Ollama 모델을 사용합니다. Windows에서는 [Ollama 공식 다운로드 페이지](https://ollama.com/download/windows)에서 설치하거나 PowerShell에서 다음 명령으로 설치합니다.
+
+```powershell
+irm https://ollama.com/install.ps1 | iex
+```
+
+새 PowerShell 창을 열어 설치를 확인하고, 프로젝트와 동일한 모델을 다운로드합니다. 모델 파일은 약 4.6GB로, 다운로드할 때 인터넷 연결이 필요합니다.
+
+```powershell
+ollama --version
+ollama pull gemma4:e2b
+ollama list
+```
+
+`ollama list`에 `gemma4:e2b`가 보여야 합니다. 직접 동작을 확인하려면 `ollama run gemma4:e2b`로 질문한 뒤 `/bye`로 종료합니다. `.env`의 `OLLAMA_BASE_URL=http://127.0.0.1:11434`와 `OLLAMA_MODEL=gemma4:e2b`가 실제 실행 환경과 일치해야 합니다.
+
+Ollama 앱을 실행한 뒤 다음 명령으로 서버 연결을 확인합니다. `TcpTestSucceeded : True`가 나오면 프로젝트에서 접속할 수 있습니다. 실행되지 않았다면 `ollama serve`를 별도 PowerShell 창에서 실행합니다. 이미 실행 중이면 중복 실행하지 않습니다.
+
+```powershell
+Test-NetConnection 127.0.0.1 -Port 11434
+```
+
+### 웹 앱 실행
+
+```powershell
+npm run dev
+```
+
+브라우저에서 `http://localhost:5173`을 엽니다. 개발 서버는 `node --watch backend/server.js`로 실행되며, 한 번만 실행할 때는 `npm start`를 사용합니다. 브라우저 주소 `/pages/`와 `/shared/`는 유지됩니다. 이 프로젝트 루트에는 `package.json`이 있으므로 이 위치에서 명령을 실행하세요.
+
+![최종 발표 자료의 KO-B 튜토리얼과 서비스 시연 화면](docs/images/ko-b-final-demo.png)
+
+`.env`의 `DB_PATH` 기본값은 `data/commerce.sqlite`입니다. 카카오 지도 화면을 사용하려면 `KAKAO_MAP_JAVASCRIPT_KEY`를 설정하고 카카오 개발자 콘솔에 `http://localhost:5173`을 허용 도메인으로 등록합니다. 도보 경로에는 `KAKAO_REST_API_KEY`가 별도로 필요합니다. Ollama가 꺼져 있거나 모델이 없으면 AI 생성 답변 대신 자료 기반 안내만 표시될 수 있습니다. 모델 실행 속도는 컴퓨터 사양에 따라 달라집니다.
 
 ## 7. 검증
 
