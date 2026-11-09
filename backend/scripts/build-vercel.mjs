@@ -50,6 +50,7 @@ await fs.writeFile(path.join(fn,'index.mjs'),`process.env.PUBLIC_DEMO='1';proces
 await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'index.mjs',launcherType:'Nodejs',maxDuration:30}));
 const excluded=relative=>/\/(analysis|sources)\//.test('/'+relative)||/\.(csv|zip|ipynb|sqlite|py|md|pptx|docx)$/i.test(relative)||relative==='pages/owner/assets/businesses.json';
 const frontend=path.join(root,'frontend');
+await fs.rm(path.join(output,'static'),{recursive:true,force:true});
 await fs.cp(frontend,path.join(output,'static'),{recursive:true,filter:source=>!excluded(path.relative(frontend,source).replaceAll('\\','/'))});
 // Public deployment marker is injected at build time, leaving local pages unchanged.
 async function inject(dir){for(const e of await fs.readdir(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())await inject(p);else if(e.name.endsWith('.html')){let html=await fs.readFile(p,'utf8');html=html.replace('</head>','<script>window.KOB_PUBLIC_DEMO=true</script><script src="/shared/public-demo.js" defer></script></head>');await fs.writeFile(p,html);}}}

@@ -2,6 +2,11 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve('.vercel/output/static');
+// Reuse only the existing browser-visible Kakao JavaScript key for local preview.
+if(!process.env.KAKAO_MAP_JAVASCRIPT_KEY){
+ const localEnv=await fs.readFile('.env','utf8').catch(()=> '');
+ process.env.KAKAO_MAP_JAVASCRIPT_KEY=localEnv.match(/^KAKAO_MAP_JAVASCRIPT_KEY=(.*)$/m)?.[1].trim()||'';
+}
 const {default:handler}=await import('../../.vercel/output/functions/api.func/index.mjs');
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css','.json':'application/json','.woff2':'font/woff2','.ttf':'font/ttf','.svg':'image/svg+xml','.png':'image/png','.pdf':'application/pdf','.geojson':'application/geo+json'};
 http.createServer(async(req,res)=>{

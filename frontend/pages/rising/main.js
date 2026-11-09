@@ -25,7 +25,6 @@ let boundaryFeatures=[],boundaryPolygons=[],markerElements=new Map(),hoveredCode
 let dongFeatures=[],districtFeatures=[],seoulOutlineFeature=null,districtOutlines=[];
 async function initializeMap(){
   const config=await api('/api/rising/map-config');
-  if(config.publicDemo){await(await import('/shared/public-map.js')).installPublicMap();provider='kakao';map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(37.5665,126.978),level:7});new ResizeObserver(()=>map.relayout()).observe($('map'));badges=[];return;}
   if(!config.kakaoJavaScriptKey)throw Error('카카오 지도 JavaScript 키를 .env에 설정해 주세요.');
   if(config.kakaoJavaScriptKey){
     await new Promise((resolve,reject)=>{

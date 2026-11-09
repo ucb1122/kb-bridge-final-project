@@ -8,7 +8,7 @@
 |---|---|---|
 | 서버 | `backend/server.js`의 장기 실행 HTTP 서버 | 동일한 `handleRequest`를 Node.js 함수로 호출 |
 | 데이터 조회 | 로컬 `data/commerce.sqlite` | 공개 통계 논리 사본에서 빌드한 읽기 전용 SQLite |
-| 지도 | 카카오 지도와 키·도메인 설정 | Leaflet/OpenStreetMap 어댑터, 같은 실제 경계·순위·선택 동작 |
+| 지도 | 카카오 지도와 키·도메인 설정 | 동일한 카카오 지도. Vercel의 JavaScript 키 환경변수와 배포 도메인 등록 필요 |
 | 로그인·상담 저장 | 로컬 사용자 DB | 비활성화, 503 응답. 사용자 DB는 배포하지 않음 |
 | AI 요약·자유 질문 | PC의 Ollama 모델, 문서·데이터 대체 응답 | 검증된 데이터·문서 응답. PC 모델 호출 안 함 |
 | 상담 PDF | 브라우저 생성 | 브라우저 생성, 은행 전송·예약은 안 함 |
@@ -38,7 +38,7 @@ node backend/scripts/preview-vercel.mjs
 npm test
 ```
 
-Vercel 프로젝트는 이 저장소 루트를 지정하고 `vercel.json`의 빌드 명령을 사용합니다. Build Output API로 정적 화면과 `/api/*` 함수를 분리합니다. Node.js 22 이상이 필요합니다. 별도 DB 계정과 금융기관 연결 없이 공개 시연본을 실행할 수 있습니다.
+Vercel 프로젝트는 이 저장소 루트를 지정하고 `vercel.json`의 빌드 명령을 사용합니다. Build Output API로 정적 화면과 `/api/*` 함수를 분리합니다. Node.js 22 이상이 필요합니다. 카카오 JavaScript 키는 Vercel 환경변수 `KAKAO_MAP_JAVASCRIPT_KEY`로 설정하고 카카오 개발자 콘솔의 JavaScript SDK 도메인에 `https://kob-bridge-project4.vercel.app`을 등록합니다. 키 값은 Git에 커밋하지 않습니다. 별도 DB 계정과 금융기관 연결 없이 공개 시연본을 실행할 수 있습니다.
 
 ## 포함·제외 원칙
 

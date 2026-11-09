@@ -73,7 +73,7 @@ export async function handleRequest(req,res){
     }
     if(url.pathname==='/api/rising/map-config'){
       loadEnv(root);
-      return json(res,200,{kakaoJavaScriptKey:process.env.PUBLIC_DEMO==='1'?'':process.env.KAKAO_MAP_JAVASCRIPT_KEY||'',publicDemo:process.env.PUBLIC_DEMO==='1'});
+      return json(res,200,{kakaoJavaScriptKey:process.env.KAKAO_MAP_JAVASCRIPT_KEY||'',publicDemo:process.env.PUBLIC_DEMO==='1'});
     }
     if(url.pathname==='/api/rankings')return json(res,200,getRankings(Object.fromEntries(url.searchParams)));
     if(url.pathname==='/api/filters')return json(res,200,getFilters());
