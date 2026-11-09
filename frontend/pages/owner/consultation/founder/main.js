@@ -220,6 +220,7 @@ function openBranchRequest(){
 }
 function submitBranchRequest(event){
   event.preventDefault();
+  if(window.KOB_PUBLIC_DEMO){$('request-error').textContent='공개 시연본에서는 상담서를 전송하거나 예약하지 않습니다. PDF를 저장해 주세요.';return;}
   const phoneInput=$('request-phone'),digits=phoneInput.value.trim().replace(/[-\s]/g,'');
   let message='';
   if(!/^01[016789]\d{7,8}$/.test(digits))message='연락받을 휴대폰 번호를 확인해 주세요.';

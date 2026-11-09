@@ -9,10 +9,12 @@ import readline from 'node:readline';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const output=path.join(root,'.vercel/output'),fn=path.join(output,'functions/api.func');
 // Only this generated output is replaced. Local source and databases stay intact.
-await fs.rm(output,{recursive:true,force:true});
+const reuse=process.argv.includes('--reuse-db');
+if(!reuse)await fs.rm(output,{recursive:true,force:true});
 await fs.mkdir(path.join(fn,'data'),{recursive:true});
 const snapshot=path.join(root,'data/public-snapshot');
 const manifest=JSON.parse(await fs.readFile(path.join(snapshot,'manifest.json'),'utf8'));
+if(!reuse){
 const db=new DatabaseSync(path.join(fn,'data/commerce.sqlite'));
 db.exec('PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF;');
 for(const table of manifest.tables){
@@ -32,6 +34,7 @@ for(const table of manifest.tables){
  db.exec('COMMIT');console.log(table.name,count);
 }
 db.exec('VACUUM');db.close();
+}
 for(const name of ['commerce.geojson','commerce-dong.geojson'])await fs.writeFile(path.join(fn,'data',name),gunzipSync(await fs.readFile(path.join(snapshot,name+'.gz'))));
 for(const name of (await fs.readdir(path.join(root,'data'))).filter(x=>x.startsWith('official-')&&x.endsWith('.json')))await fs.copyFile(path.join(root,'data',name),path.join(fn,'data',name));
 await fs.cp(path.join(root,'backend/server'),path.join(fn,'backend/server'),{recursive:true});
