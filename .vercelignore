@@ -1,0 +1,10 @@
+.git
+.env*
+!.env.example
+data/*.sqlite*
+data/raw
+frontend/pages/intended-owner/analysis
+frontend/pages/guide/sources
+node_modules
+output
+*.bak*

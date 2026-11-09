@@ -23,6 +23,7 @@ function makeDialog(onLogin){
 }
 document.addEventListener('DOMContentLoaded',async()=>{
   const button=document.querySelector('.header-login');if(!button)return;let user=await authState();button.disabled=false;button.removeAttribute('title');
+  if(window.KOB_PUBLIC_DEMO){button.textContent='로그인 · 시연 제한';button.disabled=true;button.title='공개 시연본에서는 로그인과 상담 서버 저장이 제한됩니다.';return;}
   const dialog=makeDialog(value=>{user=value;render()});const menu=document.createElement('div');menu.className='account-menu';menu.hidden=true;button.parentElement.append(menu);
   function render(){if(!user){button.textContent='로그인';button.removeAttribute('aria-expanded');button.onclick=dialog.open;menu.hidden=true;return}
     button.textContent=`${user.name}님`;button.setAttribute('aria-label',`${user.name}님 계정 정보`);button.setAttribute('aria-expanded','false');menu.replaceChildren();

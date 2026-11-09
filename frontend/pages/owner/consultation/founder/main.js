@@ -8,7 +8,8 @@ const kind=params.get('kind'),code=params.get('code'),quarter=params.get('quarte
 const origin={lat:null,lng:null};
 let report,branches=[],support=[],branchMeta,financeMeta,chosenBranch=null,purpose='startup',category='all',step=1,maxStepReached=1,map,branchMarkers=[],routePolyline,routeRequest=0,walkingRoute=null;
 const routeCache=new Map();
-let reviewPdfUrl='',reviewGeneration=0,reviewDialog=null,downloadDialog=null;
+let reviewPdfUrl='',reviewGeneration=0,reviewDialog=null,downloadDialog=null,requestDialog=null;
+const pickedSupport=new Map();
 const money=n=>n===null?'미입력':`${n.toLocaleString('ko-KR',{maximumFractionDigits:2})}만원`;
 const add=(parent,tag,value,className)=>{const el=document.createElement(tag);el.textContent=value;if(className)el.className=className;parent.append(el);return el};
 const amountInputs=[...document.querySelectorAll('[data-amount]')];
@@ -38,9 +39,13 @@ function renderSupport(){
   const preparing=founderSupport(support);
   const afterRegistration=support.filter(item=>['kb-ontact','kb-owner-overdraft','kb-policy-loan'].includes(item.id));
   const available=[...preparing,...afterRegistration].filter(x=>category==='all'||x.categories?.includes(category));
+  const pickedBar=add(list,'div','','support-picked-bar');add(pickedBar,'span',`상담서에 담은 지원 ${pickedSupport.size}개`);add(pickedBar,'small',pickedSupport.size?'영업점 상담 때 함께 확인해요':'상담 때 물어볼 지원을 담아 보세요');
   if(!available.length){add(list,'p','이 종류의 창업 전 안내는 확인된 자료에 없습니다.');return}
   for(const item of available){
     const card=add(list,'article','', 'support-item');const stage=item.businessTypes.includes('preparing')?'창업 전 상담 안내':'사업자등록 후 조건 확인';add(card,'small',`${stage} · ${item.categories.join(' · ')}`,'tag');add(card,'h3',item.name);add(card,'p',item.summary);
+    const picked=pickedSupport.has(item.id);card.classList.toggle('picked',picked);
+    const pick=add(card,'button',picked?'✓ 상담서에 담았어요':'+ 상담서에 추가','support-add');pick.type='button';pick.setAttribute('aria-pressed',String(picked));
+    pick.onclick=()=>{if(pickedSupport.has(item.id))pickedSupport.delete(item.id);else pickedSupport.set(item.id,item.name);renderSupport()};
     const checks=add(card,'details','');add(checks,'summary','추가로 확인할 조건');const ul=add(checks,'ul','');for(const check of item.checks||[])add(ul,'li',check);
     const link=add(card,'a','공식 안내에서 현재 조건 확인');link.href=item.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';
     add(card,'p',`자료 확인일 ${item.verifiedAt||financeMeta.verifiedAt} · 신청 가능 여부는 별도 확인`,'source');
@@ -158,6 +163,7 @@ function renderReview(personalUser){
   const consult=reviewSection(paper,personalUser?'05 · 영업점과 상담 메모':'04 · 영업점과 상담 메모');
   const routeText=walkingRoute?.branchId===chosenBranch?.id?`약 ${(walkingRoute.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(walkingRoute.durationSeconds/60))}분`:'도보 경로 확인 전';
   reviewRow(consult,'상담할 영업점',chosenBranch?`KB국민은행 ${chosenBranch.name}\n${routeText}\n${chosenBranch.address}\n${chosenBranch.phone||''}`:'선택하지 않음');
+  reviewRow(consult,'상담서에 담은 지원',[...pickedSupport.values()].join('\n')||'선택하지 않음');
   reviewRow(consult,'상담에서 물어볼 내용',$('memo').value.trim()||'미입력');
 }
 async function showReviewPDF(){
@@ -190,6 +196,43 @@ async function showReviewPDF(){
     $('print').textContent='PDF 내려받기';
     $('print').disabled=false;
   }catch(error){if(current===reviewGeneration){status.textContent=`PDF를 만들지 못했습니다. ${error.message}`;modalStatus.textContent=status.textContent}}
+}
+function openBranchRequest(){
+  const recipient=$('request-recipient');recipient.replaceChildren();
+  $('request-done').hidden=true;$('request-error').textContent='';
+  if(!chosenBranch){
+    recipient.className='branch-request-missing';
+    add(recipient,'p','상담서를 받을 영업점을 아직 고르지 않았어요. STEP 3에서 가까운 영업점을 먼저 골라 주세요.');
+    const back=add(recipient,'button','영업점 고르러 가기');back.type='button';back.onclick=()=>setStep(3);
+    $('request-summary').hidden=true;$('request-form').hidden=true;setStep(5);return;
+  }
+  recipient.className='branch-request-recipient';
+  const routeText=walkingRoute?.branchId===chosenBranch.id?` · 도보 약 ${(walkingRoute.distanceMeters/1000).toFixed(1)}km · 약 ${Math.max(1,Math.round(walkingRoute.durationSeconds/60))}분`:'';
+  add(recipient,'small','상담서를 받을 영업점');add(recipient,'strong',`KB국민은행 ${chosenBranch.name}`);add(recipient,'p',`${chosenBranch.address}${routeText}`);
+  const result=updateFunding();
+  const summary=$('request-summary-list');summary.replaceChildren();
+  reviewRow(summary,'분석 지역',`${report.district} ${report.name} · ${quarter.slice(0,4)}년 ${quarter.slice(4)}분기`);
+  reviewRow(summary,'필요한 도움',document.querySelector(`[data-purpose="${purpose}"]`).textContent);
+  reviewRow(summary,'상담서에 담은 지원',[...pickedSupport.values()].join(' · ')||'선택하지 않음');
+  reviewRow(summary,'추가로 준비할 금액',result.needed===null?'미입력':`${money(result.needed)} (합계 ${money(result.total)})`);
+  $('request-summary').hidden=false;$('request-form').hidden=false;
+  setStep(5);
+}
+function submitBranchRequest(event){
+  event.preventDefault();
+  const phoneInput=$('request-phone'),digits=phoneInput.value.trim().replace(/[-\s]/g,'');
+  let message='';
+  if(!/^01[016789]\d{7,8}$/.test(digits))message='연락받을 휴대폰 번호를 확인해 주세요.';
+  else if(!$('request-consent').checked)message='영업점에 보내는 것에 동의해 주세요.';
+  phoneInput.setAttribute('aria-invalid',String(message.startsWith('연락받을')));
+  $('request-error').textContent=message;
+  if(message){(message.startsWith('연락받을')?phoneInput:$('request-consent')).focus();return}
+  const branchName=`KB국민은행 ${chosenBranch.name}`;
+  $('request-form').hidden=true;
+  $('request-done-message').textContent=`${branchName}에서 내용을 확인 후 연락드릴게요.`;
+  $('request-done').hidden=false;
+  requestDialog.querySelector('p').replaceChildren(`${branchName}에서`,document.createElement('br'),'내용을 확인 후 연락드릴게요.');
+  requestDialog.showModal();
 }
 async function init(){
   if(!['area','dong'].includes(kind)||!/^\d{5,12}$/.test(code||'')||!/^20\d{2}[1-4]$/.test(quarter||'')){showError('지역 또는 기준분기가 올바르지 않습니다.');return}
@@ -230,10 +273,15 @@ $('reset-branch').onclick=()=>{chosenBranch=null;clearWalkingRoute();showBranchM
 document.querySelectorAll('[data-step] button').forEach(button=>button.onclick=()=>{const target=Number(button.closest('[data-step]').dataset.step);if(target<=maxStepReached)setStep(target)});
 $('next-1').onclick=()=>{if(!validateAmounts())return;updateFunding();setStep(2)};
 $('next-2').onclick=()=>setStep(3);
-reviewDialog=document.createElement('dialog');reviewDialog.className='founder-review-dialog';reviewDialog.setAttribute('aria-labelledby','founder-review-title');reviewDialog.innerHTML='<div class="founder-review-head"><h2 id="founder-review-title">준비 내용 확인</h2><button type="button" data-review-close aria-label="닫기">×</button></div><div class="founder-review-pages"></div><div class="founder-review-actions"><button type="button" data-review-close>닫기</button><button type="button" data-review-save>PDF 저장</button></div>';document.body.append(reviewDialog);
-reviewDialog.addEventListener('click',event=>{if(event.target===reviewDialog||event.target.closest('[data-review-close]'))reviewDialog.close();if(event.target.closest('[data-review-save]'))$('print').click()});
+reviewDialog=document.createElement('dialog');reviewDialog.className='founder-review-dialog';reviewDialog.setAttribute('aria-labelledby','founder-review-title');reviewDialog.innerHTML='<div class="founder-review-head"><h2 id="founder-review-title">준비 내용 확인</h2><button type="button" data-review-close aria-label="닫기">×</button></div><div class="founder-review-pages"></div><div class="founder-review-actions"><button type="button" data-review-close>닫기</button><button type="button" data-review-save>PDF 저장</button><button type="button" data-review-request>영업점에 상담 신청 →</button></div>';document.body.append(reviewDialog);
+reviewDialog.addEventListener('click',event=>{if(event.target===reviewDialog||event.target.closest('[data-review-close]'))reviewDialog.close();if(event.target.closest('[data-review-save]'))$('print').click();if(event.target.closest('[data-review-request]')){reviewDialog.close();openBranchRequest()}});
 downloadDialog=document.createElement('dialog');downloadDialog.className='founder-download-dialog';downloadDialog.setAttribute('aria-labelledby','founder-download-title');downloadDialog.innerHTML='<div class="founder-download-body"><button type="button" class="founder-download-close" data-download-close aria-label="닫기">×</button><img src="/shared/characters/kobi-wow.png" alt="기뻐하는 코비"><h2 id="founder-download-title">PDF 다운로드 완료</h2><p>상담 준비서를 저장했습니다.</p><a href="/pages/owner/">처음으로 돌아가기</a></div>';document.body.append(downloadDialog);
 downloadDialog.addEventListener('click',event=>{if(event.target===downloadDialog||event.target.closest('[data-download-close]'))downloadDialog.close()});
+requestDialog=document.createElement('dialog');requestDialog.className='founder-download-dialog';requestDialog.setAttribute('aria-labelledby','founder-request-title');requestDialog.innerHTML='<div class="founder-download-body"><button type="button" class="founder-download-close" data-request-close aria-label="닫기">×</button><img src="/shared/characters/kobi-wow.png" alt="기뻐하는 코비"><h2 id="founder-request-title">영업점 상담 신청완료</h2><p></p><button type="button" class="founder-request-confirm" data-request-close>확인</button></div>';document.body.append(requestDialog);
+requestDialog.addEventListener('click',event=>{if(event.target===requestDialog||event.target.closest('[data-request-close]'))requestDialog.close()});
+$('branch-request-open').onclick=openBranchRequest;
+$('request-form').addEventListener('submit',submitBranchRequest);
+$('request-pdf').onclick=()=>{if(reviewPdfUrl)$('print').click();else showReviewPDF()};
 $('review').onclick=showReviewPDF;
 $('print').onclick=()=>{if(!reviewPdfUrl)return;const link=document.createElement('a');link.href=reviewPdfUrl;link.download='KB_영업점_상담_준비서.pdf';link.click();reviewDialog?.close();downloadDialog?.showModal()};
 window.addEventListener('pagehide',()=>{if(reviewPdfUrl)URL.revokeObjectURL(reviewPdfUrl)});

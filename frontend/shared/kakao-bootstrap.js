@@ -2,7 +2,8 @@ export async function loadKakaoMaps(){
   if(window.kakao?.maps?.Map)return window.kakao.maps;
   const response=await fetch('/api/rising/map-config');
   if(!response.ok)throw Error('지도 설정을 불러오지 못했습니다.');
-  const {kakaoJavaScriptKey}=await response.json();
+  const {kakaoJavaScriptKey,publicDemo}=await response.json();
+  if(publicDemo){await(await import('/shared/public-map.js')).installPublicMap();return window.kakao.maps;}
   if(!kakaoJavaScriptKey)throw Error('카카오 지도 JavaScript 키를 .env에 설정해 주세요.');
   await new Promise((resolve,reject)=>{
     const script=document.createElement('script');

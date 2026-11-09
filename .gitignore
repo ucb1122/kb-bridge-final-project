@@ -27,3 +27,8 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Vercel local credentials and generated output
+.vercel/
+frontend/pages/intended-owner/analysis/raw/**
+.vercel

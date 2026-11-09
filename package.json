@@ -11,7 +11,8 @@
     "fetch:dong": "python backend/scripts/fetch-dong.py",
     "import:raw": "python backend/scripts/import-raw.py",
     "import:details": "python backend/scripts/import-details.py",
-    "sync:rankings": "node backend/scripts/sync-official-rankings.js"
+    "sync:rankings": "node backend/scripts/sync-official-rankings.js",
+    "build:vercel": "node backend/scripts/build-vercel.mjs"
   },
   "engines": {
     "node": ">=22.13"

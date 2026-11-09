@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 export function loadEnv(root){
+  if(process.env.PUBLIC_DEMO==='1')return;
   for(const filename of ['.env','.env.example']){
     try{for(const line of fs.readFileSync(path.join(root,filename),'utf8').split(/\r?\n/)){
       const match=line.match(/^([A-Z][A-Z0-9_]*)=(.*)$/);

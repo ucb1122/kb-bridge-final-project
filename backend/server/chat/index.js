@@ -62,6 +62,10 @@ export async function handleChat(req,res,root){
   const hits=findKnowledge(cache,previousQuestion?`${previousQuestion} ${question}`:question,2);
   res.writeHead(200,{'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
   send(res,{type:'sources',sources:hits.map(({source,title})=>({source,title}))});
+  if(process.env.PUBLIC_DEMO==='1'){
+    send(res,{type:'replace',text:documentFallback(hits)});
+    send(res,{type:'done',mode:'document'});return res.end();
+  }
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),180000);
   res.on('close',()=>controller.abort());

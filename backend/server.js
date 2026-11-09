@@ -21,9 +21,14 @@ async function readJson(req){
 }
 function authResponse(res,status,data,cookie){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...(cookie?{'Set-Cookie':cookie}:{})});res.end(JSON.stringify(data))}
 function localDemoRequest(req){return process.env.NODE_ENV!=='production'&&['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)}
-http.createServer(async(req,res)=>{
+export async function handleRequest(req,res){
   try{
     const url=new URL(req.url,'http://localhost');
+    if(url.pathname==='/api/deployment')return json(res,200,{publicDemo:process.env.PUBLIC_DEMO==='1',login:process.env.PUBLIC_DEMO!=='1',bankConnected:false});
+    if(process.env.PUBLIC_DEMO==='1'){
+      if(url.pathname==='/api/auth/me')return json(res,200,{user:null,publicDemo:true});
+      if(url.pathname.startsWith('/api/auth/')||url.pathname==='/api/consultation-requests')return json(res,503,{error:'공개 시연본에서는 로그인과 상담 서버 저장을 제공하지 않습니다. 상담서는 PDF로 저장할 수 있으며 은행에는 전송되지 않습니다.'});
+    }
     if(url.pathname==='/api/chat')return await handleChat(req,res,root);
     if(url.pathname==='/api/consultation-requests'&&req.method==='POST'){
       if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'허용되지 않은 요청입니다.'});
@@ -68,7 +73,7 @@ http.createServer(async(req,res)=>{
     }
     if(url.pathname==='/api/rising/map-config'){
       loadEnv(root);
-      return json(res,200,{kakaoJavaScriptKey:process.env.KAKAO_MAP_JAVASCRIPT_KEY||''});
+      return json(res,200,{kakaoJavaScriptKey:process.env.PUBLIC_DEMO==='1'?'':process.env.KAKAO_MAP_JAVASCRIPT_KEY||'',publicDemo:process.env.PUBLIC_DEMO==='1'});
     }
     if(url.pathname==='/api/rankings')return json(res,200,getRankings(Object.fromEntries(url.searchParams)));
     if(url.pathname==='/api/filters')return json(res,200,getFilters());
@@ -100,4 +105,5 @@ http.createServer(async(req,res)=>{
     const content=await fs.readFile(file);
     res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream'});res.end(content);
   }catch(error){json(res,error.code==='ENOENT'?404:400,{error:error.message})}
-}).listen(Number(process.env.PORT||5173),()=>console.log(`http://localhost:${process.env.PORT||5173}`));
+}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))http.createServer(handleRequest).listen(Number(process.env.PORT||5173),()=>console.log(`http://localhost:${process.env.PORT||5173}`));

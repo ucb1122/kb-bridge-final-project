@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "source": "서울특별시 서울 열린데이터광장 / 공공데이터포털(data.go.kr)",
+  "tables": [
+    {
+      "name": "observations",
+      "file": "observations.jsonl.gz",
+      "rows": 115295,
+      "sha256": "bb81901b52c03883361b407ef8b045dfe6eb13e685d227125a6bf3cd094fe58d"
+    },
+    {
+      "name": "report_details",
+      "file": "report_details.jsonl.gz",
+      "rows": 966605,
+      "sha256": "f12e35a27e0da442282980d9bc7c949350fb4e4e3bf0d405cb4f0232337188da"
+    },
+    {
+      "name": "report_industries",
+      "file": "report_industries.jsonl.gz",
+      "rows": 556827,
+      "sha256": "1ae7630db36412d463f4020c6794c40e5722b7f952f6c51217896e88e9ca7a12"
+    },
+    {
+      "name": "report_group_sales",
+      "file": "report_group_sales.jsonl.gz",
+      "rows": 162030,
+      "sha256": "05487168e0f9e891d8b1602b99ad650e579a50efd2f85649de22a3d1dda76b6f"
+    }
+  ],
+  "note": "공개 집계통계의 배포용 논리 사본. 결측치와 원본 수치를 변경하지 않음. 사용자 DB 제외."
+}

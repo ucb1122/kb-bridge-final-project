@@ -70,6 +70,7 @@ function localSummary(report){
 async function generateRegionAnalysis(query){
   const report=getRegionReport(query);
   if(!report)return null;
+  if(process.env.PUBLIC_DEMO==='1')return {mode:'data',lines:localSummary(report),note:'공개 집계통계를 직접 계산한 요약입니다. 공개 시연본에서는 PC의 AI 모델을 호출하지 않습니다.'};
   const model=process.env.OLLAMA_MODEL||'gemma4:e2b';
   const fallback={mode:'data',lines:localSummary(report),note:'Ollama 종합의견을 사용할 수 없어 원본 CSV의 핵심 수치를 표시합니다. Ollama를 실행하고 설정된 모델을 내려받으세요.'};
   if(query.mode==='local')return {mode:'data',lines:fallback.lines,note:'공개 원본의 핵심 수치로 만든 즉시 요약입니다. AI 종합의견을 준비하는 중입니다.'};
